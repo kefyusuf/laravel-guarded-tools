@@ -1,0 +1,30 @@
+{
+    "name": "local/guarded-tools",
+    "description": "Guarded tools and assurance tests for Laravel AI agents (working name).",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.4",
+        "laravel/framework": "^13.0",
+        "laravel/ai": "^1.0",
+        "packstub/agents": "^1.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "GuardedTools\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "GuardedTools\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GuardedTools\\GuardedToolsServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable"
+}
