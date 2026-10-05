@@ -88,15 +88,23 @@ try {
         echo "MODEL_UNAVAILABLE: exact primary ID not in /models.\n";
         exit(2);
     }
-    $response = $agent->prompt('Call the smoke tool now.', provider: 'hetzner', model: $model);
+    // The SDK default HTTP timeout (60 s) was too short for the reference model on 2026-10-05.
+    $startedAt = microtime(true);
+    $response = $agent->prompt('Call the smoke tool now.', provider: 'hetzner', model: $model, timeout: 180);
+    $elapsedSeconds = round(microtime(true) - $startedAt, 1);
     $summary = [
         'model' => $model,
         'structured_sdk_tool_calls' => $response->toolCalls->isNotEmpty(),
         'sdk_arguments_are_arrays' => $response->toolCalls->every(fn ($call) => is_array($call->arguments)),
         'raw_arguments_json' => 'UNVERIFIED: SDK arguments are already decoded',
         'think_tag_in_final_content' => preg_match('/<\/?think\b/i', $response->text) === 1,
-        'reasoning_in_final_content' => 'UNVERIFIED: manual review required',
+        'reasoning_in_final_content' => 'MANUAL: review final_text',
+        'final_text' => Str::limit($response->text, 300),
+        'tool_calls' => $response->toolCalls->map(fn ($call) => ['name' => $call->name, 'arguments' => $call->arguments])->all(),
+        'models_listed' => $ids,
         'network' => 'PASS',
+        'elapsed_seconds' => $elapsedSeconds,
+        'steps' => count($response->steps),
         'smoke_tool_executed' => DB::table('spike_events')->where('run_id', $runId)->where('event', 'SmokeToolExecuted')->exists(),
     ];
     $record('SmokeResponse', $summary);

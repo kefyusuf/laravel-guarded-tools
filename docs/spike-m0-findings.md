@@ -20,7 +20,7 @@ The final go / pivot / stop recommendation is written after the D- and L-phases.
 | Step / gate | Result | Evidence |
 |---|---|---|
 | 0: app and pinned packages | **PASS** | Section "Versions" |
-| 0b: reference model smoke test | **PENDING_KEY** | `spike-m0/smoke.php` lints and exits with `PENDING_KEY` when `HETZNER_AI_API_KEY` is empty. No inference request was sent. |
+| 0b: reference model smoke test | **PASS** (with a latency finding) | Section 4, step 0b |
 | 1: Q10 build-or-buy | **No stop. Differentiation narrowed.** | Section 6 |
 | 2: Q1 exposure | **PASS** (public, documented) | `GateTest::test_q1_*` |
 | 3: Q2 execution | **PASS_PUBLIC** (one undocumented-behavior note) | `GateTest::test_q2_*` |
@@ -48,7 +48,7 @@ Both files were restored, and the suite passed again after each mutation.
 | `laravel/ai` | 1.0.1 (exact pin in `spike-m0/composer.json`) | Composer |
 | PHPUnit | ^12.5.12 (Laravel skeleton default) | `spike-m0/composer.json` |
 | `packstub/agents` | v1.7.0, commit `08ccad07e89bc799f4f628d09bc8e54d7ca3ff72` | `git clone --depth 1 --branch v1.7.0` into `spike-m0/.scratch/packstub` (git-ignored). Read only, not a dependency. |
-| Reference model | Not confirmed yet (`PENDING_KEY`) | — |
+| Reference model | `Qwen3.8-27B` on the Hetzner Experiments Platform Inference API | `GET /v1/models` on 2026-10-05 listed `Qwen/Qwen3.6-35B-A3B-FP8` and `Qwen3.8-27B` |
 
 ### Attempt history
 
@@ -64,7 +64,7 @@ Vendor paths are relative to `spike-m0/vendor/laravel/ai/src/`. packstub paths a
 | Q1 | **Yes.** `withTools(Closure)` receives the declared tools and returns the list for this run. `ExposurePolicy::filter()` drives it. The filtered list is what reaches the provider in every step. The agent-middleware path (`PendingStep::onlyTools()`) exists but was not needed; it remains an alternative. | `Promptable.php:357-367` (`withTools`), `Promptable.php:375-380` (`resolveAgentTools`); tests `test_q1_q6_allowed_tool_is_exposed_and_scripted_call_executes` (tools sent per step: `[[orders_summary],[orders_summary]]`) and `test_q1_tool_without_permission_is_not_exposed` (tools sent: `[[]]`) |
 | Q2 | **PASS_PUBLIC.** `GuardedTool` implements the public `Tool` contract and wraps the inner tool. The SDK calls `GuardedTool::handle()`, which re-checks the policy against the *current* context before calling the inner `handle()`. A denial is returned as a canonical error result (`PolicyDenied`) and the run continues. No internal class, reflection or monkey patching. **Note 1 (undocumented behavior):** the SDK resolves a tool's name through a `name()` method when it exists, otherwise the class basename. The docs mention `name()` only for sub-agents. `GuardedTool` must forward `name()`, otherwise every wrapped tool is called `GuardedTool`. **Note 2 (design constraint):** a tool that throws fails the whole run; only `ValidationException` is returned to the model. So the guard must return results, not throw. | `Gateway/Concerns/InvokesTools.php:36` (call site), `:37-43` (validation returned to the model; other exceptions rethrown); `Tools/ToolNameResolver.php:12`; tests `test_q2_execution_recheck_denies_after_revocation` (inner calls = 0; event `tool.denied` with reason `missing_permission:orders.read`; model receives `{"status":"error","error":{"code":"PolicyDenied"},...}`) and `test_q2_guarded_tool_preserves_identity` |
 | Q3 | Preview only (full answer in later phase). With `RepairToolCalls` off, a call to a tool that is not in the exposed list throws `NoSuchToolException`, and the inner tool never runs. This is fail-closed, but it ends the whole run with an exception instead of a canonical `ToolNotAvailable` result. D3a/D3b must decide whether that is acceptable. | `Gateway/TextGenerationLoop.php:794` (lookup only in the exposed list), `:810` (exception); test `test_q1_call_to_hidden_tool_fails_closed` |
-| Q4 | TODO (later phase). Preview: the name comes from `name()` (see Q2). The spike uses `orders_summary`, not `orders.summary`, because OpenAI-style APIs usually reject dots in tool names. Verify against the reference model. | `Tools/ToolNameResolver.php:12` |
+| Q4 | TODO (later phase). Preview: the name comes from `name()` (see Q2). The Hetzner API accepted the name `smoke.php:56$0` in step 0b, so dots are probably accepted there. The spike keeps `orders_summary` for portability across providers. | `Tools/ToolNameResolver.php:12`; step 0b |
 | Q5 | TODO (later phase) | — |
 | Q6 | **Yes, through a public class.** `Agent::fake([...])` accepts `Laravel\Ai\Responses\Data\ToolCall` objects. The fake gateway turns them into a tool-call step, the SDK loop executes the tool, and the next scripted response follows. This usage is not in the Laravel docs, but the class is public and not marked `@internal`, and packstub's own tests rely on it. No custom runtime or tool loop was written. **No D-test is blocked by Q6.** | `Gateway/FakeTextGateway.php:155-158`; packstub `src/Testing/AgentEval.php:23`, `tests/Feature/LaravelAiOneTest.php:190`; test `test_q1_q6_allowed_tool_is_exposed_and_scripted_call_executes` (inner tool called once with `{"period":"last_month"}`, then final text) |
 | Q7 | TODO (later phase). Preview: validation failures are returned to the model as text so it can retry (`InvokesTools.php:37-39`). | — |
@@ -76,13 +76,32 @@ Vendor paths are relative to `spike-m0/vendor/laravel/ai/src/`. packstub paths a
 
 ### Step 0b
 
-**PENDING_KEY.** To run it later, put the key in `spike-m0/.env` (`HETZNER_AI_API_KEY=...`) and run from `spike-m0/`:
+**PASS** on 2026-10-05 with `Qwen3.8-27B`. Run from `spike-m0/`: `php smoke.php`.
 
-```powershell
-php smoke.php
-```
+| Check | Result |
+|---|---|
+| Model ID in `/v1/models` | `Qwen3.8-27B` present |
+| Structured tool call (not plain text) | Yes: `$response->toolCalls` has one call, arguments `{"marker":"smoke"}` |
+| Arguments decoded as JSON | Yes (the SDK exposes decoded arrays; the raw wire JSON was not inspected) |
+| Smoke tool executed | Yes: `SmokeToolExecuted` row in `spike_events` |
+| `<think>` tag or reasoning in the final text | No. Final text: `"
 
-The script checks `/models` for `Qwen3.8-27B`, sends one prompt with a trivial tool through `laravel/ai`, and prints a summary: structured tool calls present, arguments decoded, `<think>` tag in the final text, smoke tool executed. A 429 response is recorded as an infrastructure error. Not yet implemented: the fallback attempt with `Qwen/Qwen3.6-35B-A3B-FP8`, and a check of the raw wire JSON (the SDK only exposes decoded arguments).
+SMOKE_OK"` (leading blank lines only) |
+| Network access | Yes |
+| Fallback model needed | No |
+
+**Latency finding.** Three runs of the same prompt (2 model steps each):
+
+| Run | Result |
+|---|---|
+| 1 | PASS (duration not recorded) |
+| 2 | `ProviderConnectionException` after the SDK default 60 s HTTP timeout |
+| 3 | `ProviderConnectionException` after 61 s |
+| 4 (timeout raised to 180 s) | PASS in 6.7 s |
+
+The same request took 6.7 s once and more than 60 s twice. Live tests must set an explicit timeout (`prompt(..., timeout: 180)` or `#[Timeout]`), and must record a timeout as an infrastructure error, like a 429. The brief's 30 s total deadline (PRD §15) is not realistic for this model on this platform today.
+
+**Tool name finding.** The smoke tool is an anonymous class. With no `name()` method, the SDK sent its class basename `smoke.php:56$0` as the tool name. The API accepted it, and the model called it by that name. So this provider does not reject dots or other symbols in tool names (relevant to Q4 and R-004). Other providers may still reject them.
 
 ### Deterministic scenarios
 
@@ -90,7 +109,7 @@ TODO (later phase). Q6 is solved, so no D-test is expected to be `BLOCKED` by th
 
 ### Live scenarios
 
-TODO (later phase). Blocked until step 0b passes.
+TODO (later phase). Step 0b passed; live tests can run. Use an explicit timeout of at least 180 s.
 
 ## 5. SDK seams used
 
@@ -140,12 +159,12 @@ Draft records from the gate phase. Decisions are open until the final report.
 | R-002 | `laravel/ai` rethrows tool exceptions and fails the run. | `InvokesTools.php:40-43` | Every guarded tool returns a canonical result; it never throws for policy or upstream errors. | Open |
 | R-003 | A call to a non-exposed tool ends the run with `NoSuchToolException`. | `TextGenerationLoop.php:810`, `test_q1_call_to_hidden_tool_fails_closed` | Decide in D3a/D3b: accept the exception as fail-closed, or turn it into a canonical `ToolNotAvailable` result. | Open |
 | R-004 | Tool naming through `name()` is undocumented for plain tools; dots in names are likely rejected by providers. | `ToolNameResolver.php:12`; Q4 | Use `snake_case` tool names; keep the namespaced ID (`orders.summary`) only as registry and audit metadata. | Open |
+| R-006 | Reference model latency varies from 6.7 s to more than 60 s for the same 2-step request. | Step 0b | Set explicit timeouts; treat timeouts as infrastructure errors; re-measure the PRD §15 deadline default on the real platform. | Open |
 | R-005 | Deterministic tool-call tests are possible with the public `ToolCall` class, but this usage is undocumented. | `FakeTextGateway.php:155-158` | Use it for M1 tests; pin `laravel/ai` and keep a contract test that fails on SDK upgrade. | Open |
 
 ## 9. Open items
 
-- Step 0b: needs `HETZNER_AI_API_KEY` in `spike-m0/.env`.
-- Smoke test: fallback model attempt and raw wire JSON check not implemented.
+- Smoke test: raw wire JSON was not inspected (the SDK only exposes decoded arguments).
 - Q3–Q9, D1–D12, L1–L6 and the final recommendation: later phase.
 - Q10 follow-up: confirm in the later phases that the four differences above hold in real code, and are large enough to justify a package.
 
