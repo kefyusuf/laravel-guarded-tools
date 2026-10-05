@@ -253,7 +253,7 @@ Draft records from the gate phase. Decisions are open until the final report.
 ## 9. Open items
 
 - Pilot: does one real Laravel app want the pivot package? (PRD §23 questions.)
-- packstub compatibility: can the canonical result and the evidence log plug into `Agents::mapToolResultsUsing()` and its `AgentTool`? Not tested.
+- packstub compatibility: **done**, see `docs/packstub-integration-findings.md` (integration works through `AgentTool::run()`; the result hook alone is not enough; a confidential tenant-isolation finding in packstub 1.7.0).
 - R-011 and R-012: fix and re-run L4 and L6.
 - R-013: eval without the fail-closed instruction sentence.
 - Budget for repaired and hidden-tool calls (R-007) and a total run deadline (R-009): middleware approach not tested.
