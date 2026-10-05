@@ -2,6 +2,7 @@
 
 namespace App\Spike;
 
+use Laravel\Ai\Attributes\MaxSteps;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Contracts\HasMiddleware;
 use Laravel\Ai\Contracts\HasTools;
@@ -9,6 +10,12 @@ use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Promptable;
 use Stringable;
 
+/**
+ * MaxSteps is explicit: with one tool the SDK would derive only 2 steps
+ * (TextGenerationLoop::resolveMaxSteps). PHP attributes are not inherited by
+ * subclasses, so subclasses must repeat it.
+ */
+#[MaxSteps(6)]
 class OperationsAgent implements Agent, HasMiddleware, HasTools
 {
     use Promptable;

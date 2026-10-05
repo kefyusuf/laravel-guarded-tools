@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\Spike;
 
+use App\Spike\CanonicalTool;
 use App\Spike\CurrentContext;
+use App\Spike\Domain\CanonicalToolResult;
 use App\Spike\Domain\ExecutionContext;
 use App\Spike\Domain\ToolPolicy;
 use App\Spike\EvidenceLog;
@@ -97,7 +99,7 @@ class GateTest extends TestCase
         $this->assertSame(['period' => 'last_month'], $this->inner->lastArguments);
         $this->assertSame('Geçen ay 128 sipariş verildi.', $response->text);
         $this->assertSame(
-            ['tool.authorized', 'tool.completed'],
+            ['tool.authorized', 'tool.result'],
             array_column($this->log->forRun($context->runId), 'event'),
         );
     }
@@ -183,7 +185,7 @@ class GateTest extends TestCase
     }
 }
 
-final class SpyOrdersTool implements Tool
+final class SpyOrdersTool implements CanonicalTool
 {
     public int $calls = 0;
 
@@ -204,11 +206,26 @@ final class SpyOrdersTool implements Tool
         return ['period' => $schema->string()->enum(['today', 'last_month'])->required()];
     }
 
-    public function handle(Request $request): Stringable|string
+    public function id(): string
+    {
+        return 'orders.summary';
+    }
+
+    public function rules(): array
+    {
+        return ['period' => ['required', 'in:today,last_month']];
+    }
+
+    public function run(array $arguments, ExecutionContext $context): CanonicalToolResult
     {
         $this->calls++;
-        $this->lastArguments = $request->all();
+        $this->lastArguments = $arguments;
 
-        return '{"status":"ok"}';
+        return CanonicalToolResult::ok(['order_count' => 1], ['tenantId' => $context->tenantId]);
+    }
+
+    public function handle(Request $request): Stringable|string
+    {
+        throw new \LogicException('Runs only through GuardedTool.');
     }
 }

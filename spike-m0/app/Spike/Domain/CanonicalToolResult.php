@@ -36,6 +36,14 @@ final class CanonicalToolResult
         return new self('error', null, $code, $provenance);
     }
 
+    /**
+     * Copy with extra provenance fields; existing fields win.
+     */
+    public function withProvenance(array $provenance): self
+    {
+        return new self($this->status, $this->data, $this->errorCode, $this->provenance + $provenance);
+    }
+
     public function toArray(): array
     {
         return array_filter([

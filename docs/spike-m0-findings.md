@@ -63,13 +63,13 @@ Vendor paths are relative to `spike-m0/vendor/laravel/ai/src/`. packstub paths a
 |---|---|---|
 | Q1 | **Yes.** `withTools(Closure)` receives the declared tools and returns the list for this run. `ExposurePolicy::filter()` drives it. The filtered list is what reaches the provider in every step. The agent-middleware path (`PendingStep::onlyTools()`) exists but was not needed; it remains an alternative. | `Promptable.php:357-367` (`withTools`), `Promptable.php:375-380` (`resolveAgentTools`); tests `test_q1_q6_allowed_tool_is_exposed_and_scripted_call_executes` (tools sent per step: `[[orders_summary],[orders_summary]]`) and `test_q1_tool_without_permission_is_not_exposed` (tools sent: `[[]]`) |
 | Q2 | **PASS_PUBLIC.** `GuardedTool` implements the public `Tool` contract and wraps the inner tool. The SDK calls `GuardedTool::handle()`, which re-checks the policy against the *current* context before calling the inner `handle()`. A denial is returned as a canonical error result (`PolicyDenied`) and the run continues. No internal class, reflection or monkey patching. **Note 1 (undocumented behavior):** the SDK resolves a tool's name through a `name()` method when it exists, otherwise the class basename. The docs mention `name()` only for sub-agents. `GuardedTool` must forward `name()`, otherwise every wrapped tool is called `GuardedTool`. **Note 2 (design constraint):** a tool that throws fails the whole run; only `ValidationException` is returned to the model. So the guard must return results, not throw. | `Gateway/Concerns/InvokesTools.php:36` (call site), `:37-43` (validation returned to the model; other exceptions rethrown); `Tools/ToolNameResolver.php:12`; tests `test_q2_execution_recheck_denies_after_revocation` (inner calls = 0; event `tool.denied` with reason `missing_permission:orders.read`; model receives `{"status":"error","error":{"code":"PolicyDenied"},...}`) and `test_q2_guarded_tool_preserves_identity` |
-| Q3 | Preview only (full answer in later phase). With `RepairToolCalls` off, a call to a tool that is not in the exposed list throws `NoSuchToolException`, and the inner tool never runs. This is fail-closed, but it ends the whole run with an exception instead of a canonical `ToolNotAvailable` result. D3a/D3b must decide whether that is acceptable. | `Gateway/TextGenerationLoop.php:794` (lookup only in the exposed list), `:810` (exception); test `test_q1_call_to_hidden_tool_fails_closed` |
-| Q4 | TODO (later phase). Preview: the name comes from `name()` (see Q2). The Hetzner API accepted the name `smoke.php:56$0` in step 0b, so dots are probably accepted there. The spike keeps `orders_summary` for portability across providers. | `Tools/ToolNameResolver.php:12`; step 0b |
-| Q5 | TODO (later phase) | — |
+| Q3 | **Fails closed in both modes; the hidden tool never runs.** Repair off: `NoSuchToolException` ends the whole run. Repair on: the SDK answers the model with `Tool 'orders_summary' does not exist. Available tools: none.` and the model may try again; it never executes. `RepairToolCalls` is not a security boundary; the exposed tool list is. Note: with repair on, the SDK also tells the model the names of the tools it *can* use. | `Gateway/TextGenerationLoop.php:794` (lookup only in the exposed list), `:810` (exception), `:748` (repair message); `test_d3a_hidden_tool_call_without_repair_fails_closed`, `test_d3b_hidden_tool_call_with_repair_never_executes` (zero `orders` queries in both) |
+| Q4 | **Namespaced IDs work as metadata, not as the wire name.** The SDK sends `name()` when the tool defines it, else the class basename. `CanonicalTool` separates `id()` (`orders.summary`, used in provenance and audit) from `name()` (`orders_summary`, sent to the model). The Hetzner API also accepted a name with dots and symbols in step 0b, but snake_case stays portable. | `Tools/ToolNameResolver.php:12`; `app/Spike/CanonicalTool.php`; `test_d12_evidence_chain` (`provenance.tool = orders.summary`) |
+| Q5 | **Solved without parsing model text.** `CanonicalTool::run()` returns a `CanonicalToolResult` object. `GuardedTool` writes `result->toArray()` to `spike_events` (event `tool.result`) and returns the same JSON string to the SDK. The SDK keeps that string in `$response->steps[n]->toolResults[m]->result`, so the two records are equal. The SDK conversation store was not used (it needs a `Conversational` agent) and is not needed for provenance. | `app/Spike/GuardedTool.php` (`finish()`); `test_d12_evidence_chain` (logged result equals the SDK tool result) |
 | Q6 | **Yes, through a public class.** `Agent::fake([...])` accepts `Laravel\Ai\Responses\Data\ToolCall` objects. The fake gateway turns them into a tool-call step, the SDK loop executes the tool, and the next scripted response follows. This usage is not in the Laravel docs, but the class is public and not marked `@internal`, and packstub's own tests rely on it. No custom runtime or tool loop was written. **No D-test is blocked by Q6.** | `Gateway/FakeTextGateway.php:155-158`; packstub `src/Testing/AgentEval.php:23`, `tests/Feature/LaravelAiOneTest.php:190`; test `test_q1_q6_allowed_tool_is_exposed_and_scripted_call_executes` (inner tool called once with `{"period":"last_month"}`, then final text) |
-| Q7 | TODO (later phase). Preview: validation failures are returned to the model as text so it can retry (`InvokesTools.php:37-39`). | — |
-| Q8 | TODO (later phase) | — |
-| Q9 | TODO (later phase). Preview: `GuardedTool` already writes `tool.authorized`, `tool.completed` and `tool.denied` to `spike_events`. | — |
+| Q7 | **Measured.** (1) The SDK returns a `ValidationException` to the model as plain text so it can retry (`InvokesTools.php:37-39`). `GuardedTool` does not use that path: it checks the key allow-list and the rules itself and returns a canonical `InvalidToolArguments` result. The model can still retry. (2) **"Every attempt consumes the budget" can be enforced for calls that reach `GuardedTool`:** invalid, denied and valid calls each count +1. (3) **Gap:** calls to a non-existent or hidden tool never reach `GuardedTool` (repair on), so our counter does not see them. Only the SDK step limit bounds them. | `test_d7_invalid_arguments_then_corrected_retry` (2 invalid + 1 valid call, 1 query), `test_d7_invalid_attempts_consume_the_budget` (limit 2: the corrected 3rd call is refused, 0 queries), `test_d3b_*` (no `GuardedTool` event for repaired calls) |
+| Q8 | **The SDK enforces** a step limit (`#[MaxSteps]`; without it the SDK derives `round(1.5 x tools)`, so **2 steps for 1 tool**, capped at 25) and an HTTP timeout per request (`#[Timeout]`, default 60 s). A tool call in the final step is not executed, and the run ends with an empty answer. **We enforce** the tool-call count, in `GuardedTool` through `CurrentContext`. **Nobody enforces** a total run deadline or a token budget in the spike. The SDK has no total-deadline setting. | `Gateway/TextGenerationLoop.php:545-555` (`resolveMaxSteps`), `:749` (final-step message); `Promptable.php:544` (60 s default); `test_d10_tool_call_budget_stops_execution`, `test_d10_sdk_step_limit_skips_final_step_tool_call` |
+| Q9 | **Two writers are enough.** `AgentRunner` writes `agent.started`, `agent.answered` (text and tool-call IDs) and `agent.failed`. `GuardedTool` writes one event per tool attempt (`tool.authorized`, `tool.result`, `tool.denied`, `tool.invalid_arguments`, `tool.budget_exceeded`, `tool.failed`). Agent middleware was not needed for evidence (only for tests). The chain is joined by `runId` and `toolCallId`. | `app/Spike/AgentRunner.php`, `app/Spike/GuardedTool.php`; `test_d12_evidence_chain` |
 | Q10 | **No stop.** packstub already implements exposure and execution re-check and fires an authorization audit event, but material differences remain (section 6). | Section 6 |
 
 ## 4. Eval results
@@ -105,7 +105,38 @@ The Hetzner platform is experimental and free, so this latency is **not represen
 
 ### Deterministic scenarios
 
-TODO (later phase). Q6 is solved, so no D-test is expected to be `BLOCKED` by the test seam.
+Command (from `spike-m0/`): `php artisan test --filter=Spike` gives **20 passed (78 assertions)**: 5 gate tests and 15 D-tests. Test file: `tests/Feature/Spike/DeterministicTest.php`. Fixture: tenant 42 has 3 valid orders in September 2026 (425.75 TRY) plus 1 cancelled, and none today; tenant 99 has 5 in September and 2 today. The clock is fixed at 2026-10-05 12:00.
+
+| ID | Result | Test | What it proves |
+|---|---|---|---|
+| D1 | PASS | `test_d1_allowed_call_returns_tenant_values_with_provenance` | `ok`, 3 orders, 425.75 TRY, range 2026-09-01 to 30, provenance has `runId`, `tenantId=42`, `toolCallId`, `source` |
+| D2 | PASS | `test_d2_without_permission_tool_is_not_exposed` | Tool list sent to the provider is empty; zero `orders` queries |
+| D3a | PASS | `test_d3a_hidden_tool_call_without_repair_fails_closed` | `NoSuchToolException`; zero queries; `agent.failed` recorded |
+| D3b | PASS | `test_d3b_hidden_tool_call_with_repair_never_executes` | Two repaired attempts, zero queries, the run ends normally |
+| D4 | PASS | `test_d4_revocation_after_exposure_is_denied` | `PolicyDenied` to the model; the reason is only in the audit record; zero queries |
+| D5 | PASS | `test_d5_query_is_bound_to_context_tenant` | The only `orders` query has `"tenant_id" = ?` bound to 42 (query log) |
+| D6 | PASS | `test_d6_unknown_argument_is_rejected` | `{period, tenant_id: 99}` gives `InvalidToolArguments`, `unknown_keys = [tenant_id]`, zero queries |
+| D7 | PASS | `test_d7_invalid_arguments_then_corrected_retry`, `test_d7_invalid_attempts_consume_the_budget` | Missing and invalid `period` are rejected with zero queries; retries count against the budget |
+| D8 | PASS | `test_d8_zero_orders_is_empty_not_error` | Status `empty`, `order_count: 0`, no `error` key |
+| D9 | PASS | `test_d9_upstream_failure_is_error_without_raw_text` | `UPSTREAM_UNAVAILABLE`, no `data`, no SQL or exception text in the tool message; only the exception class in the audit record |
+| D10 | PASS | `test_d10_tool_call_budget_stops_execution`, `test_d10_sdk_step_limit_skips_final_step_tool_call` | Limit 3: calls 4 and 5 get `BudgetExceeded`, 3 queries. The SDK step limit skips the final-step call |
+| D11 | PASS | `test_d11_consecutive_runs_do_not_leak` | Same agent instance, two principals: results 3/42 and 5/99; queries bound to 42, then 99; context cleared after each run |
+| D12 | PASS | `test_d12_evidence_chain` | `agent.answered.toolCallIds` links to `tool.result.provenance.toolCallId`, `runId`, `tool`, `source`; the logged result equals the SDK's tool result |
+
+No D-test is `BLOCKED`.
+
+**Mutation checks.** Each mutation was applied alone, the suite was run, and the file was restored:
+
+| Mutation | Tests that failed |
+|---|---|
+| Tenant filter removed from the query | D1, D5, D8, D11 |
+| Unknown-key check removed | D6 |
+| Raw exception message forwarded to the model | D9 |
+| `empty` reported as `ok` | D8 |
+| Budget check removed | D7 (budget), D10 (budget) |
+| Context not cleared after a run | D11 |
+
+After restoring all files: 20 passed.
 
 ### Live scenarios
 
@@ -147,7 +178,22 @@ Based on packstub v1.7.0 `composer.json`, source and tests. The README was not u
 
 ## 7. Budget policy decision input
 
-TODO (later phase).
+Measured in D3b, D7 and D10 (see Q7, Q8).
+
+| Attempt type | Reaches `GuardedTool`? | Counted by our budget? | Bounded by |
+|---|---|---|---|
+| Valid call | Yes | Yes (+1) | Our tool-call limit and `MaxSteps` |
+| Invalid arguments | Yes | Yes (+1) | Our tool-call limit and `MaxSteps` |
+| Policy-denied call | Yes | Yes (+1) | Our tool-call limit and `MaxSteps` |
+| Call to a hidden or unknown tool, repair **off** | No | No | The run fails at once (`NoSuchToolException`) |
+| Call to a hidden or unknown tool, repair **on** | No | No | `MaxSteps` only |
+| Tool call in the final step | No | No | The SDK skips it; the run ends with an empty answer |
+
+**Conclusion.** "Every attempted tool invocation consumes the budget" can be enforced for every call that reaches a real tool. It cannot be enforced from `GuardedTool` for calls the SDK resolves to no tool. Two options for M1:
+1. Keep `RepairToolCalls` off. Then a hidden-tool call ends the run, and no counter is needed.
+2. If repair is wanted, count tool calls in agent middleware with `then()` (public seam). That sees every call the model makes, before the SDK resolves it. Not tested in the spike.
+
+Also: an explicit `MaxSteps` is required. Without it, an agent with one tool gets only 2 steps.
 
 ## 8. PRD changes
 
@@ -161,11 +207,15 @@ Draft records from the gate phase. Decisions are open until the final report.
 | R-004 | Tool naming through `name()` is undocumented for plain tools; dots in names are likely rejected by providers. | `ToolNameResolver.php:12`; Q4 | Use `snake_case` tool names; keep the namespaced ID (`orders.summary`) only as registry and audit metadata. | Open |
 | R-005 | Deterministic tool-call tests are possible with the public `ToolCall` class, but this usage is undocumented. | `FakeTextGateway.php:155-158` | Use it for M1 tests; pin `laravel/ai` and keep a contract test that fails on SDK upgrade. | Open |
 | R-006 | The SDK default HTTP timeout is 60 s; an agent run fails with `ProviderConnectionException` when a step exceeds it. (Latency on the experimental Hetzner platform is not representative.) | Step 0b | Make the timeout an explicit per-agent setting; map a timeout to an infrastructure error, not a tool or model failure. | Open |
+| R-007 | Calls to hidden or unknown tools never reach `GuardedTool`, so the per-run tool budget does not count them when `RepairToolCalls` is on. | Section 7; `test_d3b_*` | M1 default: repair off. If repair is needed, count calls in agent middleware. | Open |
+| R-008 | Without `#[MaxSteps]`, the SDK derives 2 steps for an agent with 1 tool. A final-step tool call is skipped and the answer is empty. | `TextGenerationLoop.php:545-555`, `:749`; `test_d10_sdk_step_limit_skips_final_step_tool_call` | Always set `MaxSteps` explicitly. `AgentRunner` maps an empty answer after a skipped call to a canonical "incomplete" outcome. | Open |
+| R-009 | The SDK has no total run deadline. The PRD §15 deadline is not enforced by anyone. | Q8 | M1: check elapsed time in agent middleware before each step (public seam) and stop with a canonical `BudgetExceeded`. | Open |
+| R-010 | A tool-level key allow-list is needed. Laravel validation does not reject unknown keys by default. | `test_d6_unknown_argument_is_rejected`; mutation check | `CanonicalTool::rules()` keys are the allow-list; `GuardedTool` rejects every other key. | Open |
 
 ## 9. Open items
 
 - Smoke test: raw wire JSON was not inspected (the SDK only exposes decoded arguments).
-- Q3–Q9, D1–D12, L1–L6 and the final recommendation: later phase.
+- L1–L6 and the final recommendation: later phase.
 - Q10 follow-up: confirm in the later phases that the four differences above hold in real code, and are large enough to justify a package.
 
 Docker resources created, removed or retained: none.
