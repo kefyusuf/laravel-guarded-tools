@@ -12,7 +12,7 @@ This is a demo, not a pilot. It shows that the package works and how it is used.
 
 ## 2. Deterministic tests
 
-From `demo-app/`: `php artisan migrate:fresh --seed` and `php artisan test` → **35 passed (885 assertions)** on the first run (31 demo/package tests + 4 package unit tests; Laravel's 2 example tests included in the 35).
+From `demo-app/`: `php artisan migrate:fresh --seed` and `php artisan test` → **35 passed (885 assertions)** on the first run (29 demo tests, 4 package unit tests, and Laravel's 2 example tests).
 
 **Mutation checks** (each applied alone, suite run, file restored; all caught):
 
