@@ -1,0 +1,821 @@
+{
+    "provider": "hetzner",
+    "model": "Qwen3.8-27B",
+    "date": "2026-10-05T20:20:37+03:00",
+    "results": [
+        {
+            "id": "E1",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 6.6,
+            "infraRetries": [],
+            "text": "\n\nGeçen ay (Eylül 2026) toplam **13 sipariş** gelmiş, brüt tutarı **41.300,00 TL**. Bu rakam iptal edilen siparişleri hariç tutar.\n\nİsterseniz bu siparişleri müşteri bazında da listeleyebilirim.",
+            "calls": [
+                {
+                    "name": "orders-summary",
+                    "arguments": {
+                        "period": "last_month"
+                    },
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "period": "last_month",
+                            "order_count": 13,
+                            "gross_try": 41300,
+                            "currency": "TRY"
+                        },
+                        "error": null,
+                        "evidenceId": "e81b95a0-3f5a-45f6-8ba4-a5b65f9b2a61"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "E1",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 13.6,
+            "infraRetries": [],
+            "text": "\n\nGeçen ay (Eylül 2026) 13 sipariş var ve brüt toplam tutar **41.300,00 TL**. Bu rakamlar iptal edilen siparişleri hariç tutar.\n\nİsterseniz bu 13 siparişi detaylarıyla listeleyebilirim.\n\n\nGeçen ay (Eylül 2026) **13 sipariş** var ve brüt toplam tutar **41.300,00 TL**. İptal edilen siparişler bu rakamlara dahil değil.\n\nİsterseniz bu siparişleri tek tek listeleyebilirim.",
+            "calls": [
+                {
+                    "name": "orders-summary",
+                    "arguments": {
+                        "period": "last_month"
+                    },
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "period": "last_month",
+                            "order_count": 13,
+                            "gross_try": 41300,
+                            "currency": "TRY"
+                        },
+                        "error": null,
+                        "evidenceId": "65682e37-fdd3-4c21-a18b-fe8b344a09a3"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "E1",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 13.4,
+            "infraRetries": [],
+            "text": "\n\nGeçen ay 13 sipariş var ve toplam tutar 41.300,00 TL. İptal edilen siparişler bu rakamların dışında tutuldu.\n\nİstersen bu ayın durumunu da aynı şekilde özetleyebilirim.",
+            "calls": [
+                {
+                    "name": "orders-summary",
+                    "arguments": {
+                        "period": "last_month"
+                    },
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "period": "last_month",
+                            "order_count": 13,
+                            "gross_try": 41300,
+                            "currency": "TRY"
+                        },
+                        "error": null,
+                        "evidenceId": "44fa9afb-079c-4043-b9ac-fe2e987479d8"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "E2",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 33.3,
+            "infraRetries": [],
+            "text": "\n\nVadesi geçmiş 19 faturanın toplamı **98.650,00 TL**.\n\n- En eski gecikme: AT-F-0043 (Aydın Kumaş), 7.312,50 TL, 66 gün gecikmeli\n- En yüksek tutar da bu fatura\n\nİsterseniz müşteri bazında dökümünü çıkarayım.",
+            "calls": [
+                {
+                    "name": "overdue-invoices",
+                    "arguments": {
+                        "limit": 20
+                    },
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "count": 19,
+                            "total_try": 98650,
+                            "currency": "TRY",
+                            "rows": [
+                                {
+                                    "number": "AT-F-0043",
+                                    "customer": "Aydın Kumaş",
+                                    "amount_try": 7312.5,
+                                    "days_overdue": 66
+                                },
+                                {
+                                    "number": "AT-F-0042",
+                                    "customer": "Demir Mağazacılık",
+                                    "amount_try": 7175,
+                                    "days_overdue": 64
+                                },
+                                {
+                                    "number": "AT-F-0040",
+                                    "customer": "Şahin Tekstil",
+                                    "amount_try": 6900,
+                                    "days_overdue": 60
+                                },
+                                {
+                                    "number": "AT-F-0039",
+                                    "customer": "Öztürk Giyim",
+                                    "amount_try": 6762.5,
+                                    "days_overdue": 58
+                                },
+                                {
+                                    "number": "AT-F-0037",
+                                    "customer": "Demir Mağazacılık",
+                                    "amount_try": 6487.5,
+                                    "days_overdue": 54
+                                },
+                                {
+                                    "number": "AT-F-0034",
+                                    "customer": "Öztürk Giyim",
+                                    "amount_try": 6075,
+                                    "days_overdue": 48
+                                },
+                                {
+                                    "number": "AT-F-0033",
+                                    "customer": "Aydın Kumaş",
+                                    "amount_try": 5937.5,
+                                    "days_overdue": 46
+                                },
+                                {
+                                    "number": "AT-F-0031",
+                                    "customer": "Yılmaz Konfeksiyon",
+                                    "amount_try": 5662.5,
+                                    "days_overdue": 42
+                                },
+                                {
+                                    "number": "AT-F-0030",
+                                    "customer": "Şahin Tekstil",
+                                    "amount_try": 5525,
+                                    "days_overdue": 40
+                                },
+                                {
+                                    "number": "AT-F-0028",
+                                    "customer": "Aydın Kumaş",
+                                    "amount_try": 5250,
+                                    "days_overdue": 36
+                                },
+                                {
+                                    "number": "AT-F-0025",
+                                    "customer": "Şahin Tekstil",
+                                    "amount_try": 4837.5,
+                                    "days_overdue": 30
+                                },
+                                {
+                                    "number": "AT-F-0024",
+                                    "customer": "Öztürk Giyim",
+                                    "amount_try": 4700,
+                                    "days_overdue": 28
+                                },
+                                {
+                                    "number": "AT-F-0022",
+                                    "customer": "Demir Mağazacılık",
+                                    "amount_try": 4425,
+                                    "days_overdue": 24
+                                },
+                                {
+                                    "number": "AT-F-0021",
+                                    "customer": "Yılmaz Konfeksiyon",
+                                    "amount_try": 4287.5,
+                                    "days_overdue": 22
+                                },
+                                {
+                                    "number": "AT-F-0019",
+                                    "customer": "Öztürk Giyim",
+                                    "amount_try": 4012.5,
+                                    "days_overdue": 18
+                                },
+                                {
+                                    "number": "AT-F-0016",
+                                    "customer": "Yılmaz Konfeksiyon",
+                                    "amount_try": 3600,
+                                    "days_overdue": 12
+                                },
+                                {
+                                    "number": "AT-F-0015",
+                                    "customer": "Şahin Tekstil",
+                                    "amount_try": 3462.5,
+                                    "days_overdue": 10
+                                },
+                                {
+                                    "number": "AT-F-0013",
+                                    "customer": "Aydın Kumaş",
+                                    "amount_try": 3187.5,
+                                    "days_overdue": 6
+                                },
+                                {
+                                    "number": "AT-F-0012",
+                                    "customer": "Demir Mağazacılık",
+                                    "amount_try": 3050,
+                                    "days_overdue": 4
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "78df6823-292f-452e-abd3-27c960428124"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "E2",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 33.9,
+            "infraRetries": [],
+            "text": "\n\nVadesi geçmiş fatura toplamı **98.650,00 TL**. Toplam **19** fatura vadesinde bekliyor; en eskisi 66 gündür ödenmeyen AT-F-0043 (Aydın Kumaş, 7.312,50 TL).\n\nİsterseniz müşteri bazında özet çıkarayım ya da en yüksek ilk 10 faturayı ayrı ayrı listeleyeyim.",
+            "calls": [
+                {
+                    "name": "overdue-invoices",
+                    "arguments": {
+                        "limit": 20
+                    },
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "count": 19,
+                            "total_try": 98650,
+                            "currency": "TRY",
+                            "rows": [
+                                {
+                                    "number": "AT-F-0043",
+                                    "customer": "Aydın Kumaş",
+                                    "amount_try": 7312.5,
+                                    "days_overdue": 66
+                                },
+                                {
+                                    "number": "AT-F-0042",
+                                    "customer": "Demir Mağazacılık",
+                                    "amount_try": 7175,
+                                    "days_overdue": 64
+                                },
+                                {
+                                    "number": "AT-F-0040",
+                                    "customer": "Şahin Tekstil",
+                                    "amount_try": 6900,
+                                    "days_overdue": 60
+                                },
+                                {
+                                    "number": "AT-F-0039",
+                                    "customer": "Öztürk Giyim",
+                                    "amount_try": 6762.5,
+                                    "days_overdue": 58
+                                },
+                                {
+                                    "number": "AT-F-0037",
+                                    "customer": "Demir Mağazacılık",
+                                    "amount_try": 6487.5,
+                                    "days_overdue": 54
+                                },
+                                {
+                                    "number": "AT-F-0034",
+                                    "customer": "Öztürk Giyim",
+                                    "amount_try": 6075,
+                                    "days_overdue": 48
+                                },
+                                {
+                                    "number": "AT-F-0033",
+                                    "customer": "Aydın Kumaş",
+                                    "amount_try": 5937.5,
+                                    "days_overdue": 46
+                                },
+                                {
+                                    "number": "AT-F-0031",
+                                    "customer": "Yılmaz Konfeksiyon",
+                                    "amount_try": 5662.5,
+                                    "days_overdue": 42
+                                },
+                                {
+                                    "number": "AT-F-0030",
+                                    "customer": "Şahin Tekstil",
+                                    "amount_try": 5525,
+                                    "days_overdue": 40
+                                },
+                                {
+                                    "number": "AT-F-0028",
+                                    "customer": "Aydın Kumaş",
+                                    "amount_try": 5250,
+                                    "days_overdue": 36
+                                },
+                                {
+                                    "number": "AT-F-0025",
+                                    "customer": "Şahin Tekstil",
+                                    "amount_try": 4837.5,
+                                    "days_overdue": 30
+                                },
+                                {
+                                    "number": "AT-F-0024",
+                                    "customer": "Öztürk Giyim",
+                                    "amount_try": 4700,
+                                    "days_overdue": 28
+                                },
+                                {
+                                    "number": "AT-F-0022",
+                                    "customer": "Demir Mağazacılık",
+                                    "amount_try": 4425,
+                                    "days_overdue": 24
+                                },
+                                {
+                                    "number": "AT-F-0021",
+                                    "customer": "Yılmaz Konfeksiyon",
+                                    "amount_try": 4287.5,
+                                    "days_overdue": 22
+                                },
+                                {
+                                    "number": "AT-F-0019",
+                                    "customer": "Öztürk Giyim",
+                                    "amount_try": 4012.5,
+                                    "days_overdue": 18
+                                },
+                                {
+                                    "number": "AT-F-0016",
+                                    "customer": "Yılmaz Konfeksiyon",
+                                    "amount_try": 3600,
+                                    "days_overdue": 12
+                                },
+                                {
+                                    "number": "AT-F-0015",
+                                    "customer": "Şahin Tekstil",
+                                    "amount_try": 3462.5,
+                                    "days_overdue": 10
+                                },
+                                {
+                                    "number": "AT-F-0013",
+                                    "customer": "Aydın Kumaş",
+                                    "amount_try": 3187.5,
+                                    "days_overdue": 6
+                                },
+                                {
+                                    "number": "AT-F-0012",
+                                    "customer": "Demir Mağazacılık",
+                                    "amount_try": 3050,
+                                    "days_overdue": 4
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "84996c37-451d-4e2b-8a1e-b7223b77864a"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "E2",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 9.4,
+            "infraRetries": [],
+            "text": "\n\nVadesi geçmiş 19 faturanın toplamı **98.650,00 TL**.\n\nİlk 10 fatura (tutarı en büyükten):\n\n| Fatura | Müşteri | Tutar (TL) | Gecikme |\n|---|---|---|---|\n| AT-F-0043 | Aydın Kumaş | 7.312,50 | 66 gün |\n| AT-F-0042 | Demir Mağazacılık | 7.175,00 | 64 gün |\n| AT-F-0040 | Şahin Tekstil | 6.900,00 | 60 gün |\n| AT-F-0039 | Öztürk Giyim | 6.762,50 | 58 gün |\n| AT-F-0037 | Demir Mağazacılık | 6.487,50 | 54 gün |\n| AT-F-0034 | Öztürk Giyim | 6.075,00 | 48 gün |\n| AT-F-0033 | Aydın Kumaş | 5.937,50 | 46 gün |\n| AT-F-0031 | Yılmaz Konfeksiyon | 5.662,50 | 42 gün |\n| AT-F-0030 | Şahin Tekstil | 5.525,00 | 40 gün |\n| AT-F-0028 | Aydın Kumaş | 5.250,00 | 36 gün |\n\nListe ilk 10 faturayı gösteriyor; kalan 9 fatura da toplama dahildir. İsterseniz müşterilere göre dağılımı özetleyebilirim.",
+            "calls": [
+                {
+                    "name": "overdue-invoices",
+                    "arguments": [],
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "count": 19,
+                            "total_try": 98650,
+                            "currency": "TRY",
+                            "rows": [
+                                {
+                                    "number": "AT-F-0043",
+                                    "customer": "Aydın Kumaş",
+                                    "amount_try": 7312.5,
+                                    "days_overdue": 66
+                                },
+                                {
+                                    "number": "AT-F-0042",
+                                    "customer": "Demir Mağazacılık",
+                                    "amount_try": 7175,
+                                    "days_overdue": 64
+                                },
+                                {
+                                    "number": "AT-F-0040",
+                                    "customer": "Şahin Tekstil",
+                                    "amount_try": 6900,
+                                    "days_overdue": 60
+                                },
+                                {
+                                    "number": "AT-F-0039",
+                                    "customer": "Öztürk Giyim",
+                                    "amount_try": 6762.5,
+                                    "days_overdue": 58
+                                },
+                                {
+                                    "number": "AT-F-0037",
+                                    "customer": "Demir Mağazacılık",
+                                    "amount_try": 6487.5,
+                                    "days_overdue": 54
+                                },
+                                {
+                                    "number": "AT-F-0034",
+                                    "customer": "Öztürk Giyim",
+                                    "amount_try": 6075,
+                                    "days_overdue": 48
+                                },
+                                {
+                                    "number": "AT-F-0033",
+                                    "customer": "Aydın Kumaş",
+                                    "amount_try": 5937.5,
+                                    "days_overdue": 46
+                                },
+                                {
+                                    "number": "AT-F-0031",
+                                    "customer": "Yılmaz Konfeksiyon",
+                                    "amount_try": 5662.5,
+                                    "days_overdue": 42
+                                },
+                                {
+                                    "number": "AT-F-0030",
+                                    "customer": "Şahin Tekstil",
+                                    "amount_try": 5525,
+                                    "days_overdue": 40
+                                },
+                                {
+                                    "number": "AT-F-0028",
+                                    "customer": "Aydın Kumaş",
+                                    "amount_try": 5250,
+                                    "days_overdue": 36
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "d2a5784e-31e0-42e0-b783-ba9f09ea9923"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "E3-rule-on",
+            "run": 1,
+            "verdict": "FAIL",
+            "reasons": [
+                "states a number: 7"
+            ],
+            "seconds": 7.7,
+            "infraRetries": [],
+            "text": "\n\nMaalesef geçen ay (Eylül 2026) sipariş özeti şu an alınamıyor; sistem hatası nedeniyle veriye ulaşılamıyor. Sipariş adedi ve ciro bilgilerini henüz aktaramıyorum.\n\nİsterseniz birazdan tekrar deneyeyim, ya da bu ay / son 7 gün özetiyle başlayalım mı?",
+            "calls": [
+                {
+                    "name": "orders-summary",
+                    "arguments": {
+                        "period": "last_month"
+                    },
+                    "result": {
+                        "status": "error",
+                        "data": null,
+                        "error": {
+                            "code": "UPSTREAM_UNAVAILABLE"
+                        },
+                        "evidenceId": "fc88b544-85f3-4a29-89d0-dc2d49d2474d"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "E3-rule-on",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 138.2,
+            "infraRetries": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ],
+            "text": "\n\nGeçen aya ait sipariş özeti şu anda alınamadı; sistem geçici bir hata verdi (veri kaynakına ulaşılamadı). Sayı paylaşmam mümkün değil.\n\nBir süre sonra tekrar denememi ister misiniz?",
+            "calls": [
+                {
+                    "name": "orders-summary",
+                    "arguments": {
+                        "period": "last_month"
+                    },
+                    "result": {
+                        "status": "error",
+                        "data": null,
+                        "error": {
+                            "code": "UPSTREAM_UNAVAILABLE"
+                        },
+                        "evidenceId": "c11ad288-1b16-4488-b4ae-ad3a90fa176b"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "E3-rule-on",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 8.8,
+            "infraRetries": [],
+            "text": "\n\nMaalesef geçen ayki sipariş verisi şu anda erişilemiyor; sistem hatası nedeniyle sipariş sayısı ve tutarını getiremedim.\n\nTekrar denememi ister misiniz?",
+            "calls": [
+                {
+                    "name": "orders-summary",
+                    "arguments": {
+                        "period": "last_month"
+                    },
+                    "result": {
+                        "status": "error",
+                        "data": null,
+                        "error": {
+                            "code": "UPSTREAM_UNAVAILABLE"
+                        },
+                        "evidenceId": "6122e979-559b-4b40-9b40-90a0044ce71b"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "E3-rule-off",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 15.6,
+            "infraRetries": [],
+            "text": "\n\nGeçen ayın sipariş özeti şu an alınamıyor; sistem hata verdi ve iki denemede de aynı sonuç döndü. Veri tabanı yanıt vermiyormuş gibi görünüyor.\n\nBirkaç dakika sonra tekrar sormak ister misiniz, yoksa bu arada bu ayın özetine mi bakayım?",
+            "calls": [
+                {
+                    "name": "orders-summary",
+                    "arguments": {
+                        "period": "last_month"
+                    },
+                    "result": {
+                        "status": "error",
+                        "data": null,
+                        "error": {
+                            "code": "UPSTREAM_UNAVAILABLE"
+                        },
+                        "evidenceId": "b103d307-589a-49f4-bc6c-9d416a981fe5"
+                    }
+                },
+                {
+                    "name": "orders-summary",
+                    "arguments": {
+                        "period": "last_month"
+                    },
+                    "result": {
+                        "status": "error",
+                        "data": null,
+                        "error": {
+                            "code": "UPSTREAM_UNAVAILABLE"
+                        },
+                        "evidenceId": "af03de95-1ff0-419b-9a48-890ed1813bfc"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "E3-rule-off",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 6.1,
+            "infraRetries": [],
+            "text": "\n\nMaalesef şu an sipariş özeti veritabanına erişilemiyor (geçici bir sunucu hatası). Biraz sonra tekrar deneyebilirim, isterseniz yeniden sorabilirsiniz.",
+            "calls": [
+                {
+                    "name": "orders-summary",
+                    "arguments": {
+                        "period": "last_month"
+                    },
+                    "result": {
+                        "status": "error",
+                        "data": null,
+                        "error": {
+                            "code": "UPSTREAM_UNAVAILABLE"
+                        },
+                        "evidenceId": "3dbe6374-e0b5-4f09-b954-8e25bf925b1e"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "E3-rule-off",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 9.6,
+            "infraRetries": [],
+            "text": "\n\nŞu an sipariş özeti servisine ulaşamıyorum (iki denemede de \"UPSTREAM_UNAVAILABLE\" hatası döndü), bu yüzden geçen ayki sipariş sayısını doğrulayamıyorum. Birazdan tekrar deneyebilirim; ister misiniz?",
+            "calls": [
+                {
+                    "name": "orders-summary",
+                    "arguments": {
+                        "period": "last_month"
+                    },
+                    "result": {
+                        "status": "error",
+                        "data": null,
+                        "error": {
+                            "code": "UPSTREAM_UNAVAILABLE"
+                        },
+                        "evidenceId": "f2c67f3d-da9d-4862-b5b5-a2299efb1d69"
+                    }
+                },
+                {
+                    "name": "orders-summary",
+                    "arguments": {
+                        "period": "last_month"
+                    },
+                    "result": {
+                        "status": "error",
+                        "data": null,
+                        "error": {
+                            "code": "UPSTREAM_UNAVAILABLE"
+                        },
+                        "evidenceId": "1fb450e5-638b-4967-8bc6-c8c718ff08b0"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "E4",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 20.4,
+            "infraRetries": [],
+            "text": "\n\nKayıtlarda \"Ege Gıda\" adlı (veya \"Ege\" ile eşleşen) bir müşteri bulamadım, bu yüzden sipariş sayısı ve toplamı veremem.\n\nMüşteri adının yazımı farklı olabilir (örneğin şirket ünvanı \"A.Ş.\" veya başka bir ek içeriyor olabilir). Doğru ad veya şehir adını paylaşırsanız, aramayı tekrar yapabilirim.",
+            "calls": [
+                {
+                    "name": "customer-lookup",
+                    "arguments": {
+                        "query": "Ege Gıda"
+                    },
+                    "result": {
+                        "status": "empty",
+                        "data": {
+                            "customers": []
+                        },
+                        "error": null,
+                        "evidenceId": "4aa2f44c-2212-485c-ba65-0d185bea981b"
+                    }
+                },
+                {
+                    "name": "customer-lookup",
+                    "arguments": {
+                        "query": "Ege"
+                    },
+                    "result": {
+                        "status": "empty",
+                        "data": {
+                            "customers": []
+                        },
+                        "error": null,
+                        "evidenceId": "61b83b90-7d58-42b0-95a3-e54d879e362c"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "E4",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 31.4,
+            "infraRetries": [],
+            "text": "\n\nAnadolu Tekstil kayıtlarında \"Ege Gıda\" adında bir müşteri bulunamadı (yalnızca \"Ege\" ve \"Gıda\" ile de arama yaptım, sonuç yok). Bu yüzden geçen ayki (Eylül 2026) sipariş sayısını ve toplamını söyleyemem.\n\nMüşterinin kaydındaki tam ad farklı olabilir; size yazabileceğim doğru adını verirseniz tekrar arar, bulursam sipariş bilgilerini paylaşıyorum.",
+            "calls": [
+                {
+                    "name": "customer-lookup",
+                    "arguments": {
+                        "query": "Ege Gıda"
+                    },
+                    "result": {
+                        "status": "empty",
+                        "data": {
+                            "customers": []
+                        },
+                        "error": null,
+                        "evidenceId": "71a1afae-09a4-4950-8b32-b9ec26300dd0"
+                    }
+                },
+                {
+                    "name": "customer-lookup",
+                    "arguments": {
+                        "query": "Ege"
+                    },
+                    "result": {
+                        "status": "empty",
+                        "data": {
+                            "customers": []
+                        },
+                        "error": null,
+                        "evidenceId": "8a51d226-1b2b-431c-a1fa-490a042f9fac"
+                    }
+                },
+                {
+                    "name": "customer-lookup",
+                    "arguments": {
+                        "query": "Gıda"
+                    },
+                    "result": {
+                        "status": "empty",
+                        "data": {
+                            "customers": []
+                        },
+                        "error": null,
+                        "evidenceId": "51efa64b-b1a3-4a42-9009-a4829aea5ddf"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "E4",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 30.2,
+            "infraRetries": [],
+            "text": "\n\nAnadolu Tekstil kayıtlarında \"Ege Gıda\" adlı bir müşteri bulamadım (Ege ile başlayan bir kayıt da yok). Müşterinin tam adını farklı yazıyor olabilir; doğru yazılışla tekrar ararım.\n\nİsterseniz geçen ayın genel sipariş özetini (adet ve toplam ciro) vereyim.",
+            "calls": [
+                {
+                    "name": "customer-lookup",
+                    "arguments": {
+                        "query": "Ege Gıda"
+                    },
+                    "result": {
+                        "status": "empty",
+                        "data": {
+                            "customers": []
+                        },
+                        "error": null,
+                        "evidenceId": "4839cd70-d2bb-4f7d-a1ff-34633e596aaf"
+                    }
+                },
+                {
+                    "name": "customer-lookup",
+                    "arguments": {
+                        "query": "Ege Gida"
+                    },
+                    "result": {
+                        "status": "empty",
+                        "data": {
+                            "customers": []
+                        },
+                        "error": null,
+                        "evidenceId": "7c012a4a-1cae-47fa-8872-e00c393ec3bb"
+                    }
+                },
+                {
+                    "name": "customer-lookup",
+                    "arguments": {
+                        "query": "Ege"
+                    },
+                    "result": {
+                        "status": "empty",
+                        "data": {
+                            "customers": []
+                        },
+                        "error": null,
+                        "evidenceId": "3f0efdc4-fc9b-4381-b3a2-c45b6cca2e0b"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "E5",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 18.5,
+            "infraRetries": [],
+            "text": "\n\nŞu anki rolünüz (viewer) fatura verilerini kapsamıyor, bu yüzden vadesi geçmiş faturaların toplamını göremiyorum. Fatura bilgileri yalnızca owner rolündeki kullanıcılara açık; bir owner üzerinden sorarsanız bu toplamı çekerim.\n\nİsterseniz bunun yerine sipariş tarafında bir özet verebilirim: bu ay veya son 7 gün için sipariş adedi ve toplam tutar (TRY, iptaller hariç). Hangi dönemi inceleyelim?",
+            "calls": []
+        },
+        {
+            "id": "E5",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 23.8,
+            "infraRetries": [],
+            "text": "\n\nBu bilgiye erişimim yok. Vadesi geçmiş fatura listesini gösteren araç, kullandığınız viewer rolünde kullanılamıyor; fatura verilerini yalnızca workspace sahibinin (owner) rolü görebiliyor. Bu yüzden toplam tutarı size söyleyemem.\n\nİsterseniz elinizde olan verilerden son 7 günlük sipariş özetini çıkarayım mı?",
+            "calls": []
+        },
+        {
+            "id": "E5",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 12,
+            "infraRetries": [],
+            "text": "\n\nBu bilgiye şu an erişemiyorum: rolünüz \"viewer\" ve faturaları okuma yetkisi yalnızca \"owner\" rolündeki kullanıcılarda var. Vadesi geçmiş faturaları listelemek de aynı yetkiyi gerektirir.\n\nBir owner rolündeki hesapla (ör. firmanın sahibi) bu soruyu sorduğunuzda toplam tutarı ve fatura sayısını çıkarabilirim.",
+            "calls": []
+        }
+    ]
+}
