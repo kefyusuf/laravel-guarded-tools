@@ -1,8 +1,10 @@
 # Spike M0 — Policy chain on top of `laravel/ai`
 
-**Status:** Frozen v1.1 · **Date:** 2026-10-05 · **Timebox:** 2 working days, hard stop
+**Status:** Frozen v1.2 · **Date:** 2026-10-05 · **Timebox:** 2 working days, hard stop
 **Pinned versions:** Laravel 13.x · `laravel/ai` 1.0.1 · `packstub/agents` 1.7.0 (reference only, not a dependency) · PHP as required by `laravel/ai` (^8.3)
-**Input documents:** `preview-demo/php-agent-prd.md` (v0.1), review decisions from 2026-10-05
+**Reference model:** Hetzner Experiments Platform Inference API, model `Qwen3.8-27B` (section 4.1)
+**Location:** Laravel app in `spike-m0/`; findings in `docs/spike-m0-findings.md`
+**Input documents:** `docs/preview-demo/php-agent-prd.md` (v0.1), review decisions from 2026-10-05
 **Output:** A throwaway Laravel app, a findings report, and a go / pivot / stop recommendation
 
 ## 1. Purpose
@@ -20,6 +22,7 @@ This spike is not the MVP. The code is disposable. The findings report is the de
 | Step | Work | Gate |
 |---|---|---|
 | 0 | Pin the exact versions above. Record them in the report. | — |
+| 0b | Reference model smoke test (section 4.1) | **Model gate** |
 | 1 | Q10 reconnaissance, max 2 hours | **Build-or-buy gate** |
 | 2 | Q1 exposure seam | — |
 | 3 | Q2 execution seam | **Hard gate** |
@@ -61,11 +64,30 @@ Answer each question with evidence: a passing test, a failing test, or a link to
 - `CanonicalToolResult` with status `ok | empty | error`, `data`, `error.code`, and `provenance` (`tool`, `runId`, `tenantId`, `source`, `at`).
 - A tenant-bound query: `Order::where('tenant_id', $context->tenantId)`. The tenant is never a tool argument.
 - An evidence log: one table `spike_events` (`run_id`, `event`, `payload`, `created_at`) on the app's default DB connection.
-- An eval suite of deterministic tests plus a small set of live tests with one hosted model.
+- An eval suite of deterministic tests plus a small set of live tests with the reference model (section 4.1).
+
+### 4.1 Reference model
+
+The live tests use one self-hosted, OpenAI-compatible reference model. This replaces "one hosted model" from v1.1. The goal is unchanged: one strong tool-calling model, so that model quality and Studio correctness can be told apart.
+
+- **Provider:** Hetzner Experiments Platform Inference API. Base URL `https://inference.hetzner.com/api/v1`. Endpoints: `/v1/models`, `/v1/chat/completions`.
+- **Model:** `Qwen3.8-27B` (dense, 262,144-token context). Confirm the exact ID with `GET /v1/models`; that response is authoritative.
+- **Optional second run, only if time remains:** `Qwen/Qwen3.6-35B-A3B-FP8`, same L1–L6 scenarios, one repetition.
+- **SDK configuration:** the `openai-compatible` driver of `laravel/ai`. Read `HETZNER_AI_URL` and `HETZNER_AI_API_KEY` from `spike-m0/.env`. The user puts the key there. Never print, log or commit it.
+- **Rate limits (per key):** 10 requests per 60 s; 4M input and 100k output tokens per 60 s. Over the limit the API returns HTTP 429. Throttle the live tests so they stay under the limit. A 429 is an infrastructure error: retry it after a wait, record it, and never report it as a tool failure, a model failure or a test result.
+- **Status:** experimental platform. The provider states that request and response content is not stored. The model list can change.
+
+**Step 0b — smoke test (model gate).** Before the gates in section 2, send one request with a single trivial tool through `laravel/ai`. Record:
+1. whether the response contains a structured `tool_calls` entry (not a tool call written as plain text),
+2. whether the arguments are valid JSON,
+3. whether reasoning or `<think>` text leaks into the final answer content,
+4. whether the call works from the implementer's sandbox (network access).
+
+The provider documentation does not mention tool calling. If structured tool calls do not work, try `Qwen/Qwen3.6-35B-A3B-FP8` once. If neither works, do not stop the spike: continue with the gates and the D-tests, mark L1–L6 as `BLOCKED` with the evidence, and record it as a finding. If only network access fails, record it; the user will run the live tests outside the sandbox.
 
 ### Out of scope
 
-Studio UI, DB-stored agent/tool/policy config, memory, knowledge, embeddings, semantic search, connectors, HTTP adapter, failover, `request_host` or service gating, write tools, approval flow, MCP server, local model, separate SQLite store, framework-independent packaging, public API naming.
+Studio UI, DB-stored agent/tool/policy config, memory, knowledge, embeddings, semantic search, connectors, HTTP adapter, failover, `request_host` or service gating, write tools, approval flow, MCP server, LM Studio and other local models, a model compatibility matrix, separate SQLite store, framework-independent packaging, public API naming.
 
 If a question needs one of these, write it in the report as an open item. Do not build it.
 
@@ -120,7 +142,7 @@ If **Q6** has no public seam, do not stop. Continue with live tests, mark D-test
 | D11 | Two runs with different principals in the same process | No context or result leaks between runs |
 | D12 | Any run | Evidence rows link answer → run → tool call → canonical result → source |
 
-### Live (one hosted model; record results, no hard pass rate)
+### Live (reference model; record results, no hard pass rate)
 
 Run each prompt 3 times. Record the model ID, the tool selected, the arguments, the answer text, and the oracle result. Use the fixed oracle for each scenario. Do not build a general claim verifier, and do not compare numbers as raw strings: normalize number formats first (for example `28.450,75` = `28450.75`).
 
@@ -140,8 +162,8 @@ A failure of L3, L4 or L6 is a P0 finding, not a test to tune away.
 The spike is **done** when all of these are true:
 
 1. Q1–Q10 each have a written answer with evidence. Q2 has a classification (`PASS_PUBLIC`, `PASS_INTERNAL_RISK` or `FAIL`).
-2. D1–D12 run in one command (`php artisan test --filter=Spike` or the equivalent) and pass. If a test cannot pass or cannot run because of an SDK limit, the report names the limit with a source reference.
-3. L1–L6 were run against one hosted model. Results are in a table in the report.
+2. D1–D12 run in one command (`php artisan test --filter=Spike` or the equivalent). **All runnable tests pass.** A test may be `BLOCKED` only when a demonstrated SDK limitation prevents it; the report gives the evidence and a source reference.
+3. L1–L6 were run against the reference model, or are `BLOCKED` with evidence from step 0b. Results are in a table in the report, with the model ID, the date and any 429 retries.
 4. The findings report is written (section 9).
 
 ## 9. Findings report
@@ -151,7 +173,7 @@ Write to `docs/spike-m0-findings.md`. Use this structure:
 1. **Recommendation:** go / pivot / stop, in one paragraph.
 2. **Gate results:** Q10, Q1, Q2 (with classification), Q6.
 3. **Q1–Q10 answers:** one row each, with evidence (test name, or source file and line).
-4. **Eval results:** D1–D12 pass/fail/blocked table; L1–L6 result table with the model ID and date.
+4. **Eval results:** D1–D12 pass/fail/blocked table; L1–L6 result table with the model ID and date; step 0b smoke test result.
 5. **SDK seams used:** the exact extension points (classes, methods, attributes). Mark each one as public or internal. Internal ones are upgrade risks.
 6. **Differentiation vs `packstub/agents`:** what we add, in at most five bullets, based on its source and tests, not its README.
 7. **Budget policy decision input:** the measured retry and repair behavior from Q7, and whether "every attempt consumes budget" can be enforced.
@@ -165,6 +187,6 @@ Write to `docs/spike-m0-findings.md`. Use this structure:
 - Use only public SDK API where possible. Every use of an internal class, reflection or an undocumented hook must be listed in the report.
 - Keep `ExecutionContext`, `PolicyDecision`, `CanonicalToolResult` and `Provenance` as plain PHP classes without Illuminate imports. Everything else may use Laravel freely.
 - For third-party package behavior, trust `composer.json`, source and tests over README text.
-- Do not commit secrets. Read the hosted model API key from `.env`, and keep `.env` out of version control.
+- Do not commit secrets. Read the reference model API key from `spike-m0/.env`, and keep `.env` out of version control.
 - Record versions in the report: PHP, Laravel, `laravel/ai`, `packstub/agents`, model ID, and the date of the live runs.
 - Stop at the timebox even when work is incomplete. An incomplete report with honest gaps is a valid result.
