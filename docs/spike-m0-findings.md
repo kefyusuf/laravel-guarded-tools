@@ -159,8 +159,8 @@ Draft records from the gate phase. Decisions are open until the final report.
 | R-002 | `laravel/ai` rethrows tool exceptions and fails the run. | `InvokesTools.php:40-43` | Every guarded tool returns a canonical result; it never throws for policy or upstream errors. | Open |
 | R-003 | A call to a non-exposed tool ends the run with `NoSuchToolException`. | `TextGenerationLoop.php:810`, `test_q1_call_to_hidden_tool_fails_closed` | Decide in D3a/D3b: accept the exception as fail-closed, or turn it into a canonical `ToolNotAvailable` result. | Open |
 | R-004 | Tool naming through `name()` is undocumented for plain tools; dots in names are likely rejected by providers. | `ToolNameResolver.php:12`; Q4 | Use `snake_case` tool names; keep the namespaced ID (`orders.summary`) only as registry and audit metadata. | Open |
-| R-006 | Reference model latency varies from 6.7 s to more than 60 s for the same 2-step request. | Step 0b | Set explicit timeouts; treat timeouts as infrastructure errors; re-measure the PRD §15 deadline default on the real platform. | Open |
 | R-005 | Deterministic tool-call tests are possible with the public `ToolCall` class, but this usage is undocumented. | `FakeTextGateway.php:155-158` | Use it for M1 tests; pin `laravel/ai` and keep a contract test that fails on SDK upgrade. | Open |
+| R-006 | Reference model latency varies from 6.7 s to more than 60 s for the same 2-step request. | Step 0b | Set explicit timeouts; treat timeouts as infrastructure errors; re-measure the PRD §15 deadline default on the real platform. | Open |
 
 ## 9. Open items
 
