@@ -99,7 +99,7 @@ SMOKE_OK"` (leading blank lines only) |
 | 3 | `ProviderConnectionException` after 61 s |
 | 4 (timeout raised to 180 s) | PASS in 6.7 s |
 
-The same request took 6.7 s once and more than 60 s twice. Live tests must set an explicit timeout (`prompt(..., timeout: 180)` or `#[Timeout]`), and must record a timeout as an infrastructure error, like a 429. The brief's 30 s total deadline (PRD §15) is not realistic for this model on this platform today.
+The Hetzner platform is experimental and free, so this latency is **not representative** of a production provider and is not a product finding. Technical takeaway only: live tests set an explicit timeout (`prompt(..., timeout: 180)` or `#[Timeout]`) and record a timeout as an infrastructure error, like a 429. Do not derive PRD deadline defaults from these numbers.
 
 **Tool name finding.** The smoke tool is an anonymous class. With no `name()` method, the SDK sent its class basename `smoke.php:56$0` as the tool name. The API accepted it, and the model called it by that name. So this provider does not reject dots or other symbols in tool names (relevant to Q4 and R-004). Other providers may still reject them.
 
@@ -109,7 +109,7 @@ TODO (later phase). Q6 is solved, so no D-test is expected to be `BLOCKED` by th
 
 ### Live scenarios
 
-TODO (later phase). Step 0b passed; live tests can run. Use an explicit timeout of at least 180 s.
+TODO (later phase). Step 0b passed; live tests can run with an explicit timeout.
 
 ## 5. SDK seams used
 
@@ -160,7 +160,7 @@ Draft records from the gate phase. Decisions are open until the final report.
 | R-003 | A call to a non-exposed tool ends the run with `NoSuchToolException`. | `TextGenerationLoop.php:810`, `test_q1_call_to_hidden_tool_fails_closed` | Decide in D3a/D3b: accept the exception as fail-closed, or turn it into a canonical `ToolNotAvailable` result. | Open |
 | R-004 | Tool naming through `name()` is undocumented for plain tools; dots in names are likely rejected by providers. | `ToolNameResolver.php:12`; Q4 | Use `snake_case` tool names; keep the namespaced ID (`orders.summary`) only as registry and audit metadata. | Open |
 | R-005 | Deterministic tool-call tests are possible with the public `ToolCall` class, but this usage is undocumented. | `FakeTextGateway.php:155-158` | Use it for M1 tests; pin `laravel/ai` and keep a contract test that fails on SDK upgrade. | Open |
-| R-006 | Reference model latency varies from 6.7 s to more than 60 s for the same 2-step request. | Step 0b | Set explicit timeouts; treat timeouts as infrastructure errors; re-measure the PRD §15 deadline default on the real platform. | Open |
+| R-006 | The SDK default HTTP timeout is 60 s; an agent run fails with `ProviderConnectionException` when a step exceeds it. (Latency on the experimental Hetzner platform is not representative.) | Step 0b | Make the timeout an explicit per-agent setting; map a timeout to an infrastructure error, not a tool or model failure. | Open |
 
 ## 9. Open items
 
