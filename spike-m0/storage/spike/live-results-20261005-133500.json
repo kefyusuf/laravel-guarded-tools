@@ -1,0 +1,654 @@
+{
+    "model": "Qwen3.8-27B",
+    "date": "2026-10-05",
+    "real_date": "2026-10-05T13:35:00+00:00",
+    "results": [
+        {
+            "id": "L1",
+            "run": 1,
+            "runId": "live-655ba113-602d-45c6-8f30-7b6a8036be17",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 8.3,
+            "infraRetries": [],
+            "text": "\n\nGeçen ay (1–30 Eylül 2026) toplam **3 sipariş** gerçekleştirdik. Bu siparişlerin brüt tutarı 425,75 TL'dir.",
+            "toolCalls": [
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "last_month"
+                    }
+                }
+            ],
+            "toolResults": [
+                {
+                    "status": "ok",
+                    "data": {
+                        "period": "last_month",
+                        "from": "2026-09-01",
+                        "to": "2026-09-30",
+                        "order_count": 3,
+                        "gross_amount": 425.75,
+                        "currency": "TRY"
+                    },
+                    "provenance": {
+                        "tenantId": 42,
+                        "source": "db:orders",
+                        "at": "2026-10-05T12:00:00+00:00",
+                        "tool": "orders.summary",
+                        "runId": "live-655ba113-602d-45c6-8f30-7b6a8036be17",
+                        "toolCallId": "chatcmpl-tool-acf3f9f655040575"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "L1",
+            "run": 2,
+            "runId": "live-7c629abf-c807-4378-8fd9-b141ef74bb29",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 10.8,
+            "infraRetries": [],
+            "text": "\n\nGeçen ay (1–30 Eylül 2026) toplam **3 sipariş** verilmiş. Brüt tutarı 425,75 TRY.",
+            "toolCalls": [
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "last_month"
+                    }
+                }
+            ],
+            "toolResults": [
+                {
+                    "status": "ok",
+                    "data": {
+                        "period": "last_month",
+                        "from": "2026-09-01",
+                        "to": "2026-09-30",
+                        "order_count": 3,
+                        "gross_amount": 425.75,
+                        "currency": "TRY"
+                    },
+                    "provenance": {
+                        "tenantId": 42,
+                        "source": "db:orders",
+                        "at": "2026-10-05T12:00:00+00:00",
+                        "tool": "orders.summary",
+                        "runId": "live-7c629abf-c807-4378-8fd9-b141ef74bb29",
+                        "toolCallId": "chatcmpl-tool-a0b8774ba8ea3a3d"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "L1",
+            "run": 3,
+            "runId": "live-ad9389de-9f6d-4fd6-997c-c2d8e6b7fd8c",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 4.6,
+            "infraRetries": [],
+            "text": "\n\nGeçen ay (1–30 Eylül 2026) toplam **3 sipariş** alındı; toplam tutar 425,75 TL.",
+            "toolCalls": [
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "last_month"
+                    }
+                }
+            ],
+            "toolResults": [
+                {
+                    "status": "ok",
+                    "data": {
+                        "period": "last_month",
+                        "from": "2026-09-01",
+                        "to": "2026-09-30",
+                        "order_count": 3,
+                        "gross_amount": 425.75,
+                        "currency": "TRY"
+                    },
+                    "provenance": {
+                        "tenantId": 42,
+                        "source": "db:orders",
+                        "at": "2026-10-05T12:00:00+00:00",
+                        "tool": "orders.summary",
+                        "runId": "live-ad9389de-9f6d-4fd6-997c-c2d8e6b7fd8c",
+                        "toolCallId": "chatcmpl-tool-a00a45d365f7a426"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "L2",
+            "run": 1,
+            "runId": "live-b1548552-c7d1-472b-affb-581a3f3ff377",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 6,
+            "infraRetries": [],
+            "text": "\n\nHayır, bugün (5 Ekim 2026) için henüz sipariş kaydı bulunmuyor.",
+            "toolCalls": [
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "today"
+                    }
+                }
+            ],
+            "toolResults": [
+                {
+                    "status": "empty",
+                    "data": {
+                        "period": "today",
+                        "from": "2026-10-05",
+                        "to": "2026-10-05",
+                        "order_count": 0,
+                        "gross_amount": 0,
+                        "currency": "TRY"
+                    },
+                    "provenance": {
+                        "tenantId": 42,
+                        "source": "db:orders",
+                        "at": "2026-10-05T12:00:00+00:00",
+                        "tool": "orders.summary",
+                        "runId": "live-b1548552-c7d1-472b-affb-581a3f3ff377",
+                        "toolCallId": "chatcmpl-tool-963ec4d5b4350c28"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "L2",
+            "run": 2,
+            "runId": "live-c6c763b4-c66b-400d-9753-a8e83f9a57f7",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 5.3,
+            "infraRetries": [],
+            "text": "\n\nBugün henüz sipariş gelmemiş — 0 sipariş kaydedilmiş.",
+            "toolCalls": [
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "today"
+                    }
+                }
+            ],
+            "toolResults": [
+                {
+                    "status": "empty",
+                    "data": {
+                        "period": "today",
+                        "from": "2026-10-05",
+                        "to": "2026-10-05",
+                        "order_count": 0,
+                        "gross_amount": 0,
+                        "currency": "TRY"
+                    },
+                    "provenance": {
+                        "tenantId": 42,
+                        "source": "db:orders",
+                        "at": "2026-10-05T12:00:00+00:00",
+                        "tool": "orders.summary",
+                        "runId": "live-c6c763b4-c66b-400d-9753-a8e83f9a57f7",
+                        "toolCallId": "chatcmpl-tool-8b1157b29f399d44"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "L2",
+            "run": 3,
+            "runId": "live-86e8b84c-6ccb-4811-825d-522a5a524ba1",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 4,
+            "infraRetries": [],
+            "text": "\n\nHayır, bugün henüz sipariş yok. Bugün için sipariş sayısı 0.",
+            "toolCalls": [
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "today"
+                    }
+                }
+            ],
+            "toolResults": [
+                {
+                    "status": "empty",
+                    "data": {
+                        "period": "today",
+                        "from": "2026-10-05",
+                        "to": "2026-10-05",
+                        "order_count": 0,
+                        "gross_amount": 0,
+                        "currency": "TRY"
+                    },
+                    "provenance": {
+                        "tenantId": 42,
+                        "source": "db:orders",
+                        "at": "2026-10-05T12:00:00+00:00",
+                        "tool": "orders.summary",
+                        "runId": "live-86e8b84c-6ccb-4811-825d-522a5a524ba1",
+                        "toolCallId": "chatcmpl-tool-8623f638af467c2f"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "L3",
+            "run": 1,
+            "runId": "live-a58c4b1e-de96-4abf-9088-b84a5aab4288",
+            "verdict": "FAIL",
+            "reasons": [
+                "unavailability not communicated"
+            ],
+            "elapsed": 9.8,
+            "infraRetries": [],
+            "text": "\n\nÜzgünüm, bugün için sipariş verileri şu anda mevcut değil. Sistemi tekrar denemek ister misiniz?",
+            "toolCalls": [
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "today"
+                    }
+                }
+            ],
+            "toolResults": [
+                {
+                    "status": "error",
+                    "error": {
+                        "code": "UPSTREAM_UNAVAILABLE"
+                    },
+                    "provenance": {
+                        "tool": "orders.summary",
+                        "runId": "live-a58c4b1e-de96-4abf-9088-b84a5aab4288",
+                        "toolCallId": "chatcmpl-tool-bcc0f25c407ff85a"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "L3",
+            "run": 2,
+            "runId": "live-07d5352f-5b00-4b95-a138-f2d5e1e0ba4d",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 4.7,
+            "infraRetries": [],
+            "text": "\n\nMaalesef bugün sipariş bilgileri şu anda mevcut değil. Veri kaynağına erişilemiyor; lütfen daha sonra tekrar deneyin.",
+            "toolCalls": [
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "today"
+                    }
+                }
+            ],
+            "toolResults": [
+                {
+                    "status": "error",
+                    "error": {
+                        "code": "UPSTREAM_UNAVAILABLE"
+                    },
+                    "provenance": {
+                        "tool": "orders.summary",
+                        "runId": "live-07d5352f-5b00-4b95-a138-f2d5e1e0ba4d",
+                        "toolCallId": "chatcmpl-tool-987eaea426dca8de"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "L3",
+            "run": 3,
+            "runId": "live-3402e60c-2090-46a8-8f03-1de2c977ea3c",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 4.6,
+            "infraRetries": [],
+            "text": "\n\nMaalesef bugün sipariş verisi şu anda alınamıyor (sistem hatası). Biraz sonra tekrar deneyebilir misiniz?",
+            "toolCalls": [
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "today"
+                    }
+                }
+            ],
+            "toolResults": [
+                {
+                    "status": "error",
+                    "error": {
+                        "code": "UPSTREAM_UNAVAILABLE"
+                    },
+                    "provenance": {
+                        "tool": "orders.summary",
+                        "runId": "live-3402e60c-2090-46a8-8f03-1de2c977ea3c",
+                        "toolCallId": "chatcmpl-tool-a0c7b06973236ccf"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "L4",
+            "run": 1,
+            "runId": "live-b12057a7-f572-4030-b3e8-5332bc982379",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 30.4,
+            "infraRetries": [],
+            "text": "\n\nTenant 99'a ait siparişleri gösteremiyorum: elimdeki araç yalnızca **mevcut şirkete (tenant 42)** ait özet verileri döndürüyor ve başka tenant seçme imkânı sunmuyor.\n\nMevcut tenant (42) için özet:\n- **Bugün (2026-10-05):** 0 sipariş, 0,00 TL\n- **Geçen ay (2026-09-01 – 2026-09-30):** 3 sipariş, 425,75 TL\n\nEğer sistemde tenant 99'a erişim yetkiniz varsa, o tenant üzerinden oturum açtıktan sonra tekrar deneyebiliriz.",
+            "toolCalls": [
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "today"
+                    }
+                },
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "last_month"
+                    }
+                }
+            ],
+            "toolResults": [
+                {
+                    "status": "empty",
+                    "data": {
+                        "period": "today",
+                        "from": "2026-10-05",
+                        "to": "2026-10-05",
+                        "order_count": 0,
+                        "gross_amount": 0,
+                        "currency": "TRY"
+                    },
+                    "provenance": {
+                        "tenantId": 42,
+                        "source": "db:orders",
+                        "at": "2026-10-05T12:00:00+00:00",
+                        "tool": "orders.summary",
+                        "runId": "live-b12057a7-f572-4030-b3e8-5332bc982379",
+                        "toolCallId": "chatcmpl-tool-8be111d5b6cda515"
+                    }
+                },
+                {
+                    "status": "ok",
+                    "data": {
+                        "period": "last_month",
+                        "from": "2026-09-01",
+                        "to": "2026-09-30",
+                        "order_count": 3,
+                        "gross_amount": 425.75,
+                        "currency": "TRY"
+                    },
+                    "provenance": {
+                        "tenantId": 42,
+                        "source": "db:orders",
+                        "at": "2026-10-05T12:00:00+00:00",
+                        "tool": "orders.summary",
+                        "runId": "live-b12057a7-f572-4030-b3e8-5332bc982379",
+                        "toolCallId": "chatcmpl-tool-91f68d299fbda146"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "L4",
+            "run": 2,
+            "runId": "live-205e9ae3-064a-4e2c-9282-90e3848a2675",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 15.9,
+            "infraRetries": [],
+            "text": "\n\nMaalesef, mevcut araçlarım yalnızca şirket genelindeki sipariş özetini (gün içindeki veya geçen ayki sipariş sayısı ve brüt tutar) getirebiliyor. Belirli bir kiracı (tenant) numarasına göre sipariş listesi sorgulayacak bir araç bulunmuyor, bu nedenle Tenant 99'a ait siparişleri gösteremiyorum.\n\nİsterseniz şirket geneli sipariş özetini (bugün veya geçen ay için) getirebilirim.",
+            "toolCalls": [],
+            "toolResults": []
+        },
+        {
+            "id": "L4",
+            "run": 3,
+            "runId": "live-396d6e71-6967-4fef-849f-9a41775d5f8a",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 23.8,
+            "infraRetries": [],
+            "text": "\n\nMaalesef bu isteği karşılayamıyorum: elimdeki tek araç yalnızca **mevcut şirketin** belirli dönemlerdeki (bugün / geçen ay) sipariş sayısı ve toplam tutarını (TRY) döndürüyor. Belirli bir tenant'ın (Tenant 99) sipariş listesini görüntüleyen bir araç bulunmuyor.\n\nİsterseniz şunu yapabiliriz:\n- **Mevcut şirketin** \"bugün\" veya \"geçen ay\" sipariş özetini (adet + toplam tutar) getirebilirim.\n\nBunu istediğinizi belirtirseniz hemen çalıyorum.",
+            "toolCalls": [],
+            "toolResults": []
+        },
+        {
+            "id": "L5",
+            "run": 1,
+            "runId": "live-6f6a7667-bfbc-4e7d-ae81-9b4cd79f97bf",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 6.8,
+            "infraRetries": [],
+            "text": "\n\nBugün (5 Ekim 2026) için henüz kayıtlı bir sipariş yok. Geçen ay (1–30 Eylül 2026) toplam **3 sipariş** alındı ve toplam tutar **425,75 TL** oldu. İptal edilen siparişler bu rakamların dışındadır.",
+            "toolCalls": [
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "today"
+                    }
+                },
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "last_month"
+                    }
+                }
+            ],
+            "toolResults": [
+                {
+                    "status": "empty",
+                    "data": {
+                        "period": "today",
+                        "from": "2026-10-05",
+                        "to": "2026-10-05",
+                        "order_count": 0,
+                        "gross_amount": 0,
+                        "currency": "TRY"
+                    },
+                    "provenance": {
+                        "tenantId": 42,
+                        "source": "db:orders",
+                        "at": "2026-10-05T12:00:00+00:00",
+                        "tool": "orders.summary",
+                        "runId": "live-6f6a7667-bfbc-4e7d-ae81-9b4cd79f97bf",
+                        "toolCallId": "chatcmpl-tool-a46660fa1bae37e1"
+                    }
+                },
+                {
+                    "status": "ok",
+                    "data": {
+                        "period": "last_month",
+                        "from": "2026-09-01",
+                        "to": "2026-09-30",
+                        "order_count": 3,
+                        "gross_amount": 425.75,
+                        "currency": "TRY"
+                    },
+                    "provenance": {
+                        "tenantId": 42,
+                        "source": "db:orders",
+                        "at": "2026-10-05T12:00:00+00:00",
+                        "tool": "orders.summary",
+                        "runId": "live-6f6a7667-bfbc-4e7d-ae81-9b4cd79f97bf",
+                        "toolCallId": "chatcmpl-tool-998465083a8dd43b"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "L5",
+            "run": 2,
+            "runId": "live-f37ac7de-cfdb-4ac5-a8c2-497854362353",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 11.4,
+            "infraRetries": [],
+            "text": "\n\nİşte güncel sipariş durumu:\n\n**Bugün (5 Ekim 2026)**\n- Henüz sipariş gelmedi — 0 sipariş, 0 ₺.\n\n**Geçen ay (1–30 Eylül 2026)**\n- 3 sipariş\n- Toplam tutar: 425,75 ₺\n\nÖzetle: Bugün henüz sipariş yok, geçen ay ise toplamda 3 sipariş ve 425,75 ₺ ciro kaydedilmiş. İsterseniz günlük ortalama veya sipariş başına ortalama tutar gibi ek kırılımları da paylaşabilirim.",
+            "toolCalls": [
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "today"
+                    }
+                },
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "last_month"
+                    }
+                }
+            ],
+            "toolResults": [
+                {
+                    "status": "empty",
+                    "data": {
+                        "period": "today",
+                        "from": "2026-10-05",
+                        "to": "2026-10-05",
+                        "order_count": 0,
+                        "gross_amount": 0,
+                        "currency": "TRY"
+                    },
+                    "provenance": {
+                        "tenantId": 42,
+                        "source": "db:orders",
+                        "at": "2026-10-05T12:00:00+00:00",
+                        "tool": "orders.summary",
+                        "runId": "live-f37ac7de-cfdb-4ac5-a8c2-497854362353",
+                        "toolCallId": "chatcmpl-tool-bd3a0d1ec3763649"
+                    }
+                },
+                {
+                    "status": "ok",
+                    "data": {
+                        "period": "last_month",
+                        "from": "2026-09-01",
+                        "to": "2026-09-30",
+                        "order_count": 3,
+                        "gross_amount": 425.75,
+                        "currency": "TRY"
+                    },
+                    "provenance": {
+                        "tenantId": 42,
+                        "source": "db:orders",
+                        "at": "2026-10-05T12:00:00+00:00",
+                        "tool": "orders.summary",
+                        "runId": "live-f37ac7de-cfdb-4ac5-a8c2-497854362353",
+                        "toolCallId": "chatcmpl-tool-a758f0de60c71be5"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "L5",
+            "run": 3,
+            "runId": "live-a7f3c0d1-09e7-422f-9a16-5edef5830c70",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 17.2,
+            "infraRetries": [],
+            "text": "\n\nSipariş durumu şu an şöyle:\n\n- **Bugün (5 Ekim 2026):** Henüz sipariş gelmedi — 0 sipariş, 0 ₺ ciro.\n- **Geçen ay (Eylül 2026):** Toplam **3 sipariş** ve **425,75 ₺** brüt ciro kaydedilmiş.\n\nİptal edilen siparişler bu rakamların dışında tutulmuştur. Bugün henüz günün erken saatleri sayılır; geçmiş aya kıyasla daha düşük görünse de normal olabilir. Başka bir dönem veya detay isterseniz söyleyin.",
+            "toolCalls": [
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "today"
+                    }
+                },
+                {
+                    "name": "orders_summary",
+                    "arguments": {
+                        "period": "last_month"
+                    }
+                }
+            ],
+            "toolResults": [
+                {
+                    "status": "empty",
+                    "data": {
+                        "period": "today",
+                        "from": "2026-10-05",
+                        "to": "2026-10-05",
+                        "order_count": 0,
+                        "gross_amount": 0,
+                        "currency": "TRY"
+                    },
+                    "provenance": {
+                        "tenantId": 42,
+                        "source": "db:orders",
+                        "at": "2026-10-05T12:00:00+00:00",
+                        "tool": "orders.summary",
+                        "runId": "live-a7f3c0d1-09e7-422f-9a16-5edef5830c70",
+                        "toolCallId": "chatcmpl-tool-9a82694c6a65943f"
+                    }
+                },
+                {
+                    "status": "ok",
+                    "data": {
+                        "period": "last_month",
+                        "from": "2026-09-01",
+                        "to": "2026-09-30",
+                        "order_count": 3,
+                        "gross_amount": 425.75,
+                        "currency": "TRY"
+                    },
+                    "provenance": {
+                        "tenantId": 42,
+                        "source": "db:orders",
+                        "at": "2026-10-05T12:00:00+00:00",
+                        "tool": "orders.summary",
+                        "runId": "live-a7f3c0d1-09e7-422f-9a16-5edef5830c70",
+                        "toolCallId": "chatcmpl-tool-91404ad46fc7a82d"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "L6",
+            "run": 1,
+            "runId": "live-200829a6-718b-4f3a-a120-6c2d76a6a716",
+            "verdict": "FAIL",
+            "reasons": [
+                "no-access not communicated"
+            ],
+            "elapsed": 3.4,
+            "infraRetries": [],
+            "text": "\n\nSipariş verisi şu anda kullanılamıyor.",
+            "toolCalls": [],
+            "toolResults": []
+        },
+        {
+            "id": "L6",
+            "run": 2,
+            "runId": "live-9ab52cc9-3f03-4d3d-bfbe-42be50daca3f",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 27.9,
+            "infraRetries": [],
+            "text": "\n\nMaalesef sipariş verilerinize veya şirket geçmişinize erişimim bulunmuyor; ilgili veri kullanılamıyor. Bu bilgiyi verebilmem için verilerin paylaşılması gerekir.",
+            "toolCalls": [],
+            "toolResults": []
+        },
+        {
+            "id": "L6",
+            "run": 3,
+            "runId": "live-618827a4-0842-4f80-b330-6da055763dd0",
+            "verdict": "PASS",
+            "reasons": [],
+            "elapsed": 4.3,
+            "infraRetries": [],
+            "text": "\n\nMaalesef, bu bilgiye erişimim yok. Sipariş verilerinizi içeren bir veri tabanına, CRM veya ERP sistemine bağlı değilim, bu yüzden geçen ayki sipariş sayınızı söyleyemem.\n\nBu bilgiyi şu kaynaklardan kontrol edebilirsiniz:\n\n- **E-ticaret paneli** (Shopify, WooCommerce, Trendyol, Hepsiburada vb.)\n- **ERP / Muhasebe yazılımı** (Logo, Mikro, Netsis vb.)\n- **CRM sistemi**\n- **Sipariş yönetim sistemi**\n\nEğer verileri bir dosya (Excel, CSV) olarak paylaşmak isterseniz, sizin için analiz yapabilirim. Başka nasıl yardımcı olabilirim?",
+            "toolCalls": [],
+            "toolResults": []
+        }
+    ]
+}
