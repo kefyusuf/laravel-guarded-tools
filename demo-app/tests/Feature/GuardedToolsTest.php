@@ -185,6 +185,7 @@ class GuardedToolsTest extends TestCase
         $this->assertSame(180, $agent->timeout());
         $this->assertStringContainsString('If a tool result has status error, say the data is unavailable and do not state any number.', $agent->instructions());
         $this->assertStringContainsString('If status is empty, say there is no data for that period.', $agent->instructions());
+        $this->assertStringContainsString('Reply in the language of the person\'s latest message', $agent->instructions());
         foreach ([OrdersSummary::class, OverdueInvoices::class, CustomerLookup::class] as $tool) {
             $this->assertTrue(app($tool)->isReadOnly());
         }

@@ -45,7 +45,7 @@ Every answered run printed its evidence ID; the model-facing results contained o
 ## 4. Observations
 
 - G1–G6 and G8 hold in this demo. G7 (stop the run on budget) was out of scope.
-- The model answered in English for three Turkish questions. The agent's persona and domain are in English; the brief said "the model answers in the user's language", but nothing enforces it. Small fix: an answer rule for the user's language.
+- The model first answered Turkish questions in English. Cause: packstub adds "Answer language: <app locale>" to the prompt, and `demo-app/.env` had `APP_LOCALE=en`. **Fixed:** `APP_LOCALE=tr`, plus an answer rule in `OrderDeskAssistant` (reply in the language of the latest message, Turkish number format), covered by the agent test. Re-run: the viewer and owner questions were answered in Turkish ("Geçen ay (Eylül 2026) toplam 13 sipariş … 41.300,00 TL").
 - `demo:ask` reads packstub's transcript structure (`AgentChat::for()->messages()`), listed as an upgrade risk in `demo-app/README-demo.md`.
 - One live run per question; not a statistical result.
 

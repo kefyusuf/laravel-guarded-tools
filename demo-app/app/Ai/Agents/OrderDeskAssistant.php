@@ -31,6 +31,8 @@ class OrderDeskAssistant extends Agent
     {
         return [...parent::answerRules(),
             'If a tool result has status error, say the data is unavailable and do not state any number. If status is empty, say there is no data for that period.',
+            // packstub adds "Answer language: <app locale>"; the person's own message wins over it.
+            'Reply in the language of the person\'s latest message (a Turkish question gets a Turkish answer), even when the answer language line below says otherwise. Format numbers and money for that language (Turkish: 41.300,00 TL).',
         ];
     }
 
