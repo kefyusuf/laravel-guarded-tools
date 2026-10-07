@@ -8,7 +8,7 @@
     "require": {
         "php": "^8.2",
         "kefyusuf/laravel-guarded-tools": "@dev",
-        "laravel/ai": "1.0.1",
+        "laravel/ai": "1.1.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1"
     },
