@@ -34,12 +34,29 @@ jobs:
           '
 
   apps:
-    name: ${{ matrix.app }}
+    name: ${{ matrix.app }} (${{ matrix.db }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         app: [demo-app, pilots/support-desk, pilots/clinic, pilots/inventory]
+        db: [sqlite, mysql, pgsql]
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: testing
+          MYSQL_ROOT_PASSWORD: password
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping -ppassword" --health-interval=5s --health-timeout=5s --health-retries=20
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports: ['5432:5432']
+        options: --health-cmd=pg_isready --health-interval=5s --health-timeout=5s --health-retries=20
     defaults:
       run:
         working-directory: ${{ matrix.app }}
@@ -48,9 +65,21 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: pdo_sqlite, intl
+          extensions: pdo_sqlite, pdo_mysql, pdo_pgsql, intl
           tools: composer:v2
           coverage: none
       - run: composer install --no-interaction --no-progress --prefer-dist
       - run: cp .env.example .env && php artisan key:generate
+      - name: Point tests at ${{ matrix.db }}
+        if: matrix.db != 'sqlite'
+        run: |
+          if [ "${{ matrix.db }}" = mysql ]; then port=3306; user=root; else port=5432; user=postgres; fi
+          {
+            echo "DB_CONNECTION=${{ matrix.db }}"
+            echo "DB_HOST=127.0.0.1"
+            echo "DB_PORT=$port"
+            echo "DB_DATABASE=testing"
+            echo "DB_USERNAME=$user"
+            echo "DB_PASSWORD=password"
+          } >> "$GITHUB_ENV"
       - run: php artisan test
