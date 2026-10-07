@@ -6,9 +6,12 @@ use GuardedTools\Budget\ToolCallBudget;
 use GuardedTools\CanonicalToolResult;
 use GuardedTools\Evidence\EvidenceRecorder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Laravel\Mcp\Request;
+use Laravel\Mcp\Response;
+use Packstub\Agents\Events\ToolAuthorized;
 use Packstub\Agents\Facades\Agents;
 use Packstub\Agents\Mcp\AgentTool;
 use Throwable;
@@ -77,7 +80,9 @@ abstract class GuardedAgentTool extends AgentTool
                         $result = CanonicalToolResult::error('InvalidToolArguments');
                         $audit = ['reason' => 'validation_failed'];
                     } else {
-                        $result = $this->query($validator->validated(), $workspace);
+                        // A savepoint: on PostgreSQL a failed query aborts the surrounding transaction,
+                        // and the evidence row below could not be written.
+                        $result = DB::transaction(fn () => $this->query($validator->validated(), $workspace));
                     }
                 }
             }
@@ -86,6 +91,34 @@ abstract class GuardedAgentTool extends AgentTool
             $audit = ['reason' => 'upstream_failure', 'exception_class' => $exception::class];
         }
 
+        return $this->respond($result, $tool, $source, $workspace, $userId, $arguments, $audit);
+    }
+
+    /**
+     * packstub refuses a call at call time (ability or token) before run(); answer that refusal
+     * canonically too, with evidence. packstub's ToolAuthorized event is kept as it is.
+     */
+    protected function refused(Request $request, string $refusal, string $by): Response
+    {
+        ToolAuthorized::dispatch($this, $this->ability, $request->all(), false, $refusal, $by);
+
+        $tool = static::class;
+        $source = 'tool:'.static::class;
+        try {
+            $tool = $this->id();
+            $source = $this->source();
+            app(ToolCallBudget::class)->attempt();
+        } catch (Throwable) {
+            // The refusal stands; identity falls back to the class name.
+        }
+
+        return Response::json($this->respond(CanonicalToolResult::error('PolicyDenied'), $tool, $source,
+            Agents::tenant(), auth()->id(), $request->all(), ['reason' => 'refused_by_'.$by, 'refusal' => $refusal]));
+    }
+
+    private function respond(CanonicalToolResult $result, string $tool, string $source, ?Model $workspace,
+        int|string|null $userId, array $arguments, array $audit): array
+    {
         try {
             // Keep one private provenance shape, with trusted identity and source.
             $provenance = array_replace($result->provenance, [

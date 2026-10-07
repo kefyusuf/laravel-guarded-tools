@@ -10,7 +10,6 @@ use GuardedTools\Testing\AssertsGuardedTools;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -102,7 +101,7 @@ class SupportDeskGuaranteesTest extends TestCase
     #[DataProvider('tools')]
     public function test_failure_is_canonical(string $tool, array $arguments): void
     {
-        $this->assertFailureIsCanonical($tool, $arguments, fn () => Schema::rename('tickets', 'tickets_offline'));
+        $this->assertFailureIsCanonical($tool, $arguments);
     }
 
     public function test_member_of_two_workspaces_reads_only_the_current_one(): void

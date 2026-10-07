@@ -55,6 +55,7 @@ trait AssertsGuardedTools
     protected function decodeGuardedResult(AgentEvalResult $evaluation): array
     {
         Assert::assertCount(1, $evaluation->toolCalls());
+        Assert::assertFalse($evaluation->toolCalls()[0]['pending'], 'The call became a proposal waiting for approval: mark the guarded tool #[IsReadOnly].');
         $payload = json_decode((string) $evaluation->toolCalls()[0]['result'], true, 512, JSON_THROW_ON_ERROR);
         Assert::assertIsArray($payload);
         $keys = array_keys($payload);
@@ -65,6 +66,46 @@ trait AssertsGuardedTools
     }
 
     /** Capture domain queries only; context, transcript and evidence writes are excluded. */
+    /**
+     * Make every query that reads or writes one of $tables fail before it reaches the database, with an
+     * SQLSTATE-like message. Returns a function that stops the outage. Works on every driver and inside
+     * RefreshDatabase, because it needs no DDL.
+     *
+     * @param  list<string>  $tables
+     */
+    protected function failQueriesOn(array $tables): Closure
+    {
+        $failing = true;
+        DB::connection()->beforeExecuting(function (string $query) use (&$failing, $tables): void {
+            if (! $failing) {
+                return;
+            }
+            $sql = str_replace(['"', '`', '[', ']'], '', strtolower($query));
+            foreach ($tables as $table) {
+                if (preg_match('/\b(?:from|join|into|update)\s+'.preg_quote(strtolower($table), '/').'\b/', $sql)) {
+                    throw new \RuntimeException("SQLSTATE[HY000]: simulated outage on {$table}: {$query}");
+                }
+            }
+        });
+
+        return function () use (&$failing): void {
+            $failing = false;
+        };
+    }
+
+    /** Recursively key-sorted copy, for comparing JSON that a database may have reordered. */
+    protected function sortedKeys(mixed $value): mixed
+    {
+        if (! is_array($value)) {
+            return $value;
+        }
+        if (! array_is_list($value)) {
+            ksort($value);
+        }
+
+        return array_map(fn ($item) => $this->sortedKeys($item), $value);
+    }
+
     private function captureGuardedQueries(string $tool, Closure $execute): array
     {
         $connection = DB::connection();
@@ -148,12 +189,24 @@ trait AssertsGuardedTools
         }
     }
 
-    public function assertFailureIsCanonical(string $tool, array $arguments, Closure $breakDataSource): void
+    /**
+     * The data source fails. Without $breakDataSource, every query on the tool's tables fails before it
+     * reaches the database (with an SQLSTATE-like message the model must never see). This needs no DDL,
+     * so it works inside RefreshDatabase on MySQL, where a DDL statement commits the test transaction.
+     */
+    public function assertFailureIsCanonical(string $tool, array $arguments, ?Closure $breakDataSource = null): void
     {
         $user = auth()->user();
         $workspace = Agents::tenant();
-        $breakDataSource();
-        $evaluation = $this->runGuardedTool($tool, $arguments, $user, $workspace);
+        $restore = $breakDataSource === null ? $this->failQueriesOn($this->guardedToolTables($tool)) : null;
+        if ($breakDataSource !== null) {
+            $breakDataSource();
+        }
+        try {
+            $evaluation = $this->runGuardedTool($tool, $arguments, $user, $workspace);
+        } finally {
+            $restore && $restore();
+        }
         $payload = $this->decodeGuardedResult($evaluation);
         Assert::assertSame('error', $payload['status']);
         Assert::assertSame(['code' => 'UPSTREAM_UNAVAILABLE'], $payload['error']);
@@ -203,6 +256,25 @@ trait AssertsGuardedTools
         Assert::assertSame(['code' => 'PolicyDenied'], $payload['error']);
         Assert::assertNull($payload['data']);
         Assert::assertSame([], $queries, 'A revoked member must not query domain tables.');
+    }
+
+    /**
+     * The person loses the tool's ability during the turn. packstub refuses the call before run();
+     * the model must still get a canonical PolicyDenied, no data, and the refusal is in the evidence.
+     */
+    public function assertAbilityRefusalIsCanonical(string $tool, array $arguments, Authenticatable $user, Model $workspace, Closure $revokeAbility): void
+    {
+        [$evaluation, $queries] = $this->captureGuardedQueries($tool,
+            fn () => $this->runGuardedTool($tool, $arguments, $user, $workspace, $revokeAbility));
+        $payload = $this->decodeGuardedResult($evaluation);
+        Assert::assertSame('error', $payload['status']);
+        Assert::assertSame(['code' => 'PolicyDenied'], $payload['error']);
+        Assert::assertNull($payload['data']);
+        Assert::assertSame([], $queries, 'A refused call must not query domain tables.');
+
+        $row = DB::table('guarded_tool_evidence')->where('id', $payload['evidenceId'])->first();
+        Assert::assertNotNull($row, 'A refused call must still write evidence.');
+        Assert::assertStringStartsWith('refused_by_', json_decode($row->audit, true)['reason'] ?? '');
     }
 
     /**
@@ -263,10 +335,11 @@ trait AssertsGuardedTools
         Assert::assertSame((string) $user->getAuthIdentifier(), (string) $row->user_id);
         Assert::assertSame(app($tool)->id(), $row->tool);
         Assert::assertSame($source, $row->source);
-        Assert::assertSame($arguments, json_decode($row->arguments, true, 512, JSON_THROW_ON_ERROR));
+        // JSON columns may reorder keys (MySQL), so compare values, not key order.
+        Assert::assertEquals($this->sortedKeys($arguments), $this->sortedKeys(json_decode($row->arguments, true, 512, JSON_THROW_ON_ERROR)));
         $full = json_decode($row->result, true, 512, JSON_THROW_ON_ERROR);
         Assert::assertSame($source, $full['provenance']['source']);
-        Assert::assertSame($payload['data'], $full['data']);
+        Assert::assertEquals($this->sortedKeys($payload['data']), $this->sortedKeys($full['data']));
         Assert::assertSame($payload['status'], $row->status);
     }
 }

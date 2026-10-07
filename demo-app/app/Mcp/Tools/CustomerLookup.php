@@ -26,11 +26,12 @@ class CustomerLookup extends GuardedAgentTool
 
     protected function query(array $arguments, Model $workspace): CanonicalToolResult
     {
-        $needle = '%'.str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $arguments['query']).'%';
+        // '!' as the LIKE escape character behaves the same on SQLite, MySQL and PostgreSQL.
+        $needle = '%'.str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $arguments['query']).'%';
         $customers = DB::table('customers')->where('customers.team_id', $workspace->getKey())
             ->where(function ($query) use ($needle): void {
-                $query->whereRaw("customers.name LIKE ? ESCAPE '\\'", [$needle])
-                    ->orWhereRaw("customers.city LIKE ? ESCAPE '\\'", [$needle]);
+                $query->whereRaw("customers.name LIKE ? ESCAPE '!'", [$needle])
+                    ->orWhereRaw("customers.city LIKE ? ESCAPE '!'", [$needle]);
             })->orderBy('customers.name')->orderBy('customers.id')->limit(10)->get(['id', 'name', 'city']);
         $counts = $customers->isEmpty() ? collect() : DB::table('orders')->where('orders.team_id', $workspace->getKey())
             ->whereIn('customer_id', $customers->pluck('id')->all())->selectRaw('customer_id, COUNT(*) as order_count')

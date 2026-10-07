@@ -118,19 +118,20 @@ class GuardedToolsTest extends TestCase
     #[DataProvider('guardedTools')]
     public function test_data_source_failure_is_canonical(string $tool, array $arguments, string $table, string $source): void
     {
-        try {
-            $this->assertFailureIsCanonical($tool, $arguments, fn () => Schema::rename($table, $table.'_offline'));
-        } finally {
-            if (Schema::hasTable($table.'_offline')) {
-                Schema::rename($table.'_offline', $table);
-            }
-        }
+        $this->assertFailureIsCanonical($tool, $arguments);
     }
 
     #[DataProvider('guardedTools')]
     public function test_non_member_is_denied_before_reading_data(string $tool, array $arguments, string $table, string $source): void
     {
         $this->assertNonMemberIsDenied($tool, $arguments, $this->ownerB, $this->teamA);
+    }
+
+    #[DataProvider('guardedTools')]
+    public function test_ability_lost_mid_turn_gets_a_canonical_refusal(string $tool, array $arguments, string $table, string $source): void
+    {
+        $this->assertAbilityRefusalIsCanonical($tool, $arguments, $this->ownerA, $this->teamA,
+            fn () => auth()->user()->role = 'none');
     }
 
     #[DataProvider('guardedTools')]
@@ -167,14 +168,14 @@ class GuardedToolsTest extends TestCase
         $empty = $this->decodeGuardedResult($this->runGuardedTool(OrdersSummary::class, ['period' => 'today']));
         $this->assertSame('empty', $empty['status']);
         $this->assertSame(0, $empty['data']['order_count']);
-        Schema::rename('orders', 'orders_offline');
+        $restore = $this->failQueriesOn(['orders']);
         try {
             $failed = $this->decodeGuardedResult($this->runGuardedTool(OrdersSummary::class, ['period' => 'today']));
             $this->assertSame('error', $failed['status']);
             $this->assertSame('UPSTREAM_UNAVAILABLE', $failed['error']['code']);
             $this->assertNull($failed['data']);
         } finally {
-            Schema::rename('orders_offline', 'orders');
+            $restore();
         }
     }
 
@@ -267,9 +268,7 @@ class GuardedToolsTest extends TestCase
             if ($scenario === 'unknown') {
                 $callArguments['workspace_id'] = $this->teamB->id;
             }
-            if ($scenario === 'unavailable') {
-                Schema::rename($table, $table.'_offline');
-            }
+            $restore = $scenario === 'unavailable' ? $this->failQueriesOn([$table]) : null;
             try {
                 // "denied": membership revoked mid-turn, so the tool's own check answers (packstub >= 1.7.1
                 // refuses a non-member before any tool runs, which writes no tool evidence).
@@ -279,9 +278,7 @@ class GuardedToolsTest extends TestCase
                 ));
                 User::query()->whereKey($this->ownerA->id)->update(['current_team_id' => $this->teamA->id]);
             } finally {
-                if ($scenario === 'unavailable') {
-                    Schema::rename($table.'_offline', $table);
-                }
+                $restore && $restore();
                 if ($scenario === 'empty' && $tool === OverdueInvoices::class) {
                     DB::table('invoices')->update(['paid_at' => null]);
                 }
@@ -306,7 +303,7 @@ class GuardedToolsTest extends TestCase
             $this->assertSame($expectedCode, $row->error_code);
             $full = json_decode($row->result, true, 512, JSON_THROW_ON_ERROR);
             $this->assertSame($outcome['status'], $full['status']);
-            $this->assertSame($outcome['data'], $full['data'] ?? null);
+            $this->assertEquals($this->sortedKeys($outcome['data']), $this->sortedKeys($full['data'] ?? null));
             $audit = json_decode($row->audit, true, 512, JSON_THROW_ON_ERROR);
             $this->assertEqualsCanonicalizing(['reason', 'unknown_keys', 'exception_class'], array_keys($audit));
             $this->assertEqualsCanonicalizing(['status', 'data', 'error', 'evidenceId'], array_keys($outcome));
@@ -319,13 +316,28 @@ class GuardedToolsTest extends TestCase
     {
         Agents::useTools([UnboundOrders::class]);
         $this->expectException(AssertionFailedError::class);
+        $this->expectExceptionMessage('Missing workspace predicate for orders');
         $this->assertToolIsWorkspaceBound(UnboundOrders::class, [], $this->teamA, $this->teamB, $this->ownerA, $this->ownerB);
+    }
+
+    /**
+     * A real database error (not a simulated one). On PostgreSQL it aborts the surrounding transaction,
+     * so the evidence row can only be written because the tool query runs in a savepoint.
+     */
+    public function test_real_database_error_still_writes_evidence(): void
+    {
+        Agents::useTools([BrokenSqlOrders::class]);
+        $payload = $this->decodeGuardedResult($this->runGuardedTool(BrokenSqlOrders::class, [], $this->ownerA, $this->teamA));
+        $this->assertSame(['code' => 'UPSTREAM_UNAVAILABLE'], $payload['error']);
+        $this->assertNotNull($payload['evidenceId'], 'The evidence row must be written after a database error.');
+        $this->assertSame('upstream_failure', json_decode(DB::table('guarded_tool_evidence')
+            ->where('id', $payload['evidenceId'])->value('audit'), true)['reason']);
     }
 
     public function test_evidence_write_failure_returns_no_data_and_restores_runtime_context(): void
     {
         $transactionLevel = DB::connection()->transactionLevel();
-        Schema::rename('guarded_tool_evidence', 'guarded_tool_evidence_offline');
+        $restore = $this->failQueriesOn(['guarded_tool_evidence']);
         try {
             $failed = $this->decodeGuardedResult($this->runGuardedTool(
                 OrdersSummary::class, ['period' => 'last_month'], $this->ownerB, $this->teamB,
@@ -335,11 +347,12 @@ class GuardedToolsTest extends TestCase
                 'error' => ['code' => 'UPSTREAM_UNAVAILABLE'], 'evidenceId' => null,
             ], $failed);
             $this->assertSame($transactionLevel, DB::connection()->transactionLevel());
-            $this->assertSame(0, DB::table('guarded_tool_evidence_offline')->count());
+            $restore();
+            $this->assertSame(0, DB::table('guarded_tool_evidence')->count());
             $this->assertSame($this->ownerA->id, auth()->id());
             $this->assertSame($this->teamA->id, Agents::tenant()->getKey());
         } finally {
-            Schema::rename('guarded_tool_evidence_offline', 'guarded_tool_evidence');
+            $restore();
         }
         $recovered = $this->decodeGuardedResult($this->runGuardedTool(OrdersSummary::class, ['period' => 'last_month']));
         $this->assertSame('ok', $recovered['status']);
@@ -423,6 +436,7 @@ class GuardedToolsTest extends TestCase
 }
 
 #[IsReadOnly]
+#[IsReadOnly]
 class UnboundOrders extends GuardedAgentTool
 {
     protected ?string $ability = 'orders.read';
@@ -433,5 +447,21 @@ class UnboundOrders extends GuardedAgentTool
     protected function query(array $arguments, Model $workspace): CanonicalToolResult
     {
         return CanonicalToolResult::ok(['count' => DB::table('orders')->count()], ['source' => 'db:orders']);
+    }
+}
+
+#[IsReadOnly]
+class BrokenSqlOrders extends GuardedAgentTool
+{
+    protected ?string $ability = 'orders.read';
+
+    public function id(): string { return 'test.broken-sql-orders'; }
+    public function schema(JsonSchema $schema): array { return []; }
+    protected function rules(): array { return []; }
+    protected function query(array $arguments, Model $workspace): CanonicalToolResult
+    {
+        // An unknown SQL function fails on every driver; SQLite would read an unknown quoted column as a string.
+        return CanonicalToolResult::ok(['count' => DB::table('orders')->where('team_id', $workspace->getKey())
+            ->selectRaw('guarded_no_such_function() as c')->value('c')], ['source' => 'db:orders']);
     }
 }

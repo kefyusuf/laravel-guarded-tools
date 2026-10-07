@@ -106,6 +106,12 @@ Register it as any packstub tool: `Agents::useTools([OrdersSummary::class])`.
 
 If the evidence row cannot be written, the call returns `UPSTREAM_UNAVAILABLE` with no data.
 
+Your `query()` runs in a savepoint (`DB::transaction`). On PostgreSQL a failed query aborts the surrounding transaction; the savepoint keeps it usable, so the evidence row can still be written.
+
+packstub can also refuse a call at call time, before `run()`, when the person no longer has the tool's ability. The base class answers that refusal canonically too (`PolicyDenied`, with evidence), and still fires packstub's `ToolAuthorized` event.
+
+**Mark every guarded tool `#[IsReadOnly]`.** Without it packstub treats the tool as a write tool and turns each call into a proposal that waits for approval.
+
 ## Result statuses
 
 | Status | Meaning | Model sees |
@@ -173,8 +179,7 @@ class OrdersSummaryTest extends TestCase
         // The next two use the signed-in person and the current workspace.
         $this->actingAs($ownerA);
         $this->assertRejectsUnknownArguments(OrdersSummary::class, ['period' => 'last_month']);
-        $this->assertFailureIsCanonical(OrdersSummary::class, ['period' => 'last_month'],
-            fn () => Schema::rename('orders', 'orders_offline'));
+        $this->assertFailureIsCanonical(OrdersSummary::class, ['period' => 'last_month']); // simulated outage on the tool's tables
     }
 }
 ```
@@ -184,10 +189,13 @@ class OrdersSummaryTest extends TestCase
 | `assertToolIsWorkspaceBound` | Each workspace gets its own data, and the results differ |
 | `assertRejectsUnknownArguments` | `workspace_id`, `team_id`, `tenant_id` arguments are refused before any query |
 | `assertFailureIsCanonical` | A broken data source gives `UPSTREAM_UNAVAILABLE`, no SQL or exception text, and still an evidence row |
+| `assertAbilityRefusalIsCanonical` | The person loses the ability mid-turn; packstub's refusal reaches the model as canonical `PolicyDenied`, no query, with evidence |
 | `assertNonMemberIsDenied` | A non-member never reaches a query (refused by packstub or by the tool) |
 | `assertRevokedMemberIsDenied` | Membership revoked after the turn started is refused by the tool |
 | `assertEvidenceChain` | Answer → tool call → `evidenceId` → evidence row with workspace, user and source |
 | `assertToolCallBudgetIsEnforced` | With a budget of 2, the third call in a turn gets `BudgetExceeded` and runs no query; the next turn starts fresh |
+
+`assertFailureIsCanonical()` simulates the outage by default: every query on the tool's tables fails before it reaches the database. It needs no DDL, so it works inside `RefreshDatabase` on MySQL (where a `Schema::rename` would commit the test transaction). Use `$this->failQueriesOn(['orders'])` for your own outage tests; it returns a function that ends the outage.
 
 Two overrides adapt the kit to your schema:
 
@@ -198,15 +206,15 @@ protected function guardedWorkspaceColumn(string $tool): string { return 'clinic
 
 The workspace-bound assertion checks that **every** table in a query, joins included, has a `<table>.<column> = ?` predicate bound to the current workspace. The kit switches off packstub's turn limits for its scripted runs, so many assertions in one test do not hit "Too many questions in a row".
 
-Tested on four schemas: `team_id` (demo), a many-to-many `workspace_id` (support desk), `clinic_id` (clinic) and three-table joins on `store_id` (inventory). See `docs/pilot-simulations.md`.
+Tested on SQLite, MySQL 8.4 and PostgreSQL 17, and on four schemas: `team_id` (demo), a many-to-many `workspace_id` (support desk), `clinic_id` (clinic) and three-table joins on `store_id` (inventory). See `docs/pilot-simulations.md`.
 
 ## Known gaps
 
 - **Calls outside guarded tools:** the budget counts only `GuardedAgentTool` calls, not other tools or calls to hidden tools.
 - **Write tools:** only read-only tools are covered. Approvals for writes stay with packstub.
-- **Calls packstub refuses before `run()`:** a call to a hidden tool, or a call-time ability refusal, returns packstub's own message, not a canonical result. Both are safe (no query).
+- **Calls to hidden tools:** a call to a tool the person cannot see fails in laravel/ai before any tool code runs, so it gets no canonical result. It is safe (no query).
 - **Upgrade risk:** the base class depends on packstub's `AgentTool::run()` extension point. Pin packstub's minor version.
 
 ## Evidence
 
-Built and tested in `demo-app/` (41 tests) and three pilot simulations (25 tests), all mutation-checked, and evaluated with a live model in 18 runs. See `docs/m1a-demo-results.md` and `docs/packstub-integration-findings.md`.
+Built and tested in `demo-app/` (45 tests) and three pilot simulations (25 tests), all mutation-checked, and evaluated with a live model in 18 runs. See `docs/m1a-demo-results.md` and `docs/packstub-integration-findings.md`.

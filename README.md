@@ -24,7 +24,7 @@ This repository contains a small package that makes these guarantees the default
 
 | Check | Result |
 |---|---|
-| Deterministic tests | 66 tests across the demo and three pilot apps, all passing; 15 mutation checks, all caught |
+| Deterministic tests | 70 tests across the demo and three pilot apps, each on SQLite, MySQL 8.4 and PostgreSQL 17, all passing; 17 mutation checks, all caught |
 | Live model eval (`Qwen3.8-27B`, 18 runs) | 18/18 safe: no invented, foreign or forbidden number; all answers in the user's language |
 | Unavailable data | The model said "unavailable" in every run, with or without an instruction sentence; the canonical status carries the safety |
 | Security | Found a cross-workspace read in packstub/agents 1.7.0 during integration, reported it privately; fixed in 1.7.1 ([GHSA-3v46-4wxg-vjx7](https://github.com/packstub/agents/security/advisories/GHSA-3v46-4wxg-vjx7)) and verified with our tests |

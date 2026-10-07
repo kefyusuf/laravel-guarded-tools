@@ -9,7 +9,6 @@ use App\Models\User;
 use GuardedTools\Testing\AssertsGuardedTools;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -97,7 +96,7 @@ class InventoryGuaranteesTest extends TestCase
     #[DataProvider('tools')]
     public function test_failure_is_canonical(string $tool, array $arguments): void
     {
-        $this->assertFailureIsCanonical($tool, $arguments, fn () => Schema::rename('warehouses', 'warehouses_offline'));
+        $this->assertFailureIsCanonical($tool, $arguments);
     }
 
     public function test_same_sku_in_two_stores_is_not_mixed(): void

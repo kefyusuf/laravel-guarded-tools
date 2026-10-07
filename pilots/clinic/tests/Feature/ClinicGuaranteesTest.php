@@ -11,7 +11,6 @@ use GuardedTools\Testing\AssertsGuardedTools;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -101,10 +100,7 @@ class ClinicGuaranteesTest extends TestCase
     #[DataProvider('tools')]
     public function test_failure_is_canonical(string $tool, array $arguments, string $source): void
     {
-        $this->assertFailureIsCanonical($tool, $arguments, function (): void {
-            Schema::rename('patients', 'patients_offline');
-            Schema::rename('appointments', 'appointments_offline');
-        });
+        $this->assertFailureIsCanonical($tool, $arguments);
     }
 
     public function test_patient_search_never_returns_another_clinics_patient(): void
