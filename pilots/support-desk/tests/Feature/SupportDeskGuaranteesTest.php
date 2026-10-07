@@ -94,6 +94,7 @@ class SupportDeskGuaranteesTest extends TestCase
         $this->assertRejectsUnknownArguments($tool, $arguments);
         $this->assertNonMemberIsDenied($tool, $arguments, $this->managerB, $this->acme);
         $this->assertEvidenceChain($tool, $arguments, $this->managerA, $this->acme, 'db:tickets');
+        $this->assertToolCallBudgetIsEnforced($tool, $arguments, $this->managerA, $this->acme);
         $this->assertRevokedMemberIsDenied($tool, $arguments, $this->managerA, $this->acme,
             fn () => DB::table('user_workspace')->where('user_id', $this->managerA->id)->delete());
     }

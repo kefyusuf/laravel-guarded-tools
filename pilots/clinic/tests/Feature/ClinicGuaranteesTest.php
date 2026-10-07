@@ -93,6 +93,7 @@ class ClinicGuaranteesTest extends TestCase
         $this->assertRejectsUnknownArguments($tool, $arguments);
         $this->assertNonMemberIsDenied($tool, $arguments, $this->doctorB, $this->north);
         $this->assertEvidenceChain($tool, $arguments, $this->doctorA, $this->north, $source);
+        $this->assertToolCallBudgetIsEnforced($tool, $arguments, $this->doctorA, $this->north);
         $this->assertRevokedMemberIsDenied($tool, $arguments, $this->doctorA, $this->north,
             fn () => User::whereKey($this->doctorA->id)->update(['clinic_id' => $this->south->id]));
     }

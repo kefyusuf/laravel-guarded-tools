@@ -95,13 +95,14 @@ Register it as any packstub tool: `Agents::useTools([OrdersSummary::class])`.
 
 `GuardedAgentTool::run()` is `final`. In order, it:
 
-1. takes the workspace from packstub's context (`ContextMissing` if there is none);
-2. re-reads the signed-in person from the database and checks `canAccessTenant()` (`PolicyDenied` otherwise; this also catches membership revoked during a running turn);
-3. rejects any argument key that is not in `rules()` (`InvalidToolArguments`, before any query);
-4. validates the arguments (`InvalidToolArguments`);
-5. calls your `query()`; any exception becomes `UPSTREAM_UNAVAILABLE`, and no exception message reaches the model;
-6. writes one evidence row (same shape for every outcome);
-7. returns only `status`, `data`, `error.code` and `evidenceId` to the model. Workspace, user and source stay in the evidence row.
+1. counts the call against the turn's budget (`BudgetExceeded` over the limit; every attempt counts, also invalid and denied ones);
+2. takes the workspace from packstub's context (`ContextMissing` if there is none);
+3. re-reads the signed-in person from the database and checks `canAccessTenant()` (`PolicyDenied` otherwise; this also catches membership revoked during a running turn);
+4. rejects any argument key that is not in `rules()` (`InvalidToolArguments`, before any query);
+5. validates the arguments (`InvalidToolArguments`);
+6. calls your `query()`; any exception becomes `UPSTREAM_UNAVAILABLE`, and no exception message reaches the model;
+7. writes one evidence row (same shape for every outcome);
+8. returns only `status`, `data`, `error.code` and `evidenceId` to the model. Workspace, user and source stay in the evidence row.
 
 If the evidence row cannot be written, the call returns `UPSTREAM_UNAVAILABLE` with no data.
 
@@ -113,7 +114,15 @@ If the evidence row cannot be written, the call returns `UPSTREAM_UNAVAILABLE` w
 | `empty` | The query worked and found nothing | `data` (for example `order_count: 0`) |
 | `error` | No trustworthy data | `error.code` only, `data: null` |
 
-Error codes: `ContextMissing`, `PolicyDenied`, `InvalidToolArguments`, `UPSTREAM_UNAVAILABLE`.
+Error codes: `BudgetExceeded`, `ContextMissing`, `PolicyDenied`, `InvalidToolArguments`, `UPSTREAM_UNAVAILABLE`.
+
+## Tool-call budget
+
+Each agent turn may make at most `guarded-tools.max_calls_per_turn` guarded tool calls (default **8**; `GUARDED_TOOLS_MAX_CALLS_PER_TURN`, `null` for no budget). Further calls in the same turn get `BudgetExceeded`, run no query, and still write an evidence row. The count resets on packstub's `TurnStarted`, so a long-lived queue worker starts every turn at zero. The run itself ends at the agent's `maxSteps()`.
+
+```bash
+php artisan vendor:publish --tag=guarded-tools-config
+```
 
 Recommended agent instruction (it mainly prevents retries; the status itself already keeps answers safe in our evals):
 
@@ -159,6 +168,8 @@ class OrdersSummaryTest extends TestCase
 
         $this->assertEvidenceChain(OrdersSummary::class, ['period' => 'last_month'], $ownerA, $teamA, 'db:orders');
 
+        $this->assertToolCallBudgetIsEnforced(OrdersSummary::class, ['period' => 'last_month'], $ownerA, $teamA);
+
         // The next two use the signed-in person and the current workspace.
         $this->actingAs($ownerA);
         $this->assertRejectsUnknownArguments(OrdersSummary::class, ['period' => 'last_month']);
@@ -176,6 +187,7 @@ class OrdersSummaryTest extends TestCase
 | `assertNonMemberIsDenied` | A non-member never reaches a query (refused by packstub or by the tool) |
 | `assertRevokedMemberIsDenied` | Membership revoked after the turn started is refused by the tool |
 | `assertEvidenceChain` | Answer → tool call → `evidenceId` → evidence row with workspace, user and source |
+| `assertToolCallBudgetIsEnforced` | With a budget of 2, the third call in a turn gets `BudgetExceeded` and runs no query; the next turn starts fresh |
 
 Two overrides adapt the kit to your schema:
 
@@ -190,11 +202,11 @@ Tested on four schemas: `team_id` (demo), a many-to-many `workspace_id` (support
 
 ## Known gaps
 
-- **Run budget:** the package has no tool-call budget. Use packstub's limits and the agent's `maxSteps()`.
+- **Calls outside guarded tools:** the budget counts only `GuardedAgentTool` calls, not other tools or calls to hidden tools.
 - **Write tools:** only read-only tools are covered. Approvals for writes stay with packstub.
 - **Calls packstub refuses before `run()`:** a call to a hidden tool, or a call-time ability refusal, returns packstub's own message, not a canonical result. Both are safe (no query).
 - **Upgrade risk:** the base class depends on packstub's `AgentTool::run()` extension point. Pin packstub's minor version.
 
 ## Evidence
 
-Built and tested in `demo-app/` (38 tests) and three pilot simulations (25 tests), all mutation-checked, and evaluated with a live model in 18 runs. See `docs/m1a-demo-results.md` and `docs/packstub-integration-findings.md`.
+Built and tested in `demo-app/` (41 tests) and three pilot simulations (25 tests), all mutation-checked, and evaluated with a live model in 18 runs. See `docs/m1a-demo-results.md` and `docs/packstub-integration-findings.md`.

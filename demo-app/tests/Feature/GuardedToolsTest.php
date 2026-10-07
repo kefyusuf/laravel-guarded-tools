@@ -134,6 +134,12 @@ class GuardedToolsTest extends TestCase
     }
 
     #[DataProvider('guardedTools')]
+    public function test_tool_call_budget_is_enforced_per_turn(string $tool, array $arguments, string $table, string $source): void
+    {
+        $this->assertToolCallBudgetIsEnforced($tool, $arguments, $this->ownerA, $this->teamA);
+    }
+
+    #[DataProvider('guardedTools')]
     public function test_member_revoked_mid_turn_is_denied_by_the_tool(string $tool, array $arguments, string $table, string $source): void
     {
         // packstub 1.7.1 checks membership when entering the workspace, not at the tool call.

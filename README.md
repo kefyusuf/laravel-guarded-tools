@@ -14,7 +14,7 @@ This repository contains a small package that makes these guarantees the default
 
 | Path | What it is |
 |---|---|
-| [`packages/guarded-tools`](packages/guarded-tools) | **The package.** `GuardedAgentTool` base class, canonical `ok` / `empty` / `error` results, evidence records, hidden-capability hints, and the `AssertsGuardedTools` test kit. Start with its [README](packages/guarded-tools/README.md). |
+| [`packages/guarded-tools`](packages/guarded-tools) | **The package.** `GuardedAgentTool` base class, canonical `ok` / `empty` / `error` results, a per-turn tool-call budget, evidence records, hidden-capability hints, and the `AssertsGuardedTools` test kit. Start with its [README](packages/guarded-tools/README.md). |
 | [`demo-app`](demo-app) | "Order desk": a B2B demo with two companies, three roles and three tools. Includes `php artisan demo:ask` (live model) and `php artisan demo:eval` (18-run eval). |
 | [`pilots`](pilots) | Three apps with different tenancy models (support desk, clinic, inventory) that test the package outside the demo. |
 | [`spike-m0`](spike-m0), [`spike-packstub`](spike-packstub) | Throwaway spikes that tested the idea on plain `laravel/ai` and on packstub. Kept as evidence. |
@@ -24,7 +24,7 @@ This repository contains a small package that makes these guarantees the default
 
 | Check | Result |
 |---|---|
-| Deterministic tests | 63 tests across the demo and three pilot apps, all passing; 13 mutation checks, all caught |
+| Deterministic tests | 66 tests across the demo and three pilot apps, all passing; 15 mutation checks, all caught |
 | Live model eval (`Qwen3.8-27B`, 18 runs) | 18/18 safe: no invented, foreign or forbidden number; all answers in the user's language |
 | Unavailable data | The model said "unavailable" in every run, with or without an instruction sentence; the canonical status carries the safety |
 | Security | Found a cross-workspace read in packstub/agents 1.7.0 during integration, reported it privately; fixed in 1.7.1 ([GHSA-3v46-4wxg-vjx7](https://github.com/packstub/agents/security/advisories/GHSA-3v46-4wxg-vjx7)) and verified with our tests |

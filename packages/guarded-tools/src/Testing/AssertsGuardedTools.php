@@ -205,6 +205,50 @@ trait AssertsGuardedTools
         Assert::assertSame([], $queries, 'A revoked member must not query domain tables.');
     }
 
+    /**
+     * With a budget of two calls per turn, a third call in the same turn gets BudgetExceeded and
+     * runs no query; the next turn starts at zero again.
+     */
+    public function assertToolCallBudgetIsEnforced(string $tool, array $arguments, Authenticatable $user, Model $workspace): void
+    {
+        $previous = config('guarded-tools.max_calls_per_turn');
+        config(['guarded-tools.max_calls_per_turn' => 2]);
+        try {
+            // Domain queries made by one call, to compare with the three-call turn below.
+            [, $single] = $this->captureGuardedQueries($tool, fn () => $this->runGuardedTool($tool, $arguments, $user, $workspace));
+            Assert::assertNotEmpty($single, 'The tool must query its tables when inside the budget.');
+
+            $name = app($tool)->name();
+            $calls = array_map(fn (int $i) => new ToolCall("guarded-kit-budget-{$i}", $name, $arguments), [1, 2, 3]);
+            [$evaluation, $queries] = $this->captureGuardedQueries($tool, function () use ($user, $workspace, $calls) {
+                config(['packstub-agents.enabled' => true,
+                    'packstub-agents.limits.turns_per_minute' => null, 'packstub-agents.limits.turns_per_day' => null]);
+
+                return AgentEval::as($user)->in($workspace)
+                    ->expecting([...$calls, 'Scripted budget answer.'])
+                    ->ask('Run the requested read-only tool three times.')->assertOk();
+            });
+
+            $results = $evaluation->toolCalls()->map(fn (array $call) => json_decode((string) $call['result'], true))->all();
+            Assert::assertCount(3, $results, 'The agent maxSteps() must be at least 4 to test the budget.');
+            Assert::assertNotSame('BudgetExceeded', $results[0]['error']['code'] ?? null);
+            Assert::assertNotSame('BudgetExceeded', $results[1]['error']['code'] ?? null);
+            Assert::assertSame('error', $results[2]['status']);
+            Assert::assertSame(['code' => 'BudgetExceeded'], $results[2]['error']);
+            Assert::assertNull($results[2]['data']);
+            Assert::assertCount(2 * count($single), $queries, 'The call over the budget must not query.');
+
+            $row = DB::table('guarded_tool_evidence')->where('id', $results[2]['evidenceId'])->first();
+            Assert::assertNotNull($row, 'A refused call must still write evidence.');
+            Assert::assertSame('budget_exceeded', json_decode($row->audit, true)['reason'] ?? null);
+
+            $next = $this->decodeGuardedResult($this->runGuardedTool($tool, $arguments, $user, $workspace));
+            Assert::assertNotSame('BudgetExceeded', $next['error']['code'] ?? null, 'A new turn must start with a fresh budget.');
+        } finally {
+            config(['guarded-tools.max_calls_per_turn' => $previous]);
+        }
+    }
+
     public function assertEvidenceChain(string $tool, array $arguments, Authenticatable $user,
         Model $workspace, string $source): void
     {

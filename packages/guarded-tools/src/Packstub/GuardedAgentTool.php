@@ -2,6 +2,7 @@
 
 namespace GuardedTools\Packstub;
 
+use GuardedTools\Budget\ToolCallBudget;
 use GuardedTools\CanonicalToolResult;
 use GuardedTools\Evidence\EvidenceRecorder;
 use Illuminate\Database\Eloquent\Model;
@@ -54,7 +55,10 @@ abstract class GuardedAgentTool extends AgentTool
             $userId = auth()->id();
             $arguments = $request->all();
 
-            if ($workspace === null) {
+            if (! app(ToolCallBudget::class)->attempt()) {
+                $result = CanonicalToolResult::error('BudgetExceeded');
+                $audit = ['reason' => 'budget_exceeded', 'calls_in_turn' => app(ToolCallBudget::class)->calls()];
+            } elseif ($workspace === null) {
                 $result = CanonicalToolResult::error('ContextMissing');
                 $audit = ['reason' => 'no_workspace'];
             } elseif (($actor = $this->freshActor()) === null || ! Agents::context()->canAccessTenant($actor, $workspace)) {

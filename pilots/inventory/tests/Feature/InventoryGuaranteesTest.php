@@ -89,6 +89,7 @@ class InventoryGuaranteesTest extends TestCase
         $this->assertRejectsUnknownArguments($tool, $arguments);
         $this->assertNonMemberIsDenied($tool, $arguments, $this->managerB, $this->izmir);
         $this->assertEvidenceChain($tool, $arguments, $this->managerA, $this->izmir, 'db:stock_levels');
+        $this->assertToolCallBudgetIsEnforced($tool, $arguments, $this->managerA, $this->izmir);
         $this->assertRevokedMemberIsDenied($tool, $arguments, $this->managerA, $this->izmir,
             fn () => User::whereKey($this->managerA->id)->update(['store_id' => $this->ankara->id]));
     }
