@@ -33,7 +33,7 @@ Until the package is on Packagist, install it from GitHub:
 ```
 
 ```bash
-composer require kefyusuf/laravel-guarded-tools:dev-main
+composer require kefyusuf/laravel-guarded-tools:^0.1
 php artisan migrate
 ```
 
