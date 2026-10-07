@@ -137,7 +137,7 @@ class DeleteTimeEntry extends GuardedWriteTool
 | W6 | Audit trail | The evidence row stores the operation and what `write()` returns (return `before` / `after`) |
 | W7 | Write budget | `guarded-tools.max_writes_per_turn` (default **3**) on top of the call budget |
 
-**Requirements for write tools:** the agent must be conversational (`Conversational`, for example with `RemembersConversations`), because laravel/ai resumes an approved call from the conversation history.
+**Requirements for write tools:** the agent must be conversational (`Conversational`, for example with `RemembersConversations`), because laravel/ai resumes an approved call from the conversation history. Publish and run laravel/ai's conversation migration: `php artisan vendor:publish --provider="Laravel\Ai\AiServiceProvider"` then `php artisan migrate`.
 
 Test with `assertWriteNeedsApproval`, `assertWriteIsWorkspaceBound`, `assertCannotWriteOtherWorkspaceRow`, `assertWriteRechecksAtExecution`, `assertWriteIsIdempotent` and `assertWriteBudgetIsEnforced`. Under a faked gateway laravel/ai does not run approved calls, so the kit checks the proposal (paused, nothing written) and the approved execution (`executeApprovedWrite()`) separately.
 
