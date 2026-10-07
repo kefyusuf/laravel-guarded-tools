@@ -14,19 +14,20 @@ The test kit proves these guarantees in your own test suite, with scripted tool 
 
 ## Requirements
 
-| | |
-|---|---|
-| | Plain laravel/ai | On packstub/agents |
-|---|---|---|
-| PHP | 8.3 or newer | 8.4 or newer (packstub's floor) |
-| Laravel | 12.x or 13.x | 13.x |
-| laravel/ai | 1.x | 1.x |
-| packstub/agents | not needed | **1.7.1 or newer** (1.7.0 is affected by [GHSA-3v46-4wxg-vjx7](https://github.com/packstub/agents/security/advisories/GHSA-3v46-4wxg-vjx7); Composer refuses older versions) |
+| | Plain laravel/ai | Neuron AI | On packstub/agents |
+|---|---|---|---|
+| PHP | 8.3 or newer | 8.3 or newer | 8.4 or newer (packstub's floor) |
+| Laravel | 12.x or 13.x | 12.x or 13.x | 13.x |
+| laravel/ai | 1.x | not needed | 1.x (packstub installs it) |
+| neuron-core/neuron-ai | not needed | 4.1 or newer | not needed |
+| packstub/agents | not needed | not needed | **1.7.1 or newer** (1.7.0 is affected by [GHSA-3v46-4wxg-vjx7](https://github.com/packstub/agents/security/advisories/GHSA-3v46-4wxg-vjx7); Composer refuses older versions) |
+
+The package does not install a platform. Install the one you use next to it.
 
 ## Install
 
 ```bash
-composer require kefyusuf/laravel-guarded-tools
+composer require kefyusuf/laravel-guarded-tools laravel/ai   # or neuron-core/neuron-ai, or packstub/agents
 php artisan migrate
 ```
 

@@ -35,7 +35,7 @@ trait AssertsGuardedAiTools
 
     protected function runScript(string $tool, Authenticatable $user, ?Model $workspace, array $script): ScriptedRun
     {
-        $steps = array_values($script);
+        $steps = ScriptedCall::forLaravelAi($script);
         $index = 0;
         ScriptedAgent::fake(function () use (&$steps, &$index) {
             $next = $steps[$index++] ?? 'Scripted tool answer.';

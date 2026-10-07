@@ -2,6 +2,13 @@
 
 All notable changes to `kefyusuf/laravel-guarded-tools` are documented here. The package follows [semantic versioning](https://semver.org); while the version is `0.x`, minor releases may change the API.
 
+## Unreleased (0.5.0)
+
+### Changed
+
+- **laravel/ai is no longer required.** It moved to `suggest`, next to Neuron AI and packstub/agents; install the platform you use. A Neuron app no longer gets laravel/ai (the Neuron pilot now runs without it). Upgrading on laravel/ai: keep `laravel/ai` in your own `composer.json` (packstub/agents installs it already).
+- The test kit scripts calls with its own `GuardedTools\Testing\ScriptedCall`. Scripts with laravel/ai's `ToolCall` still work.
+
 ## 0.4.0 — 2026-10-08
 
 ### Added

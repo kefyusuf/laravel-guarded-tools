@@ -7,7 +7,6 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Laravel\Ai\Responses\Data\ToolCall;
 use LogicException;
 use NeuronAI\Chat\Messages\AssistantMessage;
 use NeuronAI\Chat\Messages\ToolCallMessage;
@@ -61,7 +60,7 @@ trait AssertsGuardedNeuronTools
 
     protected function proposeWrite(string $tool, array $arguments, Authenticatable $user, ?Model $workspace): array
     {
-        $agent = $this->scriptedNeuronAgent($tool, [new ToolCall('guarded-kit-proposal', app($tool)->getName(), $arguments), 'Waiting for approval.']);
+        $agent = $this->scriptedNeuronAgent($tool, [new ScriptedCall('guarded-kit-proposal', app($tool)->getName(), $arguments), 'Waiting for approval.']);
         Guarded::run($user, $workspace, fn () => $agent->chat(new UserMessage('Run the requested tool.')));
 
         return array_map(fn ($action) => ['tool' => $action->name, 'reason' => $action->reason], $agent->pendingApprovals());
@@ -101,7 +100,7 @@ trait AssertsGuardedNeuronTools
         $user ??= $this->currentGuardedUser();
         $workspace ??= $this->currentGuardedWorkspace();
         foreach (['approve' => true, 'reject' => false] as $decision => $runs) {
-            $agent = $this->scriptedNeuronAgent($tool, [new ToolCall("guarded-kit-{$decision}", app($tool)->getName(), $arguments), 'Done.']);
+            $agent = $this->scriptedNeuronAgent($tool, [new ScriptedCall("guarded-kit-{$decision}", app($tool)->getName(), $arguments), 'Done.']);
             [, $proposalWrites] = $this->captureGuardedWrites($tool,
                 fn () => Guarded::run($user, $workspace, fn () => $agent->chat(new UserMessage('Run the requested tool.'))));
             Assert::assertSame([], $proposalWrites, 'Nothing may be written before approval.');

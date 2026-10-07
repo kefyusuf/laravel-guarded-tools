@@ -3,7 +3,6 @@
 namespace GuardedTools\Testing;
 
 use Closure;
-use Laravel\Ai\Responses\Data\ToolCall as ScriptedCall;
 use NeuronAI\Chat\Messages\AssistantMessage;
 use NeuronAI\Chat\Messages\Message;
 use NeuronAI\Chat\Messages\ToolCallMessage;
@@ -29,7 +28,8 @@ final class ScriptedNeuronProvider extends FakeAIProvider
             $step = $step();
         }
 
-        return $step instanceof ScriptedCall
+        // A laravel/ai ToolCall from an older test script works too (same id, name and arguments).
+        return $step instanceof ScriptedCall || $step instanceof \Laravel\Ai\Responses\Data\ToolCall
             ? new ToolCallMessage(null, [new ToolCall($step->name, $step->id, $step->arguments)])
             : new AssistantMessage((string) $step);
     }

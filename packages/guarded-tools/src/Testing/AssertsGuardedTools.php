@@ -55,7 +55,7 @@ trait AssertsGuardedTools
         config(['packstub-agents.enabled' => true,
             'packstub-agents.limits.turns_per_minute' => null, 'packstub-agents.limits.turns_per_day' => null]);
 
-        $result = AgentEval::as($user)->in($workspace)->expecting($script)->ask('Run the requested read-only tool.')->assertOk();
+        $result = AgentEval::as($user)->in($workspace)->expecting(ScriptedCall::forLaravelAi($script))->ask('Run the requested read-only tool.')->assertOk();
 
         return new ScriptedRun($result->text(), $result->toolCalls()->map(fn (array $call) => [
             'id' => $call['id'], 'name' => $call['name'], 'arguments' => $call['arguments'],

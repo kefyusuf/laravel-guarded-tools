@@ -85,6 +85,9 @@ jobs:
           tools: composer:v2
           coverage: none
       - run: composer install --no-interaction --no-progress --prefer-dist
+      - name: The package installs without laravel/ai
+        if: matrix.app == 'pilots/neuron-tasks'
+        run: "! composer show laravel/ai"
       - run: cp .env.example .env && php artisan key:generate
       - name: Point tests at ${{ matrix.db }}
         if: matrix.db != 'sqlite'

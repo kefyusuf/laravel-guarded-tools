@@ -7,7 +7,6 @@ use GuardedTools\Support\GuardedCall;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Laravel\Ai\Responses\Data\ToolCall;
 use PHPUnit\Framework\Assert;
 use Throwable;
 
@@ -21,9 +20,9 @@ trait GuardedToolAssertions
 {
     /**
      * Run one agent turn as $user in $workspace whose model answers are $script, in order:
-     * a ToolCall, a Closure returning a ToolCall (run just before that call), or the final text.
+     * a ScriptedCall, a Closure returning one (run just before that call), or the final text.
      *
-     * @param  list<ToolCall|Closure|string>  $script
+     * @param  list<ScriptedCall|Closure|string>  $script
      */
     abstract protected function runScript(string $tool, Authenticatable $user, ?Model $workspace, array $script): ScriptedRun;
 
@@ -67,7 +66,7 @@ trait GuardedToolAssertions
         $user ??= $this->currentGuardedUser();
         $workspace ??= $this->currentGuardedWorkspace();
         Assert::assertNotNull($user, 'Sign a person in, or pass one, to run a guarded tool.');
-        $call = new ToolCall('guarded-kit-call', $this->guardedToolName($tool), $arguments);
+        $call = new ScriptedCall('guarded-kit-call', $this->guardedToolName($tool), $arguments);
 
         $run = $this->runScript($tool, $user, $workspace, [$beforeCall ? function () use ($beforeCall, $call) {
             $beforeCall();
@@ -327,7 +326,7 @@ trait GuardedToolAssertions
             Assert::assertNotEmpty($single, 'The tool must query its tables when inside the budget.');
 
             $name = $this->guardedToolName($tool);
-            $calls = array_map(fn (int $i) => new ToolCall("guarded-kit-budget-{$i}", $name, $arguments), [1, 2, 3]);
+            $calls = array_map(fn (int $i) => new ScriptedCall("guarded-kit-budget-{$i}", $name, $arguments), [1, 2, 3]);
             [$evaluation, $queries] = $this->captureGuardedQueries($tool,
                 fn () => $this->runScript($tool, $user, $workspace, [...$calls, 'Scripted budget answer.']));
 
