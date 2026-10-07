@@ -46,7 +46,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [demo-app, pilots/support-desk, pilots/clinic, pilots/inventory, pilots/agency-hours, pilots/neuron-tasks]
+        app: [demo-app, pilots/support-desk, pilots/clinic, pilots/inventory, pilots/agency-hours, pilots/neuron-tasks, pilots/prism-tasks]
         db: [sqlite, mysql, pgsql]
         php: ['8.4']
         include:
@@ -57,6 +57,9 @@ jobs:
           - { app: pilots/neuron-tasks, db: sqlite, php: '8.3' }
           - { app: pilots/neuron-tasks, db: mysql, php: '8.3' }
           - { app: pilots/neuron-tasks, db: pgsql, php: '8.3' }
+          - { app: pilots/prism-tasks, db: sqlite, php: '8.3' }
+          - { app: pilots/prism-tasks, db: mysql, php: '8.3' }
+          - { app: pilots/prism-tasks, db: pgsql, php: '8.3' }
     services:
       mysql:
         image: mysql:8.4
@@ -86,7 +89,7 @@ jobs:
           coverage: none
       - run: composer install --no-interaction --no-progress --prefer-dist
       - name: The package installs without laravel/ai
-        if: matrix.app == 'pilots/neuron-tasks'
+        if: matrix.app == 'pilots/neuron-tasks' || matrix.app == 'pilots/prism-tasks'
         run: "! composer show laravel/ai"
       - run: cp .env.example .env && php artisan key:generate
       - name: Point tests at ${{ matrix.db }}

@@ -4,6 +4,11 @@ All notable changes to `kefyusuf/laravel-guarded-tools` are documented here. The
 
 ## Unreleased (0.5.0)
 
+### Added
+
+- **Prism adapter (read tools):** `GuardedTools\Prism\GuardedPrismTool` with the same read guarantees. Prism has no approval step and does not pass the tool call id, so there is no write base class.
+- Test kit `AssertsGuardedPrismTools`, with a scripted provider that runs tools through Prism's own `CallsTools`, and `assertHandlerCannotBeReplaced()`.
+
 ### Changed
 
 - **laravel/ai is no longer required.** It moved to `suggest`, next to Neuron AI and packstub/agents; install the platform you use. A Neuron app no longer gets laravel/ai (the Neuron pilot now runs without it). Upgrading on laravel/ai: keep `laravel/ai` in your own `composer.json` (packstub/agents installs it already).

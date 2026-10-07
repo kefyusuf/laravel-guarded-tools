@@ -10,6 +10,7 @@ updates:
       - /pilots/inventory
       - /pilots/agency-hours
       - /pilots/neuron-tasks
+      - /pilots/prism-tasks
     schedule:
       interval: daily
     allow:
@@ -17,9 +18,10 @@ updates:
       - dependency-name: laravel/ai
       - dependency-name: laravel/mcp
       - dependency-name: neuron-core/neuron-ai
+      - dependency-name: prism-php/prism
     groups:
       agent-stack:
-        patterns: ["packstub/agents", "laravel/ai", "laravel/mcp", "neuron-core/neuron-ai"]
+        patterns: ["packstub/agents", "laravel/ai", "laravel/mcp", "neuron-core/neuron-ai", "prism-php/prism"]
     open-pull-requests-limit: 5
     commit-message:
       prefix: deps

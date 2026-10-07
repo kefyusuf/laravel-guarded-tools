@@ -1,6 +1,6 @@
 # guarded-tools (working name)
 
-Guarded tools and assurance tests for Laravel AI agents, on plain [laravel/ai](https://github.com/laravel/ai), on [Neuron AI](https://github.com/neuron-core/neuron-ai) or on [packstub/agents](https://github.com/packstub/agents).
+Guarded tools and assurance tests for Laravel AI agents, on plain [laravel/ai](https://github.com/laravel/ai), on [Neuron AI](https://github.com/neuron-core/neuron-ai), on [Prism](https://github.com/prism-php/prism) (read tools) or on [packstub/agents](https://github.com/packstub/agents).
 
 A tool built on this package guarantees, on every call:
 
@@ -14,20 +14,21 @@ The test kit proves these guarantees in your own test suite, with scripted tool 
 
 ## Requirements
 
-| | Plain laravel/ai | Neuron AI | On packstub/agents |
-|---|---|---|---|
-| PHP | 8.3 or newer | 8.3 or newer | 8.4 or newer (packstub's floor) |
-| Laravel | 12.x or 13.x | 12.x or 13.x | 13.x |
-| laravel/ai | 1.x | not needed | 1.x (packstub installs it) |
-| neuron-core/neuron-ai | not needed | 4.1 or newer | not needed |
-| packstub/agents | not needed | not needed | **1.7.1 or newer** (1.7.0 is affected by [GHSA-3v46-4wxg-vjx7](https://github.com/packstub/agents/security/advisories/GHSA-3v46-4wxg-vjx7); Composer refuses older versions) |
+| | Plain laravel/ai | Neuron AI | Prism (read only) | On packstub/agents |
+|---|---|---|---|---|
+| PHP | 8.3 or newer | 8.3 or newer | 8.3 or newer | 8.4 or newer (packstub's floor) |
+| Laravel | 12.x or 13.x | 12.x or 13.x | 12.x or 13.x | 13.x |
+| laravel/ai | 1.x | not needed | not needed | 1.x (packstub installs it) |
+| neuron-core/neuron-ai | not needed | 4.1 or newer | not needed | not needed |
+| prism-php/prism | not needed | not needed | 0.100 or newer | not needed |
+| packstub/agents | not needed | not needed | not needed | **1.7.1 or newer** (1.7.0 is affected by [GHSA-3v46-4wxg-vjx7](https://github.com/packstub/agents/security/advisories/GHSA-3v46-4wxg-vjx7); Composer refuses older versions) |
 
 The package does not install a platform. Install the one you use next to it.
 
 ## Install
 
 ```bash
-composer require kefyusuf/laravel-guarded-tools laravel/ai   # or neuron-core/neuron-ai, or packstub/agents
+composer require kefyusuf/laravel-guarded-tools laravel/ai   # or neuron-core/neuron-ai, prism-php/prism, packstub/agents
 php artisan migrate
 ```
 
@@ -260,6 +261,40 @@ Neuron specifics:
 - **Name:** `$name` when set, otherwise the class name in snake case.
 
 Test with `GuardedTools\Testing\AssertsGuardedNeuronTools` (all read and write assertions). Neuron runs approved calls under its fake provider, so this kit also has `assertApprovalFlowEndToEnd()`: proposed, nothing written; approved, written once; rejected, nothing written.
+
+## Prism (read tools)
+
+Extend `GuardedTools\Prism\GuardedPrismTool`. Set `$name` and `$description`, and declare the inputs in `defineParameters()` with Prism's `with*Parameter()` methods. The base class owns Prism's `handle()` and closes `using()`, so your tool implements `query()`.
+
+```php
+use GuardedTools\Prism\GuardedPrismTool;
+
+class OpenTasks extends GuardedPrismTool
+{
+    protected ?string $ability = 'tasks.read';                      // Gate ability
+    protected string $name = 'open_tasks';
+    protected string $description = 'Open tasks of the current company.';
+
+    public function id(): string { return 'tasks.open'; }
+    protected function rules(): array { return ['assignee_id' => ['sometimes', 'integer']]; }
+
+    protected function defineParameters(): void
+    {
+        $this->withNumberParameter('assignee_id', 'Only tasks of this person.', required: false);
+    }
+
+    protected function query(array $arguments, Model $workspace): CanonicalToolResult
+    {
+        // scope every query to $workspace
+    }
+}
+```
+
+Run the request inside `Guarded::run($user, $workspace, fn () => Prism::text()->withTools(Guarded::visible([...]))->...->asText())`.
+
+**Read only.** Prism has no approval step and does not pass the provider's tool call id to the tool, so W1 (approval) and W4 (idempotency) cannot hold. There is no write base class for Prism; use laravel/ai or Neuron AI for write tools.
+
+Test with `GuardedTools\Testing\AssertsGuardedPrismTools` (all read assertions, plus `assertHandlerCannotBeReplaced()`). Prism's own fake does not run tools, so the kit uses a scripted provider that calls them with Prism's `CallsTools`, as Prism's real providers do.
 
 ## Write tools on packstub
 
