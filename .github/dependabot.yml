@@ -1,0 +1,29 @@
+# Watch the packages the base class extends. A new release opens a pull
+# request in every app, and CI tests it on SQLite, MySQL and PostgreSQL.
+version: 2
+updates:
+  - package-ecosystem: composer
+    directories:
+      - /demo-app
+      - /pilots/support-desk
+      - /pilots/clinic
+      - /pilots/inventory
+    schedule:
+      interval: daily
+    allow:
+      - dependency-name: packstub/agents
+      - dependency-name: laravel/ai
+      - dependency-name: laravel/mcp
+    groups:
+      agent-stack:
+        patterns: ["packstub/agents", "laravel/ai", "laravel/mcp"]
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: deps
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
