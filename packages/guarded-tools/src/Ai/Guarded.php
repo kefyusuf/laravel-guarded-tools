@@ -4,6 +4,7 @@ namespace GuardedTools\Ai;
 
 use Closure;
 use GuardedTools\Budget\ToolCallBudget;
+use GuardedTools\Support\GuardsAccess;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -86,7 +87,7 @@ final class Guarded
     {
         $visible = [];
         foreach ($tools as $tool) {
-            if (! $tool instanceof GuardedTool || $tool->allows(self::$user)) {
+            if (! $tool instanceof GuardsAccess || $tool->allows(self::$user)) {
                 $visible[] = $tool;
             }
         }
@@ -104,8 +105,8 @@ final class Guarded
     {
         $hidden = [];
         foreach ($tools as $tool) {
-            if ($tool instanceof GuardedTool && ! $tool->allows(self::$user)) {
-                $hidden[] = ['name' => $tool->name(), 'description' => (string) $tool->description()];
+            if ($tool instanceof GuardsAccess && ! $tool->allows(self::$user)) {
+                $hidden[] = ['name' => $tool->guardedName(), 'description' => $tool->guardedDescription()];
             }
         }
 

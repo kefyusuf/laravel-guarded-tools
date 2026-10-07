@@ -59,7 +59,7 @@ trait AssertsGuardedAiTools
     protected function proposeWrite(string $tool, array $arguments, Authenticatable $user, ?Model $workspace): array
     {
         // Approval needs a conversational agent and laravel/ai's agent_conversations table.
-        ConversationalScriptedAgent::fake([new ToolCall('guarded-kit-proposal', app($tool)->name(), $arguments), 'Waiting for approval.']);
+        ConversationalScriptedAgent::fake([new ToolCall('guarded-kit-proposal', $this->guardedToolName($tool), $arguments), 'Waiting for approval.']);
         $response = Guarded::run($user, $workspace,
             fn () => (new ConversationalScriptedAgent([app($tool)]))->forUser($user)->prompt('Run the requested tool.'));
 

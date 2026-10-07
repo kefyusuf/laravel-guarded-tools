@@ -22,6 +22,14 @@ use Throwable;
  */
 final class GuardedCall
 {
+    private static bool $querying = false;
+
+    /** True while a tool's own query() or write() runs, not the pipeline's checks around it. */
+    public static function querying(): bool
+    {
+        return self::$querying;
+    }
+
     /**
      * @param  Closure(): array{0: string, 1: string}  $identity  [tool id, source]
      * @param  Closure(): ?Model  $workspace
@@ -82,7 +90,14 @@ final class GuardedCall
                     } else {
                         // A savepoint: on PostgreSQL a failed query aborts the surrounding transaction,
                         // and the evidence row below could not be written.
-                        $result = DB::transaction(fn () => $query($validator->validated(), $space));
+                        $result = DB::transaction(function () use ($query, $validator, $space) {
+                            self::$querying = true;
+                            try {
+                                return $query($validator->validated(), $space);
+                            } finally {
+                                self::$querying = false;
+                            }
+                        });
                     }
                 }
             }

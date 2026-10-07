@@ -24,7 +24,7 @@ trait AssertsGuardedTools
         config(['packstub-agents.enabled' => true,
             'packstub-agents.limits.turns_per_minute' => null, 'packstub-agents.limits.turns_per_day' => null]);
         $result = AgentEval::as($user)->in($workspace)
-            ->expecting([new ToolCall('guarded-kit-proposal', app($tool)->name(), $arguments), 'Waiting for approval.'])
+            ->expecting([new ToolCall('guarded-kit-proposal', $this->guardedToolName($tool), $arguments), 'Waiting for approval.'])
             ->ask('Run the requested tool.');
 
         return $result->proposals()->map(fn (array $proposal) => ['tool' => $proposal['tool'], 'reason' => $proposal['question']])

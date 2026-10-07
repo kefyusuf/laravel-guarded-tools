@@ -3,6 +3,7 @@
 namespace GuardedTools\Testing;
 
 use Closure;
+use GuardedTools\Support\GuardedCall;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -38,6 +39,12 @@ trait GuardedToolAssertions
         return false;
     }
 
+    /** The name the model calls the tool by. */
+    protected function guardedToolName(string $tool): string
+    {
+        return app($tool)->name();
+    }
+
     /** Override for an app whose tool tables have different names. */
     protected function guardedToolTables(string $tool): array
     {
@@ -60,7 +67,7 @@ trait GuardedToolAssertions
         $user ??= $this->currentGuardedUser();
         $workspace ??= $this->currentGuardedWorkspace();
         Assert::assertNotNull($user, 'Sign a person in, or pass one, to run a guarded tool.');
-        $call = new ToolCall('guarded-kit-call', app($tool)->name(), $arguments);
+        $call = new ToolCall('guarded-kit-call', $this->guardedToolName($tool), $arguments);
 
         $run = $this->runScript($tool, $user, $workspace, [$beforeCall ? function () use ($beforeCall, $call) {
             $beforeCall();
@@ -132,17 +139,19 @@ trait GuardedToolAssertions
     /** Capture domain queries only; context, transcript and evidence writes are excluded. */
     private function captureGuardedQueries(string $tool, Closure $execute): array
     {
-        $connection = DB::connection();
-        $wasLogging = $connection->logging();
-        $offset = count($connection->getQueryLog());
-        $connection->enableQueryLog();
+        // Only queries made while the tool's own query() runs: the pipeline's checks around it
+        // (re-reading the person, evidence) are not the tool's queries, even on the same tables.
+        $queries = [];
+        $listening = true;
+        DB::listen(function ($executed) use (&$queries, &$listening): void {
+            if ($listening && GuardedCall::querying()) {
+                $queries[] = ['query' => $executed->sql, 'bindings' => $executed->bindings];
+            }
+        });
         try {
             $evaluation = $execute();
-            $queries = array_slice($connection->getQueryLog(), $offset);
         } finally {
-            if (! $wasLogging) {
-                $connection->disableQueryLog();
-            }
+            $listening = false;
         }
 
         $tables = $this->guardedToolTables($tool);
@@ -317,7 +326,7 @@ trait GuardedToolAssertions
             [, $single] = $this->captureGuardedQueries($tool, fn () => $this->runGuardedTool($tool, $arguments, $user, $workspace));
             Assert::assertNotEmpty($single, 'The tool must query its tables when inside the budget.');
 
-            $name = app($tool)->name();
+            $name = $this->guardedToolName($tool);
             $calls = array_map(fn (int $i) => new ToolCall("guarded-kit-budget-{$i}", $name, $arguments), [1, 2, 3]);
             [$evaluation, $queries] = $this->captureGuardedQueries($tool,
                 fn () => $this->runScript($tool, $user, $workspace, [...$calls, 'Scripted budget answer.']));

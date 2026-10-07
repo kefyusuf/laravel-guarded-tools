@@ -2,6 +2,19 @@
 
 All notable changes to `kefyusuf/laravel-guarded-tools` are documented here. The package follows [semantic versioning](https://semver.org); while the version is `0.x`, minor releases may change the API.
 
+## Unreleased (0.4.0)
+
+### Added
+
+- **Neuron AI adapter:** `GuardedTools\Neuron\GuardedNeuronTool` and `GuardedNeuronWriteTool` with the same read guarantees and W1–W7. Approval through Neuron's interrupt; the provider's tool call id as the idempotency key.
+- Test kit `AssertsGuardedNeuronTools`, with `assertApprovalFlowEndToEnd()` (Neuron runs approved calls under its fake provider).
+- `GuardedTools\Support\GuardsAccess`: `Guarded::visible()` and `hiddenCapabilities()` work for any platform's guarded tools.
+
+### Changed
+
+- The test kit counts only the queries made while a tool's own `query()` or `write()` runs (`GuardedCall::querying()`), so the pipeline's checks (for example re-reading the person from `users`) are not taken for the tool's queries. Tools that read `users` can now be checked.
+- Tool names in the kit go through `guardedToolName()`.
+
 ## 0.3.0 — 2026-10-08
 
 ### Added

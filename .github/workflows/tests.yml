@@ -46,7 +46,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [demo-app, pilots/support-desk, pilots/clinic, pilots/inventory, pilots/agency-hours]
+        app: [demo-app, pilots/support-desk, pilots/clinic, pilots/inventory, pilots/agency-hours, pilots/neuron-tasks]
         db: [sqlite, mysql, pgsql]
         php: ['8.4']
         include:
@@ -54,6 +54,9 @@ jobs:
           - { app: pilots/agency-hours, db: sqlite, php: '8.3' }
           - { app: pilots/agency-hours, db: mysql, php: '8.3' }
           - { app: pilots/agency-hours, db: pgsql, php: '8.3' }
+          - { app: pilots/neuron-tasks, db: sqlite, php: '8.3' }
+          - { app: pilots/neuron-tasks, db: mysql, php: '8.3' }
+          - { app: pilots/neuron-tasks, db: pgsql, php: '8.3' }
     services:
       mysql:
         image: mysql:8.4

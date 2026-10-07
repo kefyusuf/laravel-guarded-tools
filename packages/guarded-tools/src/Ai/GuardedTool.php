@@ -4,6 +4,7 @@ namespace GuardedTools\Ai;
 
 use GuardedTools\CanonicalToolResult;
 use GuardedTools\Support\GuardedCall;
+use GuardedTools\Support\GuardsAccess;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
@@ -16,7 +17,7 @@ use Stringable;
  * Base class for read-only tools on plain laravel/ai (no packstub). The workspace and the
  * person come from Guarded::run(); the ability is a Laravel Gate ability.
  */
-abstract class GuardedTool implements Tool
+abstract class GuardedTool implements GuardsAccess, Tool
 {
     /** The Gate ability to see and run this tool; null = any member of the workspace. */
     protected ?string $ability = null;
@@ -47,6 +48,16 @@ abstract class GuardedTool implements Tool
     public function allows(?Authenticatable $user): bool
     {
         return $user !== null && ($this->ability === null || Gate::forUser($user)->allows($this->ability));
+    }
+
+    public function guardedName(): string
+    {
+        return $this->name();
+    }
+
+    public function guardedDescription(): string
+    {
+        return (string) $this->description();
     }
 
     final public function handle(Request $request): Stringable|string

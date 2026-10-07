@@ -9,15 +9,17 @@ updates:
       - /pilots/clinic
       - /pilots/inventory
       - /pilots/agency-hours
+      - /pilots/neuron-tasks
     schedule:
       interval: daily
     allow:
       - dependency-name: packstub/agents
       - dependency-name: laravel/ai
       - dependency-name: laravel/mcp
+      - dependency-name: neuron-core/neuron-ai
     groups:
       agent-stack:
-        patterns: ["packstub/agents", "laravel/ai", "laravel/mcp"]
+        patterns: ["packstub/agents", "laravel/ai", "laravel/mcp", "neuron-core/neuron-ai"]
     open-pull-requests-limit: 5
     commit-message:
       prefix: deps

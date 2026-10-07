@@ -1,6 +1,6 @@
 # guarded-tools (working name)
 
-Guarded tools and assurance tests for Laravel AI agents, on plain [laravel/ai](https://github.com/laravel/ai) or on [packstub/agents](https://github.com/packstub/agents).
+Guarded tools and assurance tests for Laravel AI agents, on plain [laravel/ai](https://github.com/laravel/ai), on [Neuron AI](https://github.com/neuron-core/neuron-ai) or on [packstub/agents](https://github.com/packstub/agents).
 
 A tool built on this package guarantees, on every call:
 
@@ -213,6 +213,52 @@ Your `query()` runs in a savepoint (`DB::transaction`). On PostgreSQL a failed q
 packstub can also refuse a call at call time, before `run()`, when the person no longer has the tool's ability. The base class answers that refusal canonically too (`PolicyDenied`, with evidence), and still fires packstub's `ToolAuthorized` event.
 
 **Mark every guarded tool `#[IsReadOnly]`.** Without it packstub treats the tool as a write tool and turns each call into a proposal that waits for approval.
+
+## Neuron AI
+
+Inside a Laravel app, extend `GuardedTools\Neuron\GuardedNeuronTool` (read) or `GuardedTools\Neuron\GuardedNeuronWriteTool` (create, update, delete). Declare the inputs in `properties()` as usual; the base class owns Neuron's `execute()`, so your tool implements `query()` or `write()` instead of `__invoke()`.
+
+```php
+use GuardedTools\Neuron\GuardedNeuronWriteTool;
+
+class CompleteTask extends GuardedNeuronWriteTool
+{
+    protected ?string $ability = 'tasks.write';                     // Gate ability
+    protected string $name = 'complete_task';
+    protected ?string $description = 'Mark a task as done.';
+
+    public function id(): string { return 'tasks.complete'; }
+    protected function operation(): string { return 'update'; }
+    protected function workspaceColumn(): string { return 'company_id'; }
+    protected function rules(): array { return ['task_id' => ['required', 'integer']]; }
+
+    protected function properties(): array
+    {
+        return [new ToolProperty('task_id', PropertyType::INTEGER, 'The task.', true)];
+    }
+
+    protected function describe(array $arguments): string
+    {
+        return 'Mark task #'.($arguments['task_id'] ?? '?').' as done?';
+    }
+
+    protected function write(array $arguments, Model $workspace): CanonicalToolResult
+    {
+        // findOwn() / updateOwn() as on the other platforms
+    }
+}
+```
+
+The agent returns `Guarded::visible([...])` from `tools()` and runs inside `Guarded::run($user, $workspace, fn () => $agent->chat(...))`, as on plain laravel/ai. Neuron resumes an approved call with `submitApprovalDecisions()`; run that inside `Guarded::run()` too.
+
+Neuron specifics:
+
+- **W1:** the approval gate is asked for every write call, also for inputs Neuron itself rejects, so no write skips approval. `suppressApproval()`, `withApprovalPolicy()` and `requireApproval(false)` throw.
+- **W4:** Neuron passes the provider's tool call id to the tool, so idempotency uses the real id.
+- **Unknown inputs:** Neuron keeps input keys that `properties()` does not declare; the base class checks them against `rules()`.
+- **Name:** `$name` when set, otherwise the class name in snake case.
+
+Test with `GuardedTools\Testing\AssertsGuardedNeuronTools` (all read and write assertions). Neuron runs approved calls under its fake provider, so this kit also has `assertApprovalFlowEndToEnd()`: proposed, nothing written; approved, written once; rejected, nothing written.
 
 ## Write tools on packstub
 

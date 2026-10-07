@@ -1064,7 +1064,7 @@
             "dist": {
                 "type": "path",
                 "url": "../packages/guarded-tools",
-                "reference": "476d6436cf123d660538c4c6534e11ba241879bd"
+                "reference": "76e55f3eb6a8b1327a36ef42ac47b6b33c80647e"
             },
             "require": {
                 "laravel/ai": "^1.0",
@@ -1075,6 +1075,7 @@
                 "packstub/agents": "<1.7.1"
             },
             "suggest": {
+                "neuron-core/neuron-ai": "For tools on Neuron AI inside a Laravel app (GuardedTools\\Neuron\\GuardedNeuronTool); 4.1 or newer.",
                 "packstub/agents": "For tools on packstub/agents (GuardedTools\\Packstub\\GuardedAgentTool); 1.7.1 or newer."
             },
             "type": "library",

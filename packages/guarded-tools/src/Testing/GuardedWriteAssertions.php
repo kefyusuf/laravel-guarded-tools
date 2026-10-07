@@ -83,7 +83,7 @@ trait GuardedWriteAssertions
         [$pending, $writes] = $this->captureGuardedWrites($tool, fn () => $this->proposeWrite($tool, $arguments, $user, $workspace));
 
         Assert::assertCount(1, $pending, 'A write call must wait for approval.');
-        Assert::assertSame(app($tool)->name(), $pending[0]['tool']);
+        Assert::assertSame($this->guardedToolName($tool), $pending[0]['tool']);
         Assert::assertNotEmpty($pending[0]['reason'], 'The approval needs a question for the person.');
         Assert::assertSame([], $writes, 'Nothing may be written before approval.');
         Assert::assertSame($evidence, DB::table('guarded_tool_evidence')->count(), 'No evidence before the call runs.');
