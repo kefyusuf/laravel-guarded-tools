@@ -1,6 +1,6 @@
 # Order desk: M1a demo
 
-This demo shows a small guarded-tools package used by a Laravel 13 B2B order desk with real Laravel authentication, packstub/agents 1.7.0 and laravel/ai 1.0.1. It demonstrates integration and testable tool guarantees. It is not a pilot and does not prove demand.
+This demo shows a small guarded-tools package used by a Laravel 13 B2B order desk with real Laravel authentication, packstub/agents 1.7.1 and laravel/ai 1.0.1. It demonstrates integration and testable tool guarantees. It is not a pilot and does not prove demand.
 
 ## Run
 

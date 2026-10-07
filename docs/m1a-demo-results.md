@@ -8,7 +8,7 @@ This is a demo, not a pilot. It shows that the package works and how it is used.
 ## 1. What was built
 
 - `packages/guarded-tools/` (namespace `GuardedTools\`): `CanonicalToolResult`, `Packstub\GuardedAgentTool`, `Evidence\EvidenceRecorder` + migration, `Packstub\HiddenCapabilities`, `Testing\AssertsGuardedTools`. About 400 lines.
-- `demo-app/` "Order desk" on packstub/agents 1.7.0: two companies (Anadolu Tekstil, Ege Gıda), roles owner / sales / viewer, three tools (`orders-summary`, `overdue-invoices`, `customer-lookup`), `OrderDeskAssistant`, `php artisan demo:ask`. Details: `demo-app/README-demo.md`.
+- `demo-app/` "Order desk" on packstub/agents 1.7.0 (upgraded to 1.7.1 on 2026-10-07, see §7): two companies (Anadolu Tekstil, Ege Gıda), roles owner / sales / viewer, three tools (`orders-summary`, `overdue-invoices`, `customer-lookup`), `OrderDeskAssistant`, `php artisan demo:ask`. Details: `demo-app/README-demo.md`.
 
 ## 2. Deterministic tests
 
@@ -75,3 +75,13 @@ Every answered run printed its evidence ID; the model-facing results contained o
 ## 6. Next
 
 A real pilot is still the open question (PRD §5, M2). The demo can serve as the walkthrough for a pilot conversation.
+
+## 7. Update 2026-10-07: packstub 1.7.1
+
+`demo-app` now runs on packstub/agents 1.7.1 (fix for GHSA-3v46-4wxg-vjx7). Changes:
+
+- packstub refuses a non-member before any tool runs (`WorkspaceAccessDenied`). `assertNonMemberIsDenied` accepts this refusal or the tool's own `PolicyDenied`.
+- `GuardedAgentTool` re-reads the person from the database before its membership check, so membership revoked during a running turn is refused. New assertion `assertRevokedMemberIsDenied`; a mutation without the re-read fails its 3 tests.
+- Test suite: **38 passed (892 assertions)**.
+
+The live results in §3 and §5 were recorded on 1.7.0. The fix changes only non-member entry paths, which those scenarios do not use.
