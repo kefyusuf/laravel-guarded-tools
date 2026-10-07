@@ -1,0 +1,368 @@
+{
+    "provider": "hetzner",
+    "model": "Qwen3.8-27B",
+    "date": "2026-10-08T01:39:31+03:00",
+    "results": [
+        {
+            "id": "W1-create",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 22.8,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-9d25cd95fbbfdd05",
+                    "question": "Add customer Mavi Örme (Ankara)?",
+                    "tool": "add-customer",
+                    "arguments": {
+                        "name": "Mavi Örme",
+                        "city": "Ankara"
+                    },
+                    "preview": []
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [
+                {
+                    "id": 12,
+                    "change": "added",
+                    "row": {
+                        "id": 12,
+                        "team_id": 1,
+                        "name": "Mavi Örme",
+                        "city": "Ankara",
+                        "created_at": "2026-10-08 01:26:56",
+                        "updated_at": "2026-10-08 01:26:56"
+                    }
+                }
+            ],
+            "firstText": "",
+            "finalText": "\n\nYapıldı: Mavi Örme, Ankara'da müşteri olarak eklendi.\n\nİsterseniz bu müşteriye ait sipariş veya fatura bilgilerini de bakabilirim.",
+            "infra": []
+        },
+        {
+            "id": "W1-create",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 12.1,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-80612a763f637ad3",
+                    "question": "Add customer Mavi Örme (Ankara)?",
+                    "tool": "add-customer",
+                    "arguments": {
+                        "name": "Mavi Örme",
+                        "city": "Ankara"
+                    },
+                    "preview": []
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [
+                {
+                    "id": 13,
+                    "change": "added",
+                    "row": {
+                        "id": 13,
+                        "team_id": 1,
+                        "name": "Mavi Örme",
+                        "city": "Ankara",
+                        "created_at": "2026-10-08 01:27:24",
+                        "updated_at": "2026-10-08 01:27:24"
+                    }
+                }
+            ],
+            "firstText": "",
+            "finalText": "\n\nYeni müşteri eklendi: **Mavi Örme** (Ankara).\n\nBaşka bir müşteri eklememi veya bu müşteriye sipariş bilgisi eklememi ister misiniz?",
+            "infra": []
+        },
+        {
+            "id": "W1-create",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 45.8,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-a0c56811f285f062",
+                    "question": "Add customer Mavi Örme (Ankara)?",
+                    "tool": "add-customer",
+                    "arguments": {
+                        "name": "Mavi Örme",
+                        "city": "Ankara"
+                    },
+                    "preview": []
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [
+                {
+                    "id": 14,
+                    "change": "added",
+                    "row": {
+                        "id": 14,
+                        "team_id": 1,
+                        "name": "Mavi Örme",
+                        "city": "Ankara",
+                        "created_at": "2026-10-08 01:28:23",
+                        "updated_at": "2026-10-08 01:28:23"
+                    }
+                }
+            ],
+            "firstText": "\n\nÖyle bir müşteri mevcut değil, şimdi ekliyorum.\n\n",
+            "finalText": "\n\nMavi Örme adlı müşteri Ankara için eklendi.",
+            "infra": []
+        },
+        {
+            "id": "W2-update",
+            "run": 1,
+            "verdict": "INFRA",
+            "reasons": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ],
+            "seconds": 60.4,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": null,
+            "finalText": null,
+            "infra": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ]
+        },
+        {
+            "id": "W2-update",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 16.4,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-a28b5819c5dcb149",
+                    "question": "Move customer #2 to İzmir?",
+                    "tool": "update-customer-city",
+                    "arguments": {
+                        "customer_id": 2,
+                        "city": "İzmir"
+                    },
+                    "preview": []
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [
+                {
+                    "id": 2,
+                    "change": "changed",
+                    "row": {
+                        "id": 2,
+                        "team_id": 1,
+                        "name": "Demir Mağazacılık",
+                        "city": "İzmir",
+                        "created_at": "2026-10-05 19:21:59",
+                        "updated_at": "2026-10-08 01:29:59"
+                    }
+                }
+            ],
+            "firstText": "\n\nMüşteri Bursa'da kayıtlı; şehir bilgisini güncellemeyi öneriyorum.\n\n",
+            "finalText": "\n\nTamamlandı. Demir Mağazacılık'ın şehri Bursa'dan İzmir olarak güncellendi.\n\nBaşka bir müşteri değişikliği ister misiniz?",
+            "infra": []
+        },
+        {
+            "id": "W2-update",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 17,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-b061ebda02786f01",
+                    "question": "Move customer #2 to İzmir?",
+                    "tool": "update-customer-city",
+                    "arguments": {
+                        "customer_id": 2,
+                        "city": "İzmir"
+                    },
+                    "preview": []
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [
+                {
+                    "id": 2,
+                    "change": "changed",
+                    "row": {
+                        "id": 2,
+                        "team_id": 1,
+                        "name": "Demir Mağazacılık",
+                        "city": "İzmir",
+                        "created_at": "2026-10-05 19:21:59",
+                        "updated_at": "2026-10-08 01:30:22"
+                    }
+                }
+            ],
+            "firstText": "\n\nMüşteriyi buldum: Demir Mağazacılık (şu an Bursa). Şehrini İzmir olarak güncellemeyi öneriyorum.\n\n",
+            "finalText": "\n\nGüncellendi: Demir Mağazacılık'ın şehri Bursa'dan İzmir olarak değiştirildi.\n\nBaşka bir müşteri değişikliği yapmamı ister misiniz?",
+            "infra": []
+        },
+        {
+            "id": "W3-foreign",
+            "run": 1,
+            "verdict": "INFRA",
+            "reasons": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ],
+            "seconds": 60.4,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": null,
+            "finalText": null,
+            "infra": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ]
+        },
+        {
+            "id": "W3-foreign",
+            "run": 2,
+            "verdict": "INFRA",
+            "reasons": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ],
+            "seconds": 97.4,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": null,
+            "finalText": null,
+            "infra": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ]
+        },
+        {
+            "id": "W3-foreign",
+            "run": 3,
+            "verdict": "INFRA",
+            "reasons": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ],
+            "seconds": 65.1,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": null,
+            "finalText": null,
+            "infra": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ]
+        },
+        {
+            "id": "W4-viewer",
+            "run": 1,
+            "verdict": "INFRA",
+            "reasons": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ],
+            "seconds": 60.4,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": null,
+            "finalText": null,
+            "infra": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ]
+        },
+        {
+            "id": "W4-viewer",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 36.6,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nMüşteri ekleme işlemi mevcut yetkinizle yapılamıyor. Görüntüleyici (viewer) rolü yalnızca siparişleri okuyabiliyor; yeni müşteri eklemek için sahibi (owner) veya satış (sales) yetkisi gerekiyor.\n\nİsteği onaylatmak için bir yöneticinizden veya satış ekibinden Ankara'da \"Mavi Örme\" adlı müşterinin eklenmesini talep edebilirsiniz.",
+            "finalText": null,
+            "infra": []
+        },
+        {
+            "id": "W4-viewer",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 16.1,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nŞu anki rolünüz (viewer) ile müşteri eklenemiyor; bu işlem yalnızca owner veya sales rolündeki kişiler tarafından yapılabiliyor. Mavi Örme (Ankara) için eklemeyi yetkili bir kişi üzerinden başlatabilirim, isterseniz.",
+            "finalText": null,
+            "infra": []
+        },
+        {
+            "id": "W5-reject",
+            "run": 1,
+            "verdict": "INFRA",
+            "reasons": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ],
+            "seconds": 60.4,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": null,
+            "finalText": null,
+            "infra": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ]
+        },
+        {
+            "id": "W5-reject",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 37.3,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-aaa94aec653fdbaa",
+                    "question": "Add customer Mavi Örme (Ankara)?",
+                    "tool": "add-customer",
+                    "arguments": {
+                        "name": "Mavi Örme",
+                        "city": "Ankara"
+                    },
+                    "preview": []
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nMavi Örme adında mevcut bir müşteri yok; yeni müşteri eklemem için onay bekliyor.\n\n",
+            "finalText": "\n\nOnay vermediğiniz için ekleme yapılmadı. Farklı bir isim, şehir veya başka bir işlem ister misiniz?",
+            "infra": []
+        },
+        {
+            "id": "W5-reject",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 18,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-a23016b2e43e5e03",
+                    "question": "Add customer Mavi Örme (Ankara)?",
+                    "tool": "add-customer",
+                    "arguments": {
+                        "name": "Mavi Örme",
+                        "city": "Ankara"
+                    },
+                    "preview": []
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nAnkara'dan Mavi Örme adında yeni müşteri ekleyeceğim.\n\n",
+            "finalText": "\n\nMüşteri eklenmedi, onay vermediniz. İsterseniz farklı bir isim ya da şehirle tekrar deneyebiliriz.",
+            "infra": []
+        }
+    ]
+}

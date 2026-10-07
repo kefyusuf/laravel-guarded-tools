@@ -1,0 +1,24 @@
+{
+    "provider": "hetzner",
+    "model": "Qwen3.8-27B",
+    "date": "2026-10-08T01:49:18+03:00",
+    "results": [
+        {
+            "id": "W4-viewer",
+            "run": 1,
+            "verdict": "INFRA",
+            "reasons": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ],
+            "seconds": 61.3,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": null,
+            "finalText": null,
+            "infra": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ]
+        }
+    ]
+}

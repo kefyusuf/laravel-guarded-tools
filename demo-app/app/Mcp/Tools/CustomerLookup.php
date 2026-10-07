@@ -37,7 +37,7 @@ class CustomerLookup extends GuardedAgentTool
             ->whereIn('customer_id', $customers->pluck('id')->all())->selectRaw('customer_id, COUNT(*) as order_count')
             ->groupBy('customer_id')->pluck('order_count', 'customer_id');
         $data = ['customers' => $customers->map(fn (object $customer): array => [
-            'name' => $customer->name, 'city' => $customer->city, 'order_count' => (int) ($counts[$customer->id] ?? 0),
+            'id' => (int) $customer->id, 'name' => $customer->name, 'city' => $customer->city, 'order_count' => (int) ($counts[$customer->id] ?? 0),
         ])->all()];
 
         return $customers->isEmpty() ? CanonicalToolResult::empty($data) : CanonicalToolResult::ok($data);

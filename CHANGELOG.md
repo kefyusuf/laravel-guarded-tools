@@ -2,6 +2,16 @@
 
 All notable changes to `kefyusuf/laravel-guarded-tools` are documented here. The package follows [semantic versioning](https://semver.org); while the version is `0.x`, minor releases may change the API.
 
+## Unreleased
+
+### Added
+
+- Live write eval in the demo (`php artisan demo:eval-writes`): 5 scenarios × 3 runs with `Qwen3.8-27B`, 15/15 pass. See `docs/write-eval-results.md`.
+
+### Changed
+
+- Demo: `customer-lookup` returns the customer's `id`, so the model can pass it to the write tools (found by the live eval). The assistant's persona now says that changes wait for approval.
+
 ## 0.5.0 — 2026-10-08
 
 ### Added

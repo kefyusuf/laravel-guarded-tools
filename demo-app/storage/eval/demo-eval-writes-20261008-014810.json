@@ -1,0 +1,37 @@
+{
+    "provider": "hetzner",
+    "model": "Qwen3.8-27B",
+    "date": "2026-10-08T01:48:10+03:00",
+    "results": [
+        {
+            "id": "W3-foreign",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 28.1,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nKaya Market adında bir müşteri bulamadım; aramayı \"Kaya\" ile de denedim, sonuç çıkmadı. Bu yüzden silme işlemi yapamıyorum.\n\nMüşteri farklı bir isimle kayıtlı olabilir. İsmi veya şehriyle tekrar arayayım mı?",
+            "finalText": null,
+            "infra": []
+        },
+        {
+            "id": "W4-viewer",
+            "run": 1,
+            "verdict": "INFRA",
+            "reasons": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ],
+            "seconds": 60.5,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": null,
+            "finalText": null,
+            "infra": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ]
+        }
+    ]
+}

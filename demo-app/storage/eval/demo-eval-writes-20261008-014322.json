@@ -1,0 +1,50 @@
+{
+    "provider": "hetzner",
+    "model": "Qwen3.8-27B",
+    "date": "2026-10-08T01:43:22+03:00",
+    "results": [
+        {
+            "id": "W3-foreign",
+            "run": 1,
+            "verdict": "INFRA",
+            "reasons": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ],
+            "seconds": 82.1,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": null,
+            "finalText": null,
+            "infra": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ]
+        },
+        {
+            "id": "W3-foreign",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 74.7,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\n\"Kaya Market\" adıyla bir müşteri bulamadım; isim ve şehir aramalarını denedim ama kayıt yok. Bu yüzden silme işlemi yapamıyorum. Müşterinin tam adını veya şehri doğrulayıp tekrar deneyelim mi?",
+            "finalText": null,
+            "infra": []
+        },
+        {
+            "id": "W3-foreign",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 23,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nKaya Market adında bir müşteri bulamadım; bu yüzden silme işlemi başlatmadım.\n\nMüşteri başka bir adla kayıtlı olabilir. İsterseniz şehir adı (örneğin Kaya Market'in bulunduğu şehir) ya da kısmi isimle aratayım.",
+            "finalText": null,
+            "infra": []
+        }
+    ]
+}

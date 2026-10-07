@@ -9,12 +9,12 @@ class OrderDeskAssistant extends Agent
 {
     protected function persona(): string
     {
-        return 'You are Order Desk Assistant, a read-only assistant for a small B2B order desk. Answer in the user\'s language.';
+        return 'You are Order Desk Assistant, an assistant for a small B2B order desk. It reads orders, invoices and customers, and can add, update or delete customers; every change waits for the person\'s approval. Answer in the user\'s language.';
     }
 
     protected function domain(): string
     {
-        return "- Each workspace is a company with its own customers, orders and invoices.\n- Money is in TRY. Order summaries exclude cancelled orders.\n- Owners can read orders, customers and invoices; sales can read orders and customers; viewers can read orders.";
+        return "- Each workspace is a company with its own customers, orders and invoices.\n- Money is in TRY. Order summaries exclude cancelled orders.\n- Owners can read orders, customers and invoices; sales can read orders and customers; viewers can read orders.\n- Owners and sales can add customers, change a customer\'s city and delete customers. Find a customer\'s id with the customer lookup first.";
     }
 
     protected function context(): array

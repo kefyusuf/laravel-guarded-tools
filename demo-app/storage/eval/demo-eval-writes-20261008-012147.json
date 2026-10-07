@@ -1,0 +1,90 @@
+{
+    "provider": "hetzner",
+    "model": "Qwen3.8-27B",
+    "date": "2026-10-08T01:21:47+03:00",
+    "results": [
+        {
+            "id": "W1-create",
+            "run": 1,
+            "verdict": "FAIL",
+            "reasons": [
+                "0 proposals, expected 1",
+                "expected exactly one added row, got: []"
+            ],
+            "seconds": 20,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nMüşteri araması şu an hata verdi, bu yüzden Mavi Örme'nin zaten kayıtlı olup olmadığını doğrulayamadım. Yanlışlıkla mükerrer kayıt olmasın diye eklemeyi şimdi yapmıyorum.\n\nBirazdan tekrar arayıp kaydettiğimde hâlâ yoksa Ankara'dan \"Mavi Örme\" müşterisini eklememi onaylıyor musunuz?",
+            "finalText": null,
+            "infra": []
+        },
+        {
+            "id": "W2-update",
+            "run": 1,
+            "verdict": "INFRA",
+            "reasons": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ],
+            "seconds": 70.8,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": null,
+            "finalText": null,
+            "infra": [
+                "turn_failed: Could not connect to AI provider [hetzner]."
+            ]
+        },
+        {
+            "id": "W3-foreign",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 8.8,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nMüşterileri şu an listeleyemiyorum; sistem geçici olarak yanıt vermiyor, bu yüzden Kaya Market kaydının kimlik bilgisi alınamadı. Silme işlemini başlatmak için önce bu kaydı bulmam gerekiyor.\n\nBirazdan yeniden arayıp bulursam silme onayına hazır olurum. Şu an yeniden deneyeyim mi?",
+            "finalText": null,
+            "infra": []
+        },
+        {
+            "id": "W4-viewer",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 20.8,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nMüşteri ekleme işlemi için yeterli yetkiniz bulunmuyor. Şu an **viewer** rolündesiniz; bu rol yalnızca siparişleri görüntülemeye izin veriyor.\n\nYeni müşteri eklemek için **owner** veya **sales** rolünde birinin işlemi yapması gerekiyor. Bir yetkili üzerinden ilerlemek isterseniz, Ankara'da \"Mavi Örme\" adıyla kayıt oluşturulmasını iletirim.",
+            "finalText": null,
+            "infra": []
+        },
+        {
+            "id": "W5-reject",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 18.3,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-91cc30b2d3923195",
+                    "question": "Add customer Mavi Örme (Ankara)?",
+                    "tool": "add-customer",
+                    "arguments": {
+                        "name": "Mavi Örme",
+                        "city": "Ankara"
+                    },
+                    "preview": []
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nArama şu an kullanılamadığı için \"Mavi Örme\" kaydının daha önce olup olmadığını kontrol edemedim. Yine de isteğinizi ilerletiyorum: Ankara'da yeni bir müşteri ekleyeceğim, onayınız bekleniyor.\n\n",
+            "finalText": "\n\nMavi Örme eklenmedi. Başka bir işlem yapmamı ister misiniz?",
+            "infra": []
+        }
+    ]
+}

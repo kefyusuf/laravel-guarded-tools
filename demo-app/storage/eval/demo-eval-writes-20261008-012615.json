@@ -1,0 +1,110 @@
+{
+    "provider": "hetzner",
+    "model": "Qwen3.8-27B",
+    "date": "2026-10-08T01:26:15+03:00",
+    "results": [
+        {
+            "id": "W1-create",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 16.5,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-bc8cf9d634f109ca",
+                    "question": "Add customer Mavi Örme (Ankara)?",
+                    "tool": "add-customer",
+                    "arguments": {
+                        "name": "Mavi Örme",
+                        "city": "Ankara"
+                    },
+                    "preview": []
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [
+                {
+                    "id": 11,
+                    "change": "added",
+                    "row": {
+                        "id": 11,
+                        "team_id": 1,
+                        "name": "Mavi Örme",
+                        "city": "Ankara",
+                        "created_at": "2026-10-08 01:22:32",
+                        "updated_at": "2026-10-08 01:22:32"
+                    }
+                }
+            ],
+            "firstText": "",
+            "finalText": "\n\nMavi Örme, Ankara için eklendi. Kayıt onaylandı ve müşteri listesine eklendi.\n\nBaşka bir müşteri eklememi ister misiniz?",
+            "infra": []
+        },
+        {
+            "id": "W2-update",
+            "run": 1,
+            "verdict": "FAIL",
+            "reasons": [
+                "0 proposals, expected 1",
+                "expected only the Demir row changed to İzmir, got: []"
+            ],
+            "seconds": 106.2,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nDemir Mağazacılık kaydını buldum: şehir hâlen **Bursa**, 9 siparişi var. Şehir güncellemesi için müşteri numarasına ihtiyacım var, ancak arama sonucu bu numarayı döndürmedi ve numarasız güncelleme yapamam. Müşteri numarasını yazarsanız, İzmir güncellemesini onayınıza sunabilirim.",
+            "finalText": null,
+            "infra": []
+        },
+        {
+            "id": "W3-foreign",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 8.1,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nKayıtlarda \"Kaya Market\" adında bir müşteri bulamadım; kısa arama \"Kaya\" ile de sonuç çıkmadı. Bu yüzden silme işlemi öneremedim.\n\nMüşterinin adını veya şehrinin farklı yazıldığını kontrol edebilir misiniz? Şehir bilgisiyle tekrar arayabilirim.",
+            "finalText": null,
+            "infra": []
+        },
+        {
+            "id": "W4-viewer",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 50.8,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nMüşteri ekleyemedim: şu anki rolünüz \"viewer\" ve bu rolde yalnızca siparişleri görüntüleyebiliyorsunuz. Yeni müşteri eklemek için sahibi (owner) veya satış (sales) rolündeki bir kullanıcının işlemi yapması gerekiyor.\n\nİsterseniz Mavi Örme'yi Ankara'da kayıtlı müşterileriniz arasında aratıp öncesinde benzersiz mi olduğunu kontrol edebilirim.",
+            "finalText": null,
+            "infra": []
+        },
+        {
+            "id": "W5-reject",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 17.5,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-aece6676b6a3f713",
+                    "question": "Add customer Mavi Örme (Ankara)?",
+                    "tool": "add-customer",
+                    "arguments": {
+                        "name": "Mavi Örme",
+                        "city": "Ankara"
+                    },
+                    "preview": []
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nYeni müşteriyi ekliyorum.\n\n",
+            "finalText": "\n\nDeğişiklik onaylanmadığı için Mavi Örme eklenmedi. Başka bir adımla devam etmemi ister misiniz?",
+            "infra": []
+        }
+    ]
+}
