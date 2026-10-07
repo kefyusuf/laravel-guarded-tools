@@ -7,7 +7,7 @@
         "php": "^8.4",
         "laravel/framework": "^13.0",
         "laravel/ai": "^1.0",
-        "packstub/agents": "^1.7"
+        "packstub/agents": "^1.7.1"
     },
     "autoload": {
         "psr-4": {
