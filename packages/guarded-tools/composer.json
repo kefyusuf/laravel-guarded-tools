@@ -2,7 +2,7 @@
     "name": "local/guarded-tools",
     "description": "Guarded tools and assurance tests for Laravel AI agents (working name).",
     "type": "library",
-    "license": "proprietary",
+    "license": "MIT",
     "require": {
         "php": "^8.4",
         "laravel/framework": "^13.0",
