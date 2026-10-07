@@ -10,7 +10,7 @@ A tool built on this package guarantees, on every call:
 
 The test kit proves these guarantees in your own test suite, with scripted tool calls and no model.
 
-> **Status:** pre-release, for pilot use. The API can change. Not on Packagist yet.
+> **Status:** v0.1.0, pre-release. The API can change in `0.x` releases.
 
 ## Requirements
 
@@ -23,21 +23,12 @@ The test kit proves these guarantees in your own test suite, with scripted tool 
 
 ## Install
 
-Until the package is on Packagist, install it from GitHub:
-
-```jsonc
-// composer.json
-"repositories": [
-    { "type": "vcs", "url": "https://github.com/kefyusuf/laravel-guarded-tools" }
-]
-```
-
 ```bash
-composer require kefyusuf/laravel-guarded-tools:^0.1
+composer require kefyusuf/laravel-guarded-tools
 php artisan migrate
 ```
 
-Working inside this repository, the apps use a path repository to `packages/guarded-tools` instead.
+Working inside this repository, the apps use a Composer path repository to `packages/guarded-tools` instead.
 
 The service provider is auto-discovered and adds one table: `guarded_tool_evidence`.
 

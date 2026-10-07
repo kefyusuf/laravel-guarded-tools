@@ -7,11 +7,11 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "kefyusuf/laravel-guarded-tools": "@dev",
         "laravel/ai": "1.0.1",
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0",
-        "kefyusuf/laravel-guarded-tools": "@dev",
-        "packstub/agents": "1.7.1"
+        "packstub/agents": "1.7.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

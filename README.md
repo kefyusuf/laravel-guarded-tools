@@ -8,7 +8,7 @@ When an AI agent answers from business data in a multi-tenant Laravel app, three
 
 This repository contains a small package that makes these guarantees the default for tools built on [packstub/agents](https://github.com/packstub/agents) and [laravel/ai](https://github.com/laravel/ai), and a test kit that proves them in an app's own test suite.
 
-> **Status:** v0.1.0 pre-release ([changelog](CHANGELOG.md)). Not on Packagist yet; install from GitHub (see the package README).
+> **Status:** v0.1.0 pre-release ([changelog](CHANGELOG.md)). `composer require kefyusuf/laravel-guarded-tools`
 
 ## What is here
 

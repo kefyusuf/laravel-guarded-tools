@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aa509a64531f91cf01dbcf23e010def4",
+    "content-hash": "0af8c8576aaf0eb9443e22f516e52eaf",
     "packages": [
         {
             "name": "brick/math",
@@ -2808,16 +2808,16 @@
         },
         {
             "name": "packstub/agents",
-            "version": "v1.7.1",
+            "version": "v1.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/packstub/agents.git",
-                "reference": "6ae775bf77cf78c0affa4c97b3c16dac9a61592c"
+                "reference": "e652327eaeee333c5257978903a76d54c666cea0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/packstub/agents/zipball/6ae775bf77cf78c0affa4c97b3c16dac9a61592c",
-                "reference": "6ae775bf77cf78c0affa4c97b3c16dac9a61592c",
+                "url": "https://api.github.com/repos/packstub/agents/zipball/e652327eaeee333c5257978903a76d54c666cea0",
+                "reference": "e652327eaeee333c5257978903a76d54c666cea0",
                 "shasum": ""
             },
             "require": {
@@ -2894,7 +2894,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-07T07:58:48+00:00"
+            "time": "2026-10-07T11:51:20+00:00"
         },
         {
             "name": "phpoption/phpoption",
