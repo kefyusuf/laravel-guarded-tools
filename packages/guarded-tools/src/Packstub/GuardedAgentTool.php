@@ -37,11 +37,42 @@ abstract class GuardedAgentTool extends AgentTool
             workspace: fn () => Agents::tenant(),
             actor: fn () => GuardedCall::fresh(auth()->user()),
             isMember: fn ($person, $workspace) => Agents::context()->canAccessTenant($person, $workspace),
-            mayUse: fn () => true, // packstub checked the ability before run()
+            // packstub checked the ability before run() with the person it loaded at the start of the
+            // turn; check it again with the stored person. A write tool marked #[IsReadOnly] would
+            // skip packstub's approval, so it is refused.
+            mayUse: fn ($person) => ($this->writeOperation() === null || ! $this->isReadOnly())
+                && $this->allowsFresh($person),
             rules: fn () => $this->rules(),
             arguments: $request->all(),
             query: fn (array $arguments, Model $workspace) => $this->query($arguments, $workspace),
+            toolCallId: $this->writeKey($request->all()),
+            operation: $this->writeOperation(),
         );
+    }
+
+    /** packstub's ability check (Agents::allows) for the person as stored now. */
+    private function allowsFresh(\Illuminate\Contracts\Auth\Authenticatable $person): bool
+    {
+        $guard = auth()->guard();
+        $previous = $guard->user();
+        $guard->setUser($person);
+        try {
+            return Agents::allows($this->ability);
+        } finally {
+            $previous !== null ? $guard->setUser($previous) : $guard->forgetUser();
+        }
+    }
+
+    /** create, update or delete for write tools; null for read tools. */
+    protected function writeOperation(): ?string
+    {
+        return null;
+    }
+
+    /** The idempotency key of a write call; null for read tools. */
+    protected function writeKey(array $arguments): ?string
+    {
+        return null;
     }
 
     /**

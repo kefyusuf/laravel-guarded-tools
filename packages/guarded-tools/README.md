@@ -141,7 +141,7 @@ class DeleteTimeEntry extends GuardedWriteTool
 
 Test with `assertWriteNeedsApproval`, `assertWriteIsWorkspaceBound`, `assertCannotWriteOtherWorkspaceRow`, `assertWriteRechecksAtExecution`, `assertWriteIsIdempotent` and `assertWriteBudgetIsEnforced`. Under a faked gateway laravel/ai does not run approved calls, so the kit checks the proposal (paused, nothing written) and the approved execution (`executeApprovedWrite()`) separately.
 
-Write tools are available on plain laravel/ai only. On packstub, tools without `#[IsReadOnly]` already go through packstub's own approval flow, but they do not get W2–W7 yet.
+The same guarantees exist on packstub; see [Write tools on packstub](#write-tools-on-packstub).
 
 The rest of this README describes the packstub variant; the pipeline, statuses, budget and evidence are the same in both.
 
@@ -213,6 +213,47 @@ Your `query()` runs in a savepoint (`DB::transaction`). On PostgreSQL a failed q
 packstub can also refuse a call at call time, before `run()`, when the person no longer has the tool's ability. The base class answers that refusal canonically too (`PolicyDenied`, with evidence), and still fires packstub's `ToolAuthorized` event.
 
 **Mark every guarded tool `#[IsReadOnly]`.** Without it packstub treats the tool as a write tool and turns each call into a proposal that waits for approval.
+
+## Write tools on packstub
+
+Extend `GuardedTools\Packstub\GuardedAgentWriteTool` and **do not** mark it `#[IsReadOnly]`: packstub then turns every call into a proposal that the person approves, with your `describe()` as the question (W1). The `*Own()` helpers, `notFound()`, the transaction, the evidence and the write budget work as on plain laravel/ai (W2, W5–W7).
+
+```php
+use GuardedTools\Packstub\GuardedAgentWriteTool;
+
+class DeleteCustomer extends GuardedAgentWriteTool
+{
+    protected ?string $ability = 'customers.write';
+
+    public function id(): string { return 'customers.delete'; }
+    protected function operation(): string { return 'delete'; }
+    protected function rules(): array { return ['customer_id' => ['required', 'integer']]; }
+
+    public function describe(array $arguments): ?string
+    {
+        return "Delete customer #{$arguments['customer_id']}? This cannot be undone.";
+    }
+
+    protected function write(array $arguments, Model $workspace): CanonicalToolResult
+    {
+        $before = $this->findOwn('customers', $arguments['customer_id'], $workspace);
+        if ($before === null) {
+            return $this->notFound();
+        }
+        $this->deleteOwn('customers', $arguments['customer_id'], $workspace);
+
+        return CanonicalToolResult::ok(['id' => $before->id, 'before' => (array) $before]);
+    }
+}
+```
+
+Differences from plain laravel/ai:
+
+- **W1:** packstub owns the approval flow. A write tool marked `#[IsReadOnly]` would skip it, so the base class refuses such a call (`PolicyDenied`).
+- **W3:** membership is checked by packstub when the approved call's turn enters the workspace (1.7.1+), and again by the tool. The ability is checked by packstub and again by the tool with the person as stored now.
+- **W4:** packstub does not pass the provider's tool call id to tools. The key is derived from the turn, the tool, the arguments and the call's position in the turn: a retried turn writes nothing twice, and two equal calls in one turn both run.
+
+Test with the same write assertions through `AssertsGuardedTools`.
 
 ## Result statuses
 
@@ -313,7 +354,6 @@ Tested on SQLite, MySQL 8.4 and PostgreSQL 17, and on four schemas: `team_id` (d
 ## Known gaps
 
 - **Calls outside guarded tools:** the budget counts only `GuardedAgentTool` calls, not other tools or calls to hidden tools.
-- **Write tools on packstub:** write tools with W1–W7 exist on plain laravel/ai only; on packstub, approvals for writes stay with packstub.
 - **Calls to hidden tools:** a call to a tool the person cannot see fails in laravel/ai before any tool code runs, so it gets no canonical result. It is safe (no query).
 - **Upgrade risk:** the base class depends on packstub's `AgentTool::run()` extension point. Pin packstub's minor version.
 

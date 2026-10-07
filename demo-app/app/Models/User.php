@@ -34,8 +34,8 @@ class User extends Authenticatable
     public function hasOrderDeskAbility(string $ability): bool
     {
         $abilities = [
-            'owner' => ['orders.read', 'invoices.read', 'customers.read'],
-            'sales' => ['orders.read', 'customers.read'],
+            'owner' => ['orders.read', 'invoices.read', 'customers.read', 'customers.write'],
+            'sales' => ['orders.read', 'customers.read', 'customers.write'],
             'viewer' => ['orders.read'],
         ];
 

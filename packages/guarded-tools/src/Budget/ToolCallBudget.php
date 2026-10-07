@@ -14,11 +14,15 @@ final class ToolCallBudget
 
     private int $writes = 0;
 
+    /** @var array<string, int> */
+    private array $occurrences = [];
+
     public function startTurn(string $turnId): void
     {
         $this->turn = $turnId;
         $this->calls = 0;
         $this->writes = 0;
+        $this->occurrences = [];
     }
 
     /**
@@ -43,6 +47,15 @@ final class ToolCallBudget
         $this->writes++;
 
         return $limit === null || $this->writes <= (int) $limit;
+    }
+
+    /**
+     * How often a call with this fingerprint was seen in the turn, counting this one (1, 2, ...).
+     * A retried turn starts again at 1, so it derives the same keys.
+     */
+    public function occurrence(string $fingerprint): int
+    {
+        return $this->occurrences[$fingerprint] = ($this->occurrences[$fingerprint] ?? 0) + 1;
     }
 
     public function writes(): int
