@@ -9,3 +9,4 @@
 /packages/guarded-tools/tests export-ignore
 /.gitattributes  export-ignore
 /.gitignore      export-ignore
+/.ignore        export-ignore

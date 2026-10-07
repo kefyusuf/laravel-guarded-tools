@@ -1,0 +1,56 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  manifest:
+    name: Package manifests agree
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+      - run: composer validate --strict
+      - name: Root and package composer.json declare the same package
+        run: |
+          php -r '
+            $root = json_decode(file_get_contents("composer.json"), true);
+            $pkg = json_decode(file_get_contents("packages/guarded-tools/composer.json"), true);
+            foreach (["name", "require", "extra"] as $key) {
+                if (($root[$key] ?? null) !== ($pkg[$key] ?? null)) {
+                    fwrite(STDERR, "Mismatch in {$key}\n");
+                    exit(1);
+                }
+            }
+            echo "Manifests agree\n";
+          '
+
+  apps:
+    name: ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [demo-app, pilots/support-desk, pilots/clinic, pilots/inventory]
+    defaults:
+      run:
+        working-directory: ${{ matrix.app }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_sqlite, intl
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: cp .env.example .env && php artisan key:generate
+      - run: php artisan test
