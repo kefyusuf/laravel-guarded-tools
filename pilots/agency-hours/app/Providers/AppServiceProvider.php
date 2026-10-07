@@ -17,5 +17,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::define('hours.read', fn (User $user): bool => in_array($user->role, ['member', 'manager'], true));
         Gate::define('budgets.read', fn (User $user): bool => $user->role === 'manager');
+        Gate::define('hours.write', fn (User $user): bool => in_array($user->role, ['member', 'manager'], true));
     }
 }

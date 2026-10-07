@@ -9,8 +9,9 @@ final class ScriptedRun
 {
     /**
      * @param  list<array{id: ?string, name: string, arguments: array, result: mixed, pending: bool}>  $calls
+     * @param  list<array{id: string, tool: string, arguments: array, reason: ?string}>  $pendingApprovals
      */
-    public function __construct(private readonly string $text, private readonly array $calls) {}
+    public function __construct(private readonly string $text, private readonly array $calls, private readonly array $pendingApprovals = []) {}
 
     public function text(): string
     {
@@ -21,5 +22,11 @@ final class ScriptedRun
     public function toolCalls(): Collection
     {
         return collect($this->calls);
+    }
+
+    /** Calls the run paused on, waiting for a person's approval. */
+    public function pendingApprovals(): Collection
+    {
+        return collect($this->pendingApprovals);
     }
 }

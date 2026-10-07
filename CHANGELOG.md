@@ -2,6 +2,15 @@
 
 All notable changes to `kefyusuf/laravel-guarded-tools` are documented here. The package follows [semantic versioning](https://semver.org); while the version is `0.x`, minor releases may change the API.
 
+## Unreleased (0.3.0)
+
+### Added
+
+- **Write tools on plain laravel/ai:** `GuardedTools\Ai\GuardedWriteTool` for create, update and delete. Always approved by a person (W1); workspace-bound `findOwn()`, `insertOwn()`, `updateOwn()`, `deleteOwn()` and `notFound()` (W2); all checks again at execution (W3); one write per tool call id, person and workspace (W4); transaction rollback (W5); operation and before/after in the evidence (W6); `guarded-tools.max_writes_per_turn`, default 3 (W7).
+- Error code `NotFound`.
+- Evidence column `tool_call_id` (new migration).
+- Test kit: `assertWriteNeedsApproval`, `assertWriteIsWorkspaceBound`, `assertCannotWriteOtherWorkspaceRow`, `assertWriteRechecksAtExecution`, `assertWriteIsIdempotent`, `assertWriteBudgetIsEnforced`, `executeApprovedWrite()`.
+
 ## 0.2.0 — 2026-10-07
 
 ### Added

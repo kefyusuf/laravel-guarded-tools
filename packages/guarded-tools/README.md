@@ -93,6 +93,56 @@ $answer = Guarded::run($request->user(), $request->user()->organization,
 - `Guarded::visible()` hides tools the person may not use; `GuardedTool` checks the ability again at call time.
 - Test with the trait `GuardedTools\Testing\AssertsGuardedAiTools` (the same assertions as below); call `$this->actingInWorkspace($user, $workspace)` in `setUp()`.
 
+### Write tools (create, update, delete)
+
+Extend `GuardedTools\Ai\GuardedWriteTool` and use its `*Own()` helpers for every statement:
+
+```php
+use GuardedTools\Ai\GuardedWriteTool;
+
+class DeleteTimeEntry extends GuardedWriteTool
+{
+    protected ?string $ability = 'hours.write';
+
+    public function id(): string { return 'hours.delete'; }
+    protected function operation(): string { return 'delete'; }      // create | update | delete
+    protected function workspaceColumn(): string { return 'organization_id'; }
+    protected function rules(): array { return ['entry_id' => ['required', 'integer']]; }
+
+    protected function describe(array $arguments): string               // the question the person approves
+    {
+        return "Delete time entry #{$arguments['entry_id']}? This cannot be undone.";
+    }
+
+    protected function write(array $arguments, Model $workspace): CanonicalToolResult
+    {
+        $before = $this->findOwn('time_entries', $arguments['entry_id'], $workspace);
+        if ($before === null) {
+            return $this->notFound();                                    // missing, or another workspace's row
+        }
+        $this->deleteOwn('time_entries', $arguments['entry_id'], $workspace);
+
+        return CanonicalToolResult::ok(['id' => $before->id, 'before' => (array) $before]);
+    }
+}
+```
+
+| | Guarantee | How |
+|---|---|---|
+| W1 | No write without a person's approval | `GuardedWriteTool` is `Approvable` and always asks; `withoutApproval()` throws. The run pauses until your app resumes it with the person's decision |
+| W2 | Writes stay in the workspace | `insertOwn()` sets the workspace column from the server, `updateOwn()` cannot change it, `findOwn()` / `updateOwn()` / `deleteOwn()` filter by it. Another workspace's row answers `NotFound`, like a missing row |
+| W3 | Checked again when the approved call runs | The full pipeline runs at execution: membership, ability, arguments (the approval may be late, and may change the arguments) |
+| W4 | A call writes at most once | A call that already succeeded returns its first result for the same tool call id, person and workspace |
+| W5 | All or nothing | `write()` runs in a transaction; an exception rolls every statement back |
+| W6 | Audit trail | The evidence row stores the operation and what `write()` returns (return `before` / `after`) |
+| W7 | Write budget | `guarded-tools.max_writes_per_turn` (default **3**) on top of the call budget |
+
+**Requirements for write tools:** the agent must be conversational (`Conversational`, for example with `RemembersConversations`), because laravel/ai resumes an approved call from the conversation history.
+
+Test with `assertWriteNeedsApproval`, `assertWriteIsWorkspaceBound`, `assertCannotWriteOtherWorkspaceRow`, `assertWriteRechecksAtExecution`, `assertWriteIsIdempotent` and `assertWriteBudgetIsEnforced`. Under a faked gateway laravel/ai does not run approved calls, so the kit checks the proposal (paused, nothing written) and the approved execution (`executeApprovedWrite()`) separately.
+
+Write tools are available on plain laravel/ai only. On packstub, tools without `#[IsReadOnly]` already go through packstub's own approval flow, but they do not get W2–W7 yet.
+
 The rest of this README describes the packstub variant; the pipeline, statuses, budget and evidence are the same in both.
 
 ## Write a tool (packstub/agents)
@@ -172,7 +222,7 @@ packstub can also refuse a call at call time, before `run()`, when the person no
 | `empty` | The query worked and found nothing | `data` (for example `order_count: 0`) |
 | `error` | No trustworthy data | `error.code` only, `data: null` |
 
-Error codes: `BudgetExceeded`, `ContextMissing`, `PolicyDenied`, `InvalidToolArguments`, `UPSTREAM_UNAVAILABLE`.
+Error codes: `BudgetExceeded`, `ContextMissing`, `PolicyDenied`, `InvalidToolArguments`, `NotFound` (write tools), `UPSTREAM_UNAVAILABLE`.
 
 ## Tool-call budget
 
@@ -263,10 +313,10 @@ Tested on SQLite, MySQL 8.4 and PostgreSQL 17, and on four schemas: `team_id` (d
 ## Known gaps
 
 - **Calls outside guarded tools:** the budget counts only `GuardedAgentTool` calls, not other tools or calls to hidden tools.
-- **Write tools:** only read-only tools are covered. Approvals for writes stay with packstub.
+- **Write tools on packstub:** write tools with W1–W7 exist on plain laravel/ai only; on packstub, approvals for writes stay with packstub.
 - **Calls to hidden tools:** a call to a tool the person cannot see fails in laravel/ai before any tool code runs, so it gets no canonical result. It is safe (no query).
 - **Upgrade risk:** the base class depends on packstub's `AgentTool::run()` extension point. Pin packstub's minor version.
 
 ## Evidence
 
-Built and tested in `demo-app/` (45 tests) and three pilot simulations (25 tests), all mutation-checked, and evaluated with a live model in 18 runs. See `docs/m1a-demo-results.md` and `docs/packstub-integration-findings.md`.
+Built and tested in `demo-app/` (45 tests), three packstub pilots (25 tests) and a plain laravel/ai pilot with write tools (`pilots/agency-hours`, 36 tests), all mutation-checked, and evaluated with a live model in 18 runs (read tools). See `docs/m1a-demo-results.md` and `docs/packstub-integration-findings.md`.

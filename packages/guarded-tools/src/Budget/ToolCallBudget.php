@@ -12,10 +12,13 @@ final class ToolCallBudget
 
     private int $calls = 0;
 
+    private int $writes = 0;
+
     public function startTurn(string $turnId): void
     {
         $this->turn = $turnId;
         $this->calls = 0;
+        $this->writes = 0;
     }
 
     /**
@@ -28,6 +31,23 @@ final class ToolCallBudget
         $this->calls++;
 
         return $limit === null || $this->calls <= (int) $limit;
+    }
+
+    /**
+     * Count one write attempt and say whether it is still inside the write limit
+     * (guarded-tools.max_writes_per_turn). A null limit means no write budget.
+     */
+    public function attemptWrite(): bool
+    {
+        $limit = config('guarded-tools.max_writes_per_turn');
+        $this->writes++;
+
+        return $limit === null || $this->writes <= (int) $limit;
+    }
+
+    public function writes(): int
+    {
+        return $this->writes;
     }
 
     public function calls(): int

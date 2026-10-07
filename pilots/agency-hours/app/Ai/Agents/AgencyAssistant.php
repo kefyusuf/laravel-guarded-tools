@@ -2,8 +2,11 @@
 
 namespace App\Ai\Agents;
 
+use App\Ai\Tools\DeleteTimeEntry;
 use App\Ai\Tools\HoursSummary;
+use App\Ai\Tools\LogTime;
 use App\Ai\Tools\OverBudgetProjects;
+use App\Ai\Tools\UpdateTimeEntry;
 use GuardedTools\Ai\Guarded;
 use Laravel\Ai\Attributes\MaxSteps;
 use Laravel\Ai\Contracts\Agent;
@@ -19,7 +22,7 @@ class AgencyAssistant implements Agent, HasTools
 
     private function allTools(): array
     {
-        return [new HoursSummary, new OverBudgetProjects];
+        return [new HoursSummary, new OverBudgetProjects, new LogTime, new UpdateTimeEntry, new DeleteTimeEntry];
     }
 
     public function instructions(): Stringable|string

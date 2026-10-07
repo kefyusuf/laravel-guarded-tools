@@ -247,7 +247,7 @@ class GuardedToolsTest extends TestCase
             OverdueInvoices::class => $arguments,
             CustomerLookup::class => ['query' => 'No match'],
         };
-        $expectedShape = ['id', 'tool', 'workspace_id', 'user_id', 'status', 'error_code', 'source', 'arguments', 'result', 'audit', 'created_at'];
+        $expectedShape = ['id', 'tool', 'workspace_id', 'user_id', 'status', 'error_code', 'source', 'arguments', 'result', 'audit', 'created_at', 'tool_call_id'];
         $scenarios = ['ok', 'empty', 'invalid', 'unknown', 'denied', 'unavailable'];
         foreach ($scenarios as $scenario) {
             $before = DB::table('guarded_tool_evidence')->count();

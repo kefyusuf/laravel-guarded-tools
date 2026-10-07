@@ -125,7 +125,7 @@ class AgencyHoursGuaranteesTest extends TestCase
             return [array_map(fn ($tool) => $tool->name(), iterator_to_array($agent->tools())), (string) $agent->instructions()];
         });
 
-        $this->assertSame(['hours_summary'], $names);
+        $this->assertSame(['hours_summary', 'log_time', 'update_time_entry', 'delete_time_entry'], $names);
         $this->assertStringContainsString('over_budget_projects', $instructions);
         $this->assertStringNotContainsString('App', $instructions, 'The hidden-capabilities line carries no data.');
     }

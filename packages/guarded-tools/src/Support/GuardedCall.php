@@ -32,13 +32,14 @@ final class GuardedCall
      * @param  Closure(array, Model): CanonicalToolResult  $query
      */
     public static function run(Closure $identity, Closure $workspace, Closure $actor, Closure $isMember,
-        Closure $mayUse, Closure $rules, array $arguments, Closure $query): array
+        Closure $mayUse, Closure $rules, array $arguments, Closure $query, ?string $toolCallId = null,
+        ?string $operation = null): array
     {
         $tool = 'unknown';
         $source = 'unknown';
         $space = null;
         $userId = null;
-        $audit = [];
+        $audit = $operation === null ? [] : ['operation' => $operation];
 
         // Setup belongs inside the catch boundary too: identity, context, rules and validation can fail.
         try {
@@ -49,27 +50,35 @@ final class GuardedCall
 
             if (! app(ToolCallBudget::class)->attempt()) {
                 $result = CanonicalToolResult::error('BudgetExceeded');
-                $audit = ['reason' => 'budget_exceeded', 'calls_in_turn' => app(ToolCallBudget::class)->calls()];
+                $audit += ['reason' => 'budget_exceeded', 'calls_in_turn' => app(ToolCallBudget::class)->calls()];
             } elseif ($space === null) {
                 $result = CanonicalToolResult::error('ContextMissing');
-                $audit = ['reason' => 'no_workspace'];
+                $audit += ['reason' => 'no_workspace'];
             } elseif ($person === null || ! $isMember($person, $space)) {
                 $result = CanonicalToolResult::error('PolicyDenied');
-                $audit = ['reason' => 'not_a_member'];
+                $audit += ['reason' => 'not_a_member'];
             } elseif (! $mayUse($person)) {
                 $result = CanonicalToolResult::error('PolicyDenied');
-                $audit = ['reason' => 'refused_by_ability'];
+                $audit += ['reason' => 'refused_by_ability'];
+            } elseif ($operation !== null && $toolCallId !== null
+                && ($replay = self::replay($tool, $toolCallId, $space, $userId)) !== null) {
+                // A write that already succeeded for this call (a retry, a resent approval) is not run again.
+                // Checked after membership and ability, so a revoked person gets no earlier result either.
+                return $replay;
+            } elseif ($operation !== null && ! app(ToolCallBudget::class)->attemptWrite()) {
+                $result = CanonicalToolResult::error('BudgetExceeded');
+                $audit += ['reason' => 'write_budget_exceeded', 'writes_in_turn' => app(ToolCallBudget::class)->writes()];
             } else {
                 $allowed = $rules();
                 $unknown = array_values(array_diff(array_keys($arguments), array_keys($allowed)));
                 if ($unknown !== []) {
                     $result = CanonicalToolResult::error('InvalidToolArguments');
-                    $audit = ['reason' => 'unknown_arguments', 'unknown_keys' => $unknown];
+                    $audit += ['reason' => 'unknown_arguments', 'unknown_keys' => $unknown];
                 } else {
                     $validator = Validator::make($arguments, $allowed);
                     if ($validator->fails()) {
                         $result = CanonicalToolResult::error('InvalidToolArguments');
-                        $audit = ['reason' => 'validation_failed'];
+                        $audit += ['reason' => 'validation_failed'];
                     } else {
                         // A savepoint: on PostgreSQL a failed query aborts the surrounding transaction,
                         // and the evidence row below could not be written.
@@ -79,10 +88,24 @@ final class GuardedCall
             }
         } catch (Throwable $exception) {
             $result = CanonicalToolResult::error('UPSTREAM_UNAVAILABLE');
-            $audit = ['reason' => 'upstream_failure', 'exception_class' => $exception::class];
+            $audit += ['reason' => 'upstream_failure', 'exception_class' => $exception::class];
         }
 
-        return self::respond($result, $tool, $source, $space, $userId, $arguments, $audit);
+        return self::respond($result, $tool, $source, $space, $userId, $arguments, $audit, $toolCallId);
+    }
+
+    /** The model-facing payload of an earlier successful run of this tool call, if any. */
+    private static function replay(string $tool, string $toolCallId, Model $workspace, int|string|null $userId): ?array
+    {
+        $row = DB::table('guarded_tool_evidence')->where('tool', $tool)->where('tool_call_id', $toolCallId)
+            ->where('workspace_id', $workspace->getKey())->where('user_id', $userId)
+            ->whereIn('status', ['ok', 'empty'])->orderBy('created_at')->first();
+        if ($row === null) {
+            return null;
+        }
+        $stored = json_decode($row->result, true, 512, JSON_THROW_ON_ERROR);
+
+        return ['status' => $stored['status'], 'data' => $stored['data'] ?? null, 'error' => null, 'evidenceId' => $row->id];
     }
 
     /**
@@ -90,7 +113,7 @@ final class GuardedCall
      * the call returns no data.
      */
     public static function respond(CanonicalToolResult $result, string $tool, string $source, ?Model $workspace,
-        int|string|null $userId, array $arguments, array $audit): array
+        int|string|null $userId, array $arguments, array $audit, ?string $toolCallId = null): array
     {
         try {
             $provenance = array_replace($result->provenance, [
@@ -104,7 +127,7 @@ final class GuardedCall
             };
             $evidenceId = (string) Str::uuid();
             app(EvidenceRecorder::class)->record($evidenceId, $tool, $workspace?->getKey(), $userId,
-                $source, $arguments, $result, $audit);
+                $source, $arguments, $result, $audit, $toolCallId);
 
             return [
                 'status' => $result->status, 'data' => $result->data,

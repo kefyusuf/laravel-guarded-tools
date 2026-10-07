@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class EvidenceRecorder
 {
     public function record(string $id, string $tool, int|string|null $workspaceId, int|string|null $userId,
-        string $source, array $arguments, CanonicalToolResult $result, array $audit = []): void
+        string $source, array $arguments, CanonicalToolResult $result, array $audit = [], ?string $toolCallId = null): void
     {
         // Encode everything before opening the transaction or mutating storage.
         $encode = fn (array $value): string => json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -26,6 +26,7 @@ class EvidenceRecorder
                 'reason' => null, 'unknown_keys' => [], 'exception_class' => null,
             ], $audit)),
             'created_at' => now(),
+            'tool_call_id' => $toolCallId,
         ];
 
         DB::transaction(fn () => DB::table('guarded_tool_evidence')->insert($row));

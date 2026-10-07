@@ -38,6 +38,12 @@ abstract class GuardedTool implements Tool
         return Str::snake(class_basename($this));
     }
 
+    /** create, update or delete for write tools; null for read tools. */
+    protected function writeOperation(): ?string
+    {
+        return null;
+    }
+
     public function allows(?Authenticatable $user): bool
     {
         return $user !== null && ($this->ability === null || Gate::forUser($user)->allows($this->ability));
@@ -54,6 +60,8 @@ abstract class GuardedTool implements Tool
             rules: fn () => $this->rules(),
             arguments: $request->all(),
             query: fn (array $arguments, Model $workspace) => $this->query($arguments, $workspace),
+            toolCallId: $request->toolCallId(),
+            operation: $this->writeOperation(),
         );
 
         return json_encode($payload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
