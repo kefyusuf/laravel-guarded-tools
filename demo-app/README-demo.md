@@ -4,7 +4,7 @@ This demo shows a small guarded-tools package used by a Laravel 13 B2B order des
 
 ## Run
 
-Dependencies are already installed. `local/guarded-tools` points to `../packages/guarded-tools`. No Composer manifest changes are needed for this implementation.
+Dependencies are already installed. `kefyusuf/laravel-guarded-tools` points to `../packages/guarded-tools`. No Composer manifest changes are needed for this implementation.
 
 From `demo-app/`, prepare your local `.env` from `.env.example` if needed, generate an application key if it is empty, and run:
 

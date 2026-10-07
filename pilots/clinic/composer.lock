@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c0160222ead2ddfb03bfb7d53f735c49",
+    "content-hash": "aa509a64531f91cf01dbcf23e010def4",
     "packages": [
         {
             "name": "brick/math",
@@ -1057,6 +1057,46 @@
                 }
             ],
             "time": "2026-08-24T17:13:02+00:00"
+        },
+        {
+            "name": "kefyusuf/laravel-guarded-tools",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../../packages/guarded-tools",
+                "reference": "b060455b5392775a6e69135d90bd3ada5753a220"
+            },
+            "require": {
+                "laravel/ai": "^1.0",
+                "laravel/framework": "^13.0",
+                "packstub/agents": "^1.7.1",
+                "php": "^8.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "GuardedTools\\GuardedToolsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuardedTools\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "GuardedTools\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Guarded tools and assurance tests for Laravel AI agents (working name).",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "laravel/ai",
@@ -2253,46 +2293,6 @@
                 }
             ],
             "time": "2026-03-08T20:05:35+00:00"
-        },
-        {
-            "name": "local/guarded-tools",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "../../packages/guarded-tools",
-                "reference": "db5493fa071a9d7c1eb7884c65d4c1f722d1f1e5"
-            },
-            "require": {
-                "laravel/ai": "^1.0",
-                "laravel/framework": "^13.0",
-                "packstub/agents": "^1.7",
-                "php": "^8.4"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "GuardedTools\\GuardedToolsServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "GuardedTools\\": "src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "GuardedTools\\Tests\\": "tests/"
-                }
-            },
-            "license": [
-                "proprietary"
-            ],
-            "description": "Guarded tools and assurance tests for Laravel AI agents (working name).",
-            "transport-options": {
-                "relative": true
-            }
         },
         {
             "name": "monolog/monolog",
@@ -8633,7 +8633,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "local/guarded-tools": 20
+        "kefyusuf/laravel-guarded-tools": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

@@ -23,19 +23,21 @@ The test kit proves these guarantees in your own test suite, with scripted tool 
 
 ## Install
 
-Until the package is published, install it from a local path:
+Until the package is on Packagist, install it from GitHub:
 
 ```jsonc
 // composer.json
 "repositories": [
-    { "type": "path", "url": "../packages/guarded-tools", "options": { "symlink": true } }
+    { "type": "vcs", "url": "https://github.com/kefyusuf/laravel-guarded-tools" }
 ]
 ```
 
 ```bash
-composer require local/guarded-tools:@dev
+composer require kefyusuf/laravel-guarded-tools:dev-main
 php artisan migrate
 ```
+
+Working inside this repository, the apps use a path repository to `packages/guarded-tools` instead.
 
 The service provider is auto-discovered and adds one table: `guarded_tool_evidence`.
 

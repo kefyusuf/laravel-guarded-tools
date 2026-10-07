@@ -1,8 +1,13 @@
 {
     "name": "kefyusuf/laravel-guarded-tools",
-    "description": "Guarded tools and assurance tests for Laravel AI agents (working name).",
+    "description": "Guarded tools and assurance tests for Laravel AI agents: workspace isolation, honest failures and evidence on every tool call.",
     "type": "library",
     "license": "MIT",
+    "keywords": ["laravel", "ai", "agents", "multi-tenancy", "security", "testing", "packstub", "laravel-ai"],
+    "homepage": "https://github.com/kefyusuf/laravel-guarded-tools",
+    "authors": [
+        { "name": "Yusuf Kef", "homepage": "https://github.com/kefyusuf" }
+    ],
     "require": {
         "php": "^8.4",
         "laravel/framework": "^13.0",
@@ -11,12 +16,7 @@
     },
     "autoload": {
         "psr-4": {
-            "GuardedTools\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "GuardedTools\\Tests\\": "tests/"
+            "GuardedTools\\": "packages/guarded-tools/src/"
         }
     },
     "extra": {

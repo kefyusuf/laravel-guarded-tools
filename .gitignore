@@ -5,3 +5,7 @@
 .env
 .env.*
 !.env.example
+
+# Root Composer install (package development only).
+/vendor/
+/composer.lock
