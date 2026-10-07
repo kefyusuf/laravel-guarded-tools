@@ -25,6 +25,17 @@ abstract class GuardedAgentTool extends AgentTool
         return 'tool:'.$this->id();
     }
 
+    /**
+     * The signed-in person, re-read from storage. A turn runs in a job that loads the person once when
+     * it enters the workspace, so an in-memory instance would not see membership revoked mid-turn.
+     */
+    private function freshActor(): ?\Illuminate\Contracts\Auth\Authenticatable
+    {
+        $user = auth()->user();
+
+        return $user instanceof Model ? $user->fresh() : $user;
+    }
+
     final protected function run(Request $request): array
     {
         $workspace = null;
@@ -46,7 +57,7 @@ abstract class GuardedAgentTool extends AgentTool
             if ($workspace === null) {
                 $result = CanonicalToolResult::error('ContextMissing');
                 $audit = ['reason' => 'no_workspace'];
-            } elseif (auth()->user() === null || ! Agents::context()->canAccessTenant(auth()->user(), $workspace)) {
+            } elseif (($actor = $this->freshActor()) === null || ! Agents::context()->canAccessTenant($actor, $workspace)) {
                 $result = CanonicalToolResult::error('PolicyDenied');
                 $audit = ['reason' => 'not_a_member'];
             } else {

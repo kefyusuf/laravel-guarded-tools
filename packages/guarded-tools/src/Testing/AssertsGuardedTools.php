@@ -21,17 +21,26 @@ trait AssertsGuardedTools
         return ['orders', 'invoices', 'customers'];
     }
 
+    /**
+     * @param  Closure|null  $beforeCall  runs after the workspace is entered and before the tool call,
+     *                                    for example to revoke membership mid-turn
+     */
     protected function runGuardedTool(string $tool, array $arguments,
-        ?Authenticatable $user = null, ?Model $workspace = null): AgentEvalResult
+        ?Authenticatable $user = null, ?Model $workspace = null, ?Closure $beforeCall = null): AgentEvalResult
     {
         $user ??= auth()->user();
         $workspace ??= Agents::tenant();
         Assert::assertInstanceOf(Model::class, $user, 'AgentEval needs an authenticated Eloquent user.');
         config(['packstub-agents.enabled' => true]);
         $name = app($tool)->name();
+        $call = new ToolCall('guarded-kit-call', $name, $arguments);
 
         return AgentEval::as($user)->in($workspace)
-            ->expecting([new ToolCall('guarded-kit-call', $name, $arguments), 'Scripted tool answer.'])
+            ->expecting([$beforeCall ? function () use ($beforeCall, $call) {
+                $beforeCall();
+
+                return $call;
+            } : $call, 'Scripted tool answer.'])
             ->ask('Run the requested read-only tool.')->assertOk()->assertCalled($name, $arguments);
     }
 
@@ -145,15 +154,46 @@ trait AssertsGuardedTools
         Assert::assertNotNull($payload['evidenceId'], 'A data-source failure must still persist evidence.');
     }
 
+    /**
+     * A non-member never reaches a domain query. Two outcomes are accepted: the agent platform refuses
+     * to enter the workspace (packstub >= 1.7.1 throws WorkspaceAccessDenied), or the tool itself
+     * answers PolicyDenied (packstub 1.7.0 entered without a membership check, GHSA-3v46-4wxg-vjx7).
+     */
     public function assertNonMemberIsDenied(string $tool, array $arguments, Authenticatable $outsider, Model $workspace): void
     {
+        $refusedBy = null;
+        [$evaluation, $queries] = $this->captureGuardedQueries($tool, function () use ($tool, $arguments, $outsider, $workspace, &$refusedBy) {
+            try {
+                return $this->runGuardedTool($tool, $arguments, $outsider, $workspace);
+            } catch (\Packstub\Agents\Exceptions\WorkspaceAccessDenied) {
+                $refusedBy = 'platform';
+
+                return null;
+            }
+        });
+
+        if ($refusedBy === null) {
+            $payload = $this->decodeGuardedResult($evaluation);
+            Assert::assertSame('error', $payload['status']);
+            Assert::assertSame(['code' => 'PolicyDenied'], $payload['error']);
+            Assert::assertNull($payload['data']);
+        }
+        Assert::assertSame([], $queries, 'A non-member must not query domain tables.');
+    }
+
+    /**
+     * A member enters the workspace, and membership is revoked before the tool call. The agent platform
+     * checks membership only when entering, so the tool's own check must refuse.
+     */
+    public function assertRevokedMemberIsDenied(string $tool, array $arguments, Authenticatable $member, Model $workspace, Closure $revoke): void
+    {
         [$evaluation, $queries] = $this->captureGuardedQueries($tool,
-            fn () => $this->runGuardedTool($tool, $arguments, $outsider, $workspace));
+            fn () => $this->runGuardedTool($tool, $arguments, $member, $workspace, $revoke));
         $payload = $this->decodeGuardedResult($evaluation);
         Assert::assertSame('error', $payload['status']);
         Assert::assertSame(['code' => 'PolicyDenied'], $payload['error']);
         Assert::assertNull($payload['data']);
-        Assert::assertSame([], $queries, 'A non-member must not query domain tables.');
+        Assert::assertSame([], $queries, 'A revoked member must not query domain tables.');
     }
 
     public function assertEvidenceChain(string $tool, array $arguments, Authenticatable $user,

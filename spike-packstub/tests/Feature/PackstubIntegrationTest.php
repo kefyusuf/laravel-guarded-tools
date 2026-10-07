@@ -14,6 +14,12 @@ use Packstub\Agents\Channels\Email\EmailChannel;
 use Packstub\Agents\Channels\Email\InboundEmail;
 use Packstub\Agents\Facades\Agents;
 use Packstub\Agents\Testing\AgentEval;
+use Illuminate\Support\Facades\Queue;
+use Packstub\Agents\Exceptions\WorkspaceAccessDenied;
+use Packstub\Agents\Jobs\RunAgentTurn;
+use Packstub\Agents\Support\AgentConversationStore;
+use Packstub\Agents\Support\AgentRuntime;
+use Packstub\Agents\Support\AgentTurns;
 use Tests\TestCase;
 
 /**
@@ -163,23 +169,26 @@ class PackstubIntegrationTest extends TestCase
 
     /**
      * P5b: a member of team 42 is run inside team 99 through packstub's AgentRun API.
-     * Finding: packstub does not check membership there. The canonical tool refuses; the plain tool reads team 99.
+     * packstub 1.7.0: no membership check; the plain tool read team 99 (GHSA-3v46-4wxg-vjx7).
+     * packstub 1.7.1: enter() refuses with WorkspaceAccessDenied before any tool runs.
      */
-    public function test_p5b_agentrun_without_membership_check(): void
+    public function test_p5b_agentrun_non_member_is_refused_since_1_7_1(): void
     {
         $user = $this->user($this->team42);
 
-        $canonical = AgentEval::as($user)->in($this->team99)
-            ->expecting([new ToolCall('c1', 'orders-summary', ['period' => 'last_month']), 'Cevap.'])
-            ->ask('Geçen ay kaç sipariş verdik?');
-        $this->assertSame('PolicyDenied', $this->toolResult($canonical->toolCalls()[0])['error']['code']);
-        $this->assertSame([], $this->orderQueries, 'Canonical tool: no team 99 query for a non-member.');
+        foreach (['orders-summary', 'plain-orders-summary'] as $tool) {
+            try {
+                AgentEval::as($user)->in($this->team99)
+                    ->expecting([new ToolCall('c1', $tool, ['period' => 'last_month']), 'Cevap.'])
+                    ->ask('Geçen ay kaç sipariş verdik?');
+                $this->fail("Expected WorkspaceAccessDenied for {$tool}.");
+            } catch (WorkspaceAccessDenied) {
+                // Fixed in 1.7.1.
+            }
+        }
 
-        AgentEval::as($user)->in($this->team99)
-            ->expecting([new ToolCall('c2', 'plain-orders-summary', ['period' => 'last_month']), 'Cevap.'])
-            ->ask('Geçen ay kaç sipariş verdik?');
-        // Finding (packstub 1.7.0): the plain tool reads team 99 for a team 42 member.
-        $this->assertSame([99], array_column(array_column($this->orderQueries, 'bindings'), 0));
+        $this->assertSame([], $this->orderQueries, 'No team 99 query for a non-member, with either tool.');
+        $this->assertNull(auth()->user(), 'The refused enter() leaves nobody signed in.');
     }
 
     /** P6: without the ability the tool is not offered and a direct call never queries. */
@@ -220,24 +229,85 @@ class PackstubIntegrationTest extends TestCase
     }
 
     /**
-     * P9: email channel. A team 42 member mails with tenant "globex" (in production the
-     * provider webhook sets this field, typically from the recipient address).
-     * Finding: packstub 1.7.0 runs the turn in team 99 without a membership check.
+     * P9: email channel. A team 42 member mails with tenant "globex".
+     * packstub 1.7.0: the turn ran in team 99 (GHSA-3v46-4wxg-vjx7).
+     * packstub 1.7.1: the mail is dropped without a reply.
      */
-    public function test_p9_email_channel_without_membership_check(): void
+    public function test_p9_email_non_member_is_dropped_since_1_7_1(): void
     {
         $user = $this->user($this->team42);
         Mail::fake();
-        $mail = fn (string $id) => new InboundEmail(from: $user->email, subject: 'Sipariş', text: 'Geçen ay kaç sipariş verdik?', messageId: "<{$id}@test>", tenant: 'globex');
 
-        Agents::agentClass()::fake([new ToolCall('c1', 'orders-summary', ['period' => 'last_month']), 'Cevap.']);
-        EmailChannel::receive($mail('m1'));
-        $this->assertSame([], $this->orderQueries, 'Canonical tool: no team 99 query for a non-member.');
+        foreach (['orders-summary', 'plain-orders-summary'] as $i => $tool) {
+            Agents::agentClass()::fake([new ToolCall('c1', $tool, ['period' => 'last_month']), 'Cevap.']);
+            $answer = EmailChannel::receive(new InboundEmail(from: $user->email, subject: 'Sipariş',
+                text: 'Geçen ay kaç sipariş verdik?', messageId: "<m{$i}@test>", tenant: 'globex'));
+            $this->assertNull($answer, "The mail is dropped ({$tool}).");
+        }
 
-        Agents::agentClass()::fake([new ToolCall('c2', 'plain-orders-summary', ['period' => 'last_month']), 'Cevap.']);
-        EmailChannel::receive($mail('m2'));
-        // Finding (packstub 1.7.0): the plain tool reads team 99 through the email channel.
-        $this->assertSame([99], array_column(array_column($this->orderQueries, 'bindings'), 0));
+        $this->assertSame([], $this->orderQueries);
+        Mail::assertNothingSent();
+    }
+
+    /** V3 (1.7.1): a direct AgentRuntime::enter() with no user, while a non-member is signed in, is refused. */
+    public function test_v3_runtime_enter_with_signed_in_non_member_is_refused(): void
+    {
+        $this->actingAs($this->user($this->team42));
+
+        $this->expectException(WorkspaceAccessDenied::class);
+        AgentRuntime::enter(['tenant' => $this->team99->getKey()]);
+    }
+
+    /** V4 (1.7.1): a queued turn whose membership was revoked before the worker ran ends failed, with no query. */
+    public function test_v4_queued_turn_after_membership_revoked_ends_failed(): void
+    {
+        Queue::fake();
+        $user = $this->user($this->team42);
+        $this->actingAs($user);
+
+        $conversation = app(AgentConversationStore::class)->startConversation($user, 'Geçen ay kaç sipariş verdik?');
+        $turn = app(AgentTurns::class)->enqueue($conversation, $user, ['prompt' => 'Geçen ay kaç sipariş verdik?'], null, 'auto', null);
+
+        // Revoke membership between the question and the worker.
+        $user->forceFill(['current_team_id' => $this->team99->id])->save();
+
+        Agents::agentClass()::fake([new ToolCall('c1', 'plain-orders-summary', ['period' => 'last_month']), 'Cevap.']);
+        Queue::pushed(RunAgentTurn::class)->first()->handle(app(AgentTurns::class));
+
+        $this->assertSame('failed', $turn->fresh()->status);
+        $this->assertSame([], $this->orderQueries);
+    }
+
+    /** V5 (1.7.1): with workspaces configured, the MCP path without {tenant} answers 404. */
+    public function test_v5_mcp_path_without_tenant_is_refused(): void
+    {
+        $user = $this->user($this->team42);
+        $token = $user->createToken('desk', ['read'])->plainTextToken;
+
+        $response = $this->withToken($token)->postJson('/mcp', [
+            'jsonrpc' => '2.0', 'id' => 1, 'method' => 'tools/call',
+            'params' => ['name' => 'plain-orders-summary', 'arguments' => ['period' => 'last_month']],
+        ]);
+
+        $response->assertNotFound();
+        $this->assertStringContainsString('{tenant}', (string) $response->json('error'));
+        $this->assertSame([], $this->orderQueries);
+    }
+
+    /**
+     * V6 (1.7.1, edge case): enter() with a tenant and no person at all (none given, nobody signed in).
+     * The membership check needs an actor, so this documents what happens instead of assuming it.
+     */
+    public function test_v6_runtime_enter_with_nobody_signed_in(): void
+    {
+        $this->assertNull(auth()->user());
+        $leave = AgentRuntime::enter(['tenant' => $this->team99->getKey()]);
+
+        $entered = Agents::tenant()?->getKey();
+        $leave();
+
+        fwrite(STDERR, "\n[V6] tenant entered with nobody signed in: ".json_encode($entered)."\n");
+        $this->assertSame(99, $entered, 'Observed in 1.7.1: the workspace is entered with no actor.');
     }
 
     /** P8: ability revoked between exposure and execution — packstub re-checks; what does the model get? */

@@ -134,6 +134,14 @@ class GuardedToolsTest extends TestCase
     }
 
     #[DataProvider('guardedTools')]
+    public function test_member_revoked_mid_turn_is_denied_by_the_tool(string $tool, array $arguments, string $table, string $source): void
+    {
+        // packstub 1.7.1 checks membership when entering the workspace, not at the tool call.
+        $this->assertRevokedMemberIsDenied($tool, $arguments, $this->ownerA, $this->teamA,
+            fn () => User::query()->whereKey($this->ownerA->id)->update(['current_team_id' => $this->teamB->id]));
+    }
+
+    #[DataProvider('guardedTools')]
     public function test_answer_links_to_evidence_and_source(string $tool, array $arguments, string $table, string $source): void
     {
         $this->assertEvidenceChain($tool, $arguments, $this->ownerA, $this->teamA, $source);
@@ -257,9 +265,13 @@ class GuardedToolsTest extends TestCase
                 Schema::rename($table, $table.'_offline');
             }
             try {
+                // "denied": membership revoked mid-turn, so the tool's own check answers (packstub >= 1.7.1
+                // refuses a non-member before any tool runs, which writes no tool evidence).
                 $outcome = $this->decodeGuardedResult($this->runGuardedTool(
-                    $tool, $callArguments, $scenario === 'denied' ? $this->ownerB : $this->ownerA, $this->teamA,
+                    $tool, $callArguments, $this->ownerA, $this->teamA,
+                    $scenario === 'denied' ? fn () => User::query()->whereKey($this->ownerA->id)->update(['current_team_id' => $this->teamB->id]) : null,
                 ));
+                User::query()->whereKey($this->ownerA->id)->update(['current_team_id' => $this->teamA->id]);
             } finally {
                 if ($scenario === 'unavailable') {
                     Schema::rename($table.'_offline', $table);
@@ -275,7 +287,7 @@ class GuardedToolsTest extends TestCase
             $this->assertSame((new $tool)->id(), $row->tool);
             $this->assertSame($source, $row->source);
             $this->assertSame($this->teamA->id, (int) $row->workspace_id);
-            $this->assertSame(($scenario === 'denied' ? $this->ownerB : $this->ownerA)->id, (int) $row->user_id);
+            $this->assertSame($this->ownerA->id, (int) $row->user_id);
             $this->assertSame($callArguments, json_decode($row->arguments, true, 512, JSON_THROW_ON_ERROR));
             $expectedStatus = in_array($scenario, ['ok', 'empty'], true) ? $scenario : 'error';
             $this->assertSame($expectedStatus, $row->status);

@@ -11,7 +11,7 @@
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0",
         "local/guarded-tools": "@dev",
-        "packstub/agents": "1.7.0"
+        "packstub/agents": "1.7.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -17,7 +17,7 @@ v0.1 described an "Agent Studio": a framework-independent agent runtime with a p
 | Connectors, failover, memory, retrieval, model lifecycle in V1 | Not needed for the first guarantee chain | Out of scope until a pilot asks |
 | Framework-independent core | Costly; Laravel-only users first | Plain-PHP value objects only; Laravel-first implementation |
 
-**What remains** is small and proven: guarantees at the tool level, and a way to prove them in tests. The integration experiment found a real cross-tenant gap in an existing agent package (confidential, reported to its maintainers on 2026-10-05), and our tool layer blocked it. That is the clearest evidence so far for this product.
+**What remains** is small and proven: guarantees at the tool level, and a way to prove them in tests. The integration experiment found a real cross-tenant gap in an existing agent package (reported privately on 2026-10-05; fixed in packstub/agents 1.7.1 and published as GHSA-3v46-4wxg-vjx7 on 2026-10-07), and our tool layer blocked it. That is the clearest evidence so far for this product.
 
 ## 2. Product statement
 
@@ -46,7 +46,7 @@ An AI agent in a multi-tenant Laravel app can answer from the wrong workspace, t
 
 **Default: Track A first, Track B as fallback.** The shared part (result type, evidence, test kit assertions) is the same in both.
 
-**Track gate (proposed date 2026-11-05, or earlier when packstub answers):**
+**Track gate — decided 2026-10-07: Track A stays first.** packstub confirmed and fixed the report in two days (1.7.1). Original rule, for the record:
 - packstub confirms and fixes the reported gap, or accepts a contribution → Track A stays first.
 - No answer, or the fix is refused → Track B first; Track A stays possible for packstub users.
 
@@ -157,7 +157,7 @@ No calendar estimates; exit criteria decide. The track gate (section 4) can move
 | packstub adds canonical results or evidence itself | Our difference shrinks further | Talk to the maintainers; contribute instead of competing |
 | `laravel/ai` undocumented behaviors (`name()` resolution, `ToolCall` fakes) change | Tests or naming break | Contract tests on pinned versions (R-005, Q2) |
 | Fail-closed answers depend on the instruction text | A model ignores it and invents numbers | FR-10 eval; guarantees G4–G5 hold at the data level anyway |
-| Confidential finding leaks before a fix | Users of packstub exposed | Keep F5 details out of public material until packstub releases a fix |
+| Agent platform has another entry-path gap | Cross-workspace read | Tool-level membership check re-reads the person at call time (defense in depth); keep isolation tests in the kit |
 
 ## 13. Traceability
 
