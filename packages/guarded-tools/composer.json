@@ -4,10 +4,15 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "php": "^8.4",
-        "laravel/framework": "^13.0",
-        "laravel/ai": "^1.0",
-        "packstub/agents": "^1.7.1"
+        "php": "^8.3",
+        "laravel/framework": "^12.0|^13.0",
+        "laravel/ai": "^1.0"
+    },
+    "suggest": {
+        "packstub/agents": "For tools on packstub/agents (GuardedTools\\Packstub\\GuardedAgentTool); 1.7.1 or newer."
+    },
+    "conflict": {
+        "packstub/agents": "<1.7.1"
     },
     "autoload": {
         "psr-4": {

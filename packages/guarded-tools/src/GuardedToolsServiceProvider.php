@@ -20,6 +20,9 @@ class GuardedToolsServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->publishes([__DIR__.'/../config/guarded-tools.php' => config_path('guarded-tools.php')], 'guarded-tools-config');
 
-        Event::listen(TurnStarted::class, fn (TurnStarted $event) => $this->app->make(ToolCallBudget::class)->startTurn((string) $event->turn->getKey()));
+        // packstub is optional: on plain laravel/ai, Guarded::run() starts the budget instead.
+        if (class_exists(TurnStarted::class)) {
+            Event::listen(TurnStarted::class, fn (TurnStarted $event) => $this->app->make(ToolCallBudget::class)->startTurn((string) $event->turn->getKey()));
+        }
     }
 }

@@ -2,6 +2,19 @@
 
 All notable changes to `kefyusuf/laravel-guarded-tools` are documented here. The package follows [semantic versioning](https://semver.org); while the version is `0.x`, minor releases may change the API.
 
+## Unreleased (0.2.0)
+
+### Added
+
+- **Plain laravel/ai support (no packstub):** `GuardedTools\Ai\GuardedTool` (Laravel Gate abilities), `GuardedTools\Ai\Guarded` (`run()`, `visible()`, `hiddenCapabilities()`, `membershipUsing()`), and the test kit `AssertsGuardedAiTools`.
+- PHP 8.3 and Laravel 12 for the plain laravel/ai variant.
+
+### Changed
+
+- packstub/agents is now optional (`suggest`); versions below 1.7.1 are refused through `conflict`.
+- Both base classes share one guard pipeline (`GuardedTools\Support\GuardedCall`); behavior on packstub is unchanged.
+- The test kit is split into shared assertions and two adapters; `runGuardedTool()` returns a `ScriptedRun` and checks the call's name and arguments.
+
 ## 0.1.0 — 2026-10-07
 
 First pre-release, for trial use.

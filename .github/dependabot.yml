@@ -8,6 +8,7 @@ updates:
       - /pilots/support-desk
       - /pilots/clinic
       - /pilots/inventory
+      - /pilots/agency-hours
     schedule:
       interval: daily
     allow:

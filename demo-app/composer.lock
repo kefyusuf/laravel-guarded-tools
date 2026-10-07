@@ -1064,13 +1064,18 @@
             "dist": {
                 "type": "path",
                 "url": "../packages/guarded-tools",
-                "reference": "b060455b5392775a6e69135d90bd3ada5753a220"
+                "reference": "476d6436cf123d660538c4c6534e11ba241879bd"
             },
             "require": {
                 "laravel/ai": "^1.0",
-                "laravel/framework": "^13.0",
-                "packstub/agents": "^1.7.1",
-                "php": "^8.4"
+                "laravel/framework": "^12.0|^13.0",
+                "php": "^8.3"
+            },
+            "conflict": {
+                "packstub/agents": "<1.7.1"
+            },
+            "suggest": {
+                "packstub/agents": "For tools on packstub/agents (GuardedTools\\Packstub\\GuardedAgentTool); 1.7.1 or newer."
             },
             "type": "library",
             "extra": {

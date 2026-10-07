@@ -1,6 +1,6 @@
 # guarded-tools (working name)
 
-Guarded tools and assurance tests for Laravel AI agents built on [packstub/agents](https://github.com/packstub/agents).
+Guarded tools and assurance tests for Laravel AI agents, on plain [laravel/ai](https://github.com/laravel/ai) or on [packstub/agents](https://github.com/packstub/agents).
 
 A tool built on this package guarantees, on every call:
 
@@ -16,10 +16,12 @@ The test kit proves these guarantees in your own test suite, with scripted tool 
 
 | | |
 |---|---|
-| PHP | 8.4 or newer |
-| Laravel | 13.x |
-| packstub/agents | **1.7.1 or newer** (1.7.0 is affected by [GHSA-3v46-4wxg-vjx7](https://github.com/packstub/agents/security/advisories/GHSA-3v46-4wxg-vjx7)) |
-| laravel/ai | 1.x |
+| | Plain laravel/ai | On packstub/agents |
+|---|---|---|
+| PHP | 8.3 or newer | 8.4 or newer (packstub's floor) |
+| Laravel | 12.x or 13.x | 13.x |
+| laravel/ai | 1.x | 1.x |
+| packstub/agents | not needed | **1.7.1 or newer** (1.7.0 is affected by [GHSA-3v46-4wxg-vjx7](https://github.com/packstub/agents/security/advisories/GHSA-3v46-4wxg-vjx7); Composer refuses older versions) |
 
 ## Install
 
@@ -34,7 +36,66 @@ The service provider is auto-discovered and adds one table: `guarded_tool_eviden
 
 Your app must already be set up for packstub/agents with workspaces: `Agents::tenantModel()`, `Agents::tenantUsing()`, `Agents::authorizeUsing()`, and a `canAccessTenant(Model $tenant): bool` method on your user model.
 
-## Write a tool
+## Plain laravel/ai (no packstub)
+
+Extend `GuardedTools\Ai\GuardedTool`. The ability is a Laravel Gate ability; the workspace and the person come from `Guarded::run()`, never from the model.
+
+```php
+use GuardedTools\Ai\GuardedTool;
+use GuardedTools\CanonicalToolResult;
+
+class HoursSummary extends GuardedTool
+{
+    protected ?string $ability = 'hours.read';                  // Gate::define('hours.read', ...)
+
+    public function id(): string { return 'hours.summary'; }
+    protected function source(): string { return 'db:time_entries'; }
+    protected function rules(): array { return ['period' => ['required', 'in:this_month,last_month']]; }
+    public function description(): string { return 'Hours logged per project for a period.'; }
+    public function schema(JsonSchema $schema): array
+    {
+        return ['period' => $schema->string()->enum(['this_month', 'last_month'])->required()];
+    }
+
+    protected function query(array $arguments, Model $workspace): CanonicalToolResult
+    {
+        // always query through $workspace
+    }
+}
+```
+
+Give the agent only the tools the person may use, and run it inside the person's workspace:
+
+```php
+use GuardedTools\Ai\Guarded;
+
+class AgencyAssistant implements Agent, HasTools
+{
+    use Promptable;
+
+    public function instructions(): string
+    {
+        return 'Answer from tool results only. '.Guarded::hiddenCapabilities([new HoursSummary, new OverBudgetProjects]);
+    }
+
+    public function tools(): iterable
+    {
+        return Guarded::visible([new HoursSummary, new OverBudgetProjects]);
+    }
+}
+
+$answer = Guarded::run($request->user(), $request->user()->organization,
+    fn () => (new AgencyAssistant)->prompt($question));
+```
+
+- `Guarded::run()` sets the person and workspace for the run, starts a fresh tool-call budget, and clears the context afterwards, also on error.
+- Membership: the user model's `canAccessTenant(Model $workspace): bool`, or `Guarded::membershipUsing(fn ($user, $workspace) => ...)`. A user without either is **denied**.
+- `Guarded::visible()` hides tools the person may not use; `GuardedTool` checks the ability again at call time.
+- Test with the trait `GuardedTools\Testing\AssertsGuardedAiTools` (the same assertions as below); call `$this->actingInWorkspace($user, $workspace)` in `setUp()`.
+
+The rest of this README describes the packstub variant; the pipeline, statuses, budget and evidence are the same in both.
+
+## Write a tool (packstub/agents)
 
 Extend `GuardedTools\Packstub\GuardedAgentTool` instead of packstub's `AgentTool`:
 
