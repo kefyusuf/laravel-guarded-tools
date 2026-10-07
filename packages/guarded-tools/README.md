@@ -175,7 +175,16 @@ class OrdersSummaryTest extends TestCase
 | `assertRevokedMemberIsDenied` | Membership revoked after the turn started is refused by the tool |
 | `assertEvidenceChain` | Answer → tool call → `evidenceId` → evidence row with workspace, user and source |
 
-The kit records queries on the tables `orders`, `invoices` and `customers` by default. Override `guardedToolTables(string $tool): array` in your test for your own tables.
+Two overrides adapt the kit to your schema:
+
+```php
+protected function guardedToolTables(string $tool): array { return ['patients', 'appointments']; } // default: orders, invoices, customers
+protected function guardedWorkspaceColumn(string $tool): string { return 'clinic_id'; }           // default: team_id
+```
+
+The workspace-bound assertion checks that **every** table in a query, joins included, has a `<table>.<column> = ?` predicate bound to the current workspace. The kit switches off packstub's turn limits for its scripted runs, so many assertions in one test do not hit "Too many questions in a row".
+
+Tested on four schemas: `team_id` (demo), a many-to-many `workspace_id` (support desk), `clinic_id` (clinic) and three-table joins on `store_id` (inventory). See `docs/pilot-simulations.md`.
 
 ## Known gaps
 
@@ -186,4 +195,4 @@ The kit records queries on the tables `orders`, `invoices` and `customers` by de
 
 ## Evidence
 
-Built and tested in `demo-app/` (38 tests, mutation-checked) and evaluated with a live model in 18 runs. See `docs/m1a-demo-results.md` and `docs/packstub-integration-findings.md`.
+Built and tested in `demo-app/` (38 tests) and three pilot simulations (25 tests), all mutation-checked, and evaluated with a live model in 18 runs. See `docs/m1a-demo-results.md` and `docs/packstub-integration-findings.md`.

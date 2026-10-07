@@ -21,6 +21,12 @@ trait AssertsGuardedTools
         return ['orders', 'invoices', 'customers'];
     }
 
+    /** Override for an app whose workspace foreign key has another name, for example clinic_id. */
+    protected function guardedWorkspaceColumn(string $tool): string
+    {
+        return 'team_id';
+    }
+
     /**
      * @param  Closure|null  $beforeCall  runs after the workspace is entered and before the tool call,
      *                                    for example to revoke membership mid-turn
@@ -31,7 +37,9 @@ trait AssertsGuardedTools
         $user ??= auth()->user();
         $workspace ??= Agents::tenant();
         Assert::assertInstanceOf(Model::class, $user, 'AgentEval needs an authenticated Eloquent user.');
-        config(['packstub-agents.enabled' => true]);
+        // Scripted runs: packstub's per-user and per-workspace turn limits would refuse a test after a few calls.
+        config(['packstub-agents.enabled' => true,
+            'packstub-agents.limits.turns_per_minute' => null, 'packstub-agents.limits.turns_per_day' => null]);
         $name = app($tool)->name();
         $call = new ToolCall('guarded-kit-call', $name, $arguments);
 
@@ -100,6 +108,7 @@ trait AssertsGuardedTools
             $payloads[] = $payload['data'];
             foreach ($queries as $query) {
                 $sql = str_replace(['"', '`', '[', ']'], '', strtolower($query['query']));
+                $workspaceColumn = preg_quote(strtolower($this->guardedWorkspaceColumn($tool)), '/');
                 foreach ($this->guardedToolTables($tool) as $table) {
                     $table = strtolower($table);
                     if (! preg_match_all('/\b(?:from|join)\s+'.preg_quote($table, '/').'\b(?:\s+(?:as\s+)?(?!where\b|on\b|inner\b|left\b|right\b|join\b|order\b|group\b|limit\b)([a-z_][a-z_0-9]*))?/', $sql, $references, PREG_SET_ORDER)) {
@@ -107,10 +116,10 @@ trait AssertsGuardedTools
                     }
                     foreach ($references as $reference) {
                         $alias = $reference[1] ?? $table;
-                        $column = preg_quote($alias, '/').'\.team_id';
+                        $column = preg_quote($alias, '/').'\.'.$workspaceColumn;
                         // An unqualified column is safe only in a single-table query.
                         if (! preg_match('/\bjoin\b/', $sql) && count($references) === 1) {
-                            $column = '(?:'.preg_quote($alias, '/').'\.)?team_id';
+                            $column = '(?:'.preg_quote($alias, '/').'\.)?'.$workspaceColumn;
                         }
                         preg_match_all('/\b'.$column.'\s*=\s*\?/', $sql, $predicates, PREG_OFFSET_CAPTURE);
                         Assert::assertNotEmpty($predicates[0], "Missing workspace predicate for {$alias}: {$sql}");
@@ -128,7 +137,7 @@ trait AssertsGuardedTools
 
     public function assertRejectsUnknownArguments(string $tool, array $validArguments): void
     {
-        foreach (['workspace_id', 'team_id', 'tenant_id'] as $key) {
+        foreach (array_unique(['workspace_id', 'team_id', 'tenant_id', $this->guardedWorkspaceColumn($tool)]) as $key) {
             [$evaluation, $queries] = $this->captureGuardedQueries($tool,
                 fn () => $this->runGuardedTool($tool, array_merge($validArguments, [$key => 999999])));
             $payload = $this->decodeGuardedResult($evaluation);
