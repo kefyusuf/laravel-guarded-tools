@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fc934fef33d4a755522d8bd21ac14848",
+    "content-hash": "94fb310b3b687c959dfbc50fe88f4c84",
     "packages": [
         {
             "name": "brick/math",
@@ -1067,7 +1067,7 @@
             "dist": {
                 "type": "path",
                 "url": "../../packages/guarded-tools",
-                "reference": "17479b63b30f6a41ade14c546f9f154a905ded73"
+                "reference": "e185daf612895ac5a4b295f9ec7a3807f47acd4e"
             },
             "require": {
                 "laravel/framework": "^12.0|^13.0",
@@ -2664,16 +2664,16 @@
         },
         {
             "name": "prism-php/prism",
-            "version": "v0.100.0",
+            "version": "v0.100.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/prism-php/prism.git",
-                "reference": "efa3276d2cbdd953bc09805a8564bab9090a80e4"
+                "reference": "5d6cc65b80b19cf3f22744703ac0c727b68cdca8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/prism-php/prism/zipball/efa3276d2cbdd953bc09805a8564bab9090a80e4",
-                "reference": "efa3276d2cbdd953bc09805a8564bab9090a80e4",
+                "url": "https://api.github.com/repos/prism-php/prism/zipball/5d6cc65b80b19cf3f22744703ac0c727b68cdca8",
+                "reference": "5d6cc65b80b19cf3f22744703ac0c727b68cdca8",
                 "shasum": ""
             },
             "require": {
@@ -2731,7 +2731,7 @@
             "description": "A powerful Laravel package for integrating Large Language Models (LLMs) into your applications.",
             "support": {
                 "issues": "https://github.com/prism-php/prism/issues",
-                "source": "https://github.com/prism-php/prism/tree/v0.100.0"
+                "source": "https://github.com/prism-php/prism/tree/v0.100.1"
             },
             "funding": [
                 {
@@ -2739,7 +2739,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-03-20T15:34:56+00:00"
+            "time": "2026-03-20T20:37:17+00:00"
         },
         {
             "name": "psr/clock",
