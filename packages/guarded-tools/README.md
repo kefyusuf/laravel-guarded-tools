@@ -10,7 +10,7 @@ A tool built on this package guarantees, on every call:
 
 The test kit proves these guarantees in your own test suite, with scripted tool calls and no model.
 
-> **Status:** v1.0.0 ([changelog](../../CHANGELOG.md)). Semantic versioning: the public API (the base classes, `Guarded`, `CanonicalToolResult`, the test-kit assertions and the evidence table) changes incompatibly only in a new major version. Classes marked `@internal` are not part of it.
+> **Status:** v1.0.0 ([changelog](../../CHANGELOG.md)). Semantic versioning: the public API (the base classes, `Guarded`, `CanonicalToolResult`, the test-kit assertions and the evidence table) changes incompatibly only in a new major version. Classes marked `@internal` are not part of it. The packstub adapter (`GuardedTools\Packstub`, `AssertsGuardedPackstubTools`) is experimental: it follows packstub/agents' own releases and can change in a minor version.
 
 ## Requirements
 

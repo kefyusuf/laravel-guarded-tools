@@ -2,9 +2,9 @@
 
 All notable changes to `kefyusuf/laravel-guarded-tools` are documented here. The package follows [semantic versioning](https://semver.org); while the version is `0.x`, minor releases may change the API.
 
-## Unreleased (1.0.0)
+## 1.0.0 — 2026-10-08
 
-The first stable release. From here on, the public API changes incompatibly only in a new major version (semantic versioning). Classes marked `@internal` are not part of the public API.
+The first stable release. From here on, the public API changes incompatibly only in a new major version (semantic versioning). Classes marked `@internal` are not part of the public API. The packstub adapter is experimental: it follows packstub/agents' releases and can change in a minor version.
 
 ### Removed
 

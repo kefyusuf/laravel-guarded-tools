@@ -8,7 +8,7 @@ When an AI agent answers from business data in a multi-tenant Laravel app, three
 
 This repository contains a small package that makes these guarantees the default for agent tools on plain [laravel/ai](https://github.com/laravel/ai), on [Neuron AI](https://github.com/neuron-core/neuron-ai), on [Prism](https://github.com/prism-php/prism) (read tools) or on [packstub/agents](https://github.com/packstub/agents), and a test kit that proves them in an app's own test suite.
 
-> **Status:** v1.0.0 ([changelog](CHANGELOG.md)). Semantic versioning: the public API (the base classes, `Guarded`, `CanonicalToolResult`, the test-kit assertions and the evidence table) changes incompatibly only in a new major version. Classes marked `@internal` are not part of it. `composer require kefyusuf/laravel-guarded-tools`
+> **Status:** v1.0.0 ([changelog](CHANGELOG.md)). Semantic versioning: the public API (the base classes, `Guarded`, `CanonicalToolResult`, the test-kit assertions and the evidence table) changes incompatibly only in a new major version. Classes marked `@internal` are not part of it. The packstub adapter (`GuardedTools\Packstub`, `AssertsGuardedPackstubTools`) is experimental: it follows packstub/agents' own releases and can change in a minor version. `composer require kefyusuf/laravel-guarded-tools`
 
 ## Quickstart (laravel/ai)
 
