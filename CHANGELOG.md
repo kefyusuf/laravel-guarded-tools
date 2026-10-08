@@ -2,7 +2,7 @@
 
 All notable changes to `kefyusuf/laravel-guarded-tools` are documented here. The package follows [semantic versioning](https://semver.org); while the version is `0.x`, minor releases may change the API.
 
-## Unreleased
+## 0.6.0 — 2026-10-08
 
 Preparing the 1.0 API. Old names keep working until 1.0.
 
