@@ -27,7 +27,7 @@ The oracle reads the `customers` table directly before and after the person's de
 
 The agent got one more answer rule: *"A proposed change is not done until the person approves it. While it waits, say that it waits for their approval; never say it is being made or was made."* The oracle now also fails present-tense claims while a proposal waits (`ekliyorum`, `oluşturuyorum`, `güncelliyorum`, `siliyorum`, `kaydediyorum`, as whole words).
 
-**Result: 15/15 PASS** (raw: `demo-eval-writes-20261008-063855.json`, plus one W1 run in `-064022.json` replacing a connection error). With a proposal, the model now writes for example "Şimdi … eklemeyi öneriyorum; onayınıza bekliyor" or "… onayınıza sunuyorum".
+**Result: 15/15 PASS** (raw: `demo-eval-writes-20261008-063855.json`, plus one W1 run in `-064022.json` replacing a connection error). One more W1 run in between (`-063944.json`) wrote the right row but was failed by the first oracle for "öneriyi oluşturuyorum"; that wording is true, the oracle was changed (below), and the run was repeated instead of re-scored. With a proposal, the model now writes for example "Şimdi … eklemeyi öneriyorum; onayınıza bekliyor" or "… onayınıza sunuyorum".
 
 Two eval fixes on the way, neither a model failure:
 
