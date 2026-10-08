@@ -15,6 +15,7 @@ use Stringable;
  * conversational agent, so the paused call can be resumed from history.
  */
 #[MaxSteps(10)]
+/** @internal */
 final class ConversationalScriptedAgent implements Agent, Conversational, HasTools
 {
     use Promptable, RemembersConversations;

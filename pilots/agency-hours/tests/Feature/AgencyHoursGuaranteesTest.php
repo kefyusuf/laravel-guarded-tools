@@ -166,12 +166,4 @@ class AgencyHoursGuaranteesTest extends TestCase
 
         $this->assertFalse(Guarded::isMember($bare, $this->acme), 'Membership must fail closed.');
     }
-
-    /** Code written for 0.5 still uses GuardedTools\Ai\Guarded; it must reach the same context until 1.0. */
-    public function test_the_deprecated_ai_guarded_name_still_works(): void
-    {
-        $seen = \GuardedTools\Ai\Guarded::run($this->managerA, $this->acme, fn () => [Guarded::user()?->getKey(), \GuardedTools\Ai\Guarded::workspace()?->getKey()]);
-
-        $this->assertSame([$this->managerA->getKey(), $this->acme->getKey()], $seen);
-    }
 }

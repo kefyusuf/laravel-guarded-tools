@@ -1,4 +1,4 @@
-# guarded-tools (working name)
+# laravel-guarded-tools
 
 Guarded tools and assurance tests for Laravel AI agents, on plain [laravel/ai](https://github.com/laravel/ai), on [Neuron AI](https://github.com/neuron-core/neuron-ai), on [Prism](https://github.com/prism-php/prism) (read tools) or on [packstub/agents](https://github.com/packstub/agents).
 
@@ -10,7 +10,7 @@ A tool built on this package guarantees, on every call:
 
 The test kit proves these guarantees in your own test suite, with scripted tool calls and no model.
 
-> **Status:** v0.1.0, pre-release. The API can change in `0.x` releases.
+> **Status:** v1.0.0 ([changelog](../../CHANGELOG.md)). Semantic versioning: the public API (the base classes, `Guarded`, `CanonicalToolResult`, the test-kit assertions and the evidence table) changes incompatibly only in a new major version. Classes marked `@internal` are not part of it.
 
 ## Requirements
 
@@ -441,4 +441,4 @@ Tested on SQLite, MySQL 8.4 and PostgreSQL 17, and on four schemas: `team_id` (d
 
 ## Evidence
 
-Built and tested in `demo-app/` (45 tests), three packstub pilots (25 tests) and a plain laravel/ai pilot with write tools (`pilots/agency-hours`, 36 tests), all mutation-checked, and evaluated with a live model in 18 runs (read tools). See `docs/m1a-demo-results.md` and `docs/packstub-integration-findings.md`.
+Built and tested in `demo-app/` (70 tests), three packstub pilots (25 tests), a laravel/ai pilot (`pilots/agency-hours`, 36 tests), a Neuron AI pilot (`pilots/neuron-tasks`, 32 tests) and a Prism pilot (`pilots/prism-tasks`, 8 tests), on SQLite, MySQL and PostgreSQL, all mutation-checked; evaluated with a live model in 18 read runs and 30 write runs. See `docs/m1a-demo-results.md`, `docs/write-eval-results.md` and `docs/packstub-integration-findings.md`.

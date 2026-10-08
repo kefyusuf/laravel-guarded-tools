@@ -5,6 +5,7 @@ namespace GuardedTools\Evidence;
 use GuardedTools\CanonicalToolResult;
 use Illuminate\Support\Facades\DB;
 
+/** @internal */
 class EvidenceRecorder
 {
     public function record(string $id, string $tool, int|string|null $workspaceId, int|string|null $userId,

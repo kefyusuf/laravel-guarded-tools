@@ -6,7 +6,7 @@ use App\Mcp\Tools\SlaBreaches;
 use App\Mcp\Tools\TicketQueue;
 use App\Models\User;
 use App\Models\Workspace;
-use GuardedTools\Testing\AssertsGuardedTools;
+use GuardedTools\Testing\AssertsGuardedPackstubTools;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +19,7 @@ use Tests\TestCase;
  */
 class SupportDeskGuaranteesTest extends TestCase
 {
-    use AssertsGuardedTools, RefreshDatabase;
+    use AssertsGuardedPackstubTools, RefreshDatabase;
 
     private Workspace $acme;
     private Workspace $globex;

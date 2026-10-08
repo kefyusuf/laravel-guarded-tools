@@ -8,7 +8,7 @@ When an AI agent answers from business data in a multi-tenant Laravel app, three
 
 This repository contains a small package that makes these guarantees the default for agent tools on plain [laravel/ai](https://github.com/laravel/ai), on [Neuron AI](https://github.com/neuron-core/neuron-ai), on [Prism](https://github.com/prism-php/prism) (read tools) or on [packstub/agents](https://github.com/packstub/agents), and a test kit that proves them in an app's own test suite.
 
-> **Status:** v0.6.0 pre-release ([changelog](CHANGELOG.md)). `composer require kefyusuf/laravel-guarded-tools`
+> **Status:** v1.0.0 ([changelog](CHANGELOG.md)). Semantic versioning: the public API (the base classes, `Guarded`, `CanonicalToolResult`, the test-kit assertions and the evidence table) changes incompatibly only in a new major version. Classes marked `@internal` are not part of it. `composer require kefyusuf/laravel-guarded-tools`
 
 ## Quickstart (laravel/ai)
 
@@ -108,7 +108,7 @@ class BillingToolsTest extends TestCase
 
 | Check | Result |
 |---|---|
-| Deterministic tests | 172 tests across the demo and six pilot apps, each on SQLite, MySQL 8.4 and PostgreSQL 17 (laravel/ai, Neuron and Prism pilots also on PHP 8.3), all passing; 49 mutation checks, all caught |
+| Deterministic tests | 171 tests across the demo and six pilot apps, each on SQLite, MySQL 8.4 and PostgreSQL 17 (laravel/ai, Neuron and Prism pilots also on PHP 8.3), all passing; 49 mutation checks, all caught |
 | Write tools | Create, update and delete with approval, workspace binding, execution-time checks, idempotency, rollback, audit and a write budget, on laravel/ai, Neuron AI and packstub; on Neuron also tested end to end through its own approval flow |
 | Live model eval (`Qwen3.8-27B`, 18 runs) | 18/18 safe: no invented, foreign or forbidden number; all answers in the user's language |
 | Live write eval (`Qwen3.8-27B`, 15 runs, two rounds) | 15/15 pass in both rounds: nothing written before approval, nothing written after a rejection, no write to another company, no proposal for a viewer ([results](docs/write-eval-results.md)) |

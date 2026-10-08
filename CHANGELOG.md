@@ -2,6 +2,22 @@
 
 All notable changes to `kefyusuf/laravel-guarded-tools` are documented here. The package follows [semantic versioning](https://semver.org); while the version is `0.x`, minor releases may change the API.
 
+## Unreleased (1.0.0)
+
+The first stable release. From here on, the public API changes incompatibly only in a new major version (semantic versioning). Classes marked `@internal` are not part of the public API.
+
+### Removed
+
+- `GuardedTools\Ai\Guarded` (deprecated in 0.6). Use `GuardedTools\Guarded`.
+- `GuardedTools\Testing\AssertsGuardedTools` (deprecated in 0.6). Use `AssertsGuardedPackstubTools`.
+
+### Upgrading from 0.x
+
+- Replace `use GuardedTools\Ai\Guarded;` with `use GuardedTools\Guarded;`.
+- Replace `AssertsGuardedTools` with `AssertsGuardedPackstubTools` in packstub test classes.
+- On plain laravel/ai, require `laravel/ai` in your own `composer.json` (since 0.5 the package does not install it).
+- Run `php artisan migrate` (0.3 added `tool_call_id` to the evidence table).
+
 ## 0.6.0 — 2026-10-08
 
 Preparing the 1.0 API. Old names keep working until 1.0.

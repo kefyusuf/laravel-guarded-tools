@@ -116,7 +116,7 @@ final class Guarded
             .'. Explain the access limitation when asked; do not call these tools or guess their data.';
     }
 
-    /** @internal for tests */
+    /** Clears the context and the membership resolver; call it in a test's tearDown(). */
     public static function reset(): void
     {
         self::$user = null;

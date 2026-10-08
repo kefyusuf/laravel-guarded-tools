@@ -5,6 +5,8 @@ namespace GuardedTools\Budget;
 /**
  * Counts guarded tool calls in the turn that is running. packstub's TurnStarted
  * resets it, so a long-lived queue worker starts every turn at zero.
+ *
+ * @internal
  */
 final class ToolCallBudget
 {

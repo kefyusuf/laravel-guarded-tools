@@ -10,6 +10,7 @@ use Stringable;
 
 /** A minimal laravel/ai agent for the test kit; its answers are always faked. */
 #[MaxSteps(10)]
+/** @internal */
 final class ScriptedAgent implements Agent, HasTools
 {
     use Promptable;

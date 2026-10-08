@@ -12,6 +12,8 @@ use NeuronAI\Tools\ToolCall;
 /**
  * Neuron's fake provider with the kit's script: each step is a scripted call, a Closure that
  * runs just before the model "answers" and returns a call, or the final text.
+ *
+ * @internal
  */
 final class ScriptedNeuronProvider extends FakeAIProvider
 {

@@ -16,6 +16,8 @@ use Prism\Prism\ValueObjects\Usage;
  * A Prism provider whose model answers are the kit's script. Prism's own fake does not run
  * tools; this provider runs them with Prism's CallsTools, as the real providers do, for up to
  * the request's maxSteps.
+ *
+ * @internal
  */
 final class ScriptedPrismProvider extends Provider
 {
