@@ -1,6 +1,6 @@
 {
     "name": "kefyusuf/laravel-guarded-tools",
-    "description": "Guarded tools and assurance tests for Laravel AI agents (working name).",
+    "description": "Guarded tools and assurance tests for Laravel AI agents: workspace isolation, honest failures and evidence on every tool call.",
     "type": "library",
     "license": "MIT",
     "require": {

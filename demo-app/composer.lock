@@ -1064,7 +1064,7 @@
             "dist": {
                 "type": "path",
                 "url": "../packages/guarded-tools",
-                "reference": "f7c65f7199ccbc3d5342e594934befb0121d5983"
+                "reference": "17479b63b30f6a41ade14c546f9f154a905ded73"
             },
             "require": {
                 "laravel/framework": "^12.0|^13.0",
@@ -1101,7 +1101,7 @@
             "license": [
                 "MIT"
             ],
-            "description": "Guarded tools and assurance tests for Laravel AI agents (working name).",
+            "description": "Guarded tools and assurance tests for Laravel AI agents: workspace isolation, honest failures and evidence on every tool call.",
             "transport-options": {
                 "relative": true
             }

@@ -3,6 +3,7 @@
 namespace GuardedTools\Ai;
 
 use GuardedTools\CanonicalToolResult;
+use GuardedTools\Guarded;
 use GuardedTools\Support\GuardedCall;
 use GuardedTools\Support\GuardsAccess;
 use Illuminate\Contracts\Auth\Authenticatable;

@@ -7,7 +7,7 @@ use App\Ai\Tools\LogTime;
 use App\Ai\Tools\UpdateTimeEntry;
 use App\Models\Organization;
 use App\Models\User;
-use GuardedTools\Ai\Guarded;
+use GuardedTools\Guarded;
 use GuardedTools\CanonicalToolResult;
 use GuardedTools\Testing\AssertsGuardedAiTools;
 use Illuminate\Database\Eloquent\Model;

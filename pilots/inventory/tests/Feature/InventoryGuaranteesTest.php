@@ -6,7 +6,7 @@ use App\Mcp\Tools\LowStock;
 use App\Mcp\Tools\StockBySku;
 use App\Models\Store;
 use App\Models\User;
-use GuardedTools\Testing\AssertsGuardedTools;
+use GuardedTools\Testing\AssertsGuardedPackstubTools;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -18,7 +18,7 @@ use Tests\TestCase;
  */
 class InventoryGuaranteesTest extends TestCase
 {
-    use AssertsGuardedTools, RefreshDatabase;
+    use AssertsGuardedPackstubTools, RefreshDatabase;
 
     private Store $izmir;
     private Store $ankara;

@@ -2,7 +2,7 @@
 
 namespace GuardedTools\Neuron;
 
-use GuardedTools\Ai\Guarded;
+use GuardedTools\Guarded;
 use GuardedTools\CanonicalToolResult;
 use GuardedTools\Support\GuardedCall;
 use GuardedTools\Support\GuardsAccess;

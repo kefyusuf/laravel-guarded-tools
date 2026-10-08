@@ -6,7 +6,7 @@ use App\Models\Company;
 use App\Models\User;
 use App\Prism\Tools\OpenTasks;
 use App\Prism\Tools\TeamWorkload;
-use GuardedTools\Ai\Guarded;
+use GuardedTools\Guarded;
 use GuardedTools\CanonicalToolResult;
 use GuardedTools\Prism\GuardedPrismTool;
 use GuardedTools\Testing\AssertsGuardedPrismTools;

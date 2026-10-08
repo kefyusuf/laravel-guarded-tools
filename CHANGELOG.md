@@ -4,7 +4,16 @@ All notable changes to `kefyusuf/laravel-guarded-tools` are documented here. The
 
 ## Unreleased
 
+Preparing the 1.0 API. Old names keep working until 1.0.
+
+### Deprecated
+
+- `GuardedTools\Ai\Guarded` → `GuardedTools\Guarded`. The context is used by laravel/ai, Neuron AI and Prism tools, not only laravel/ai. The old name is an alias.
+- `GuardedTools\Testing\AssertsGuardedTools` → `AssertsGuardedPackstubTools`. The old name read as if it covered every platform; it is the packstub kit. The old trait uses the new one.
+
 ### Added
+
+- README quickstart for laravel/ai.
 
 - Live write eval in the demo (`php artisan demo:eval-writes`): 5 scenarios × 3 runs with `Qwen3.8-27B`, 15/15 pass. See `docs/write-eval-results.md`.
 

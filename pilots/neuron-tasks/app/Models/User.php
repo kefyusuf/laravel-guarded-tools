@@ -24,7 +24,7 @@ class User extends Authenticatable
         return ['email_verified_at' => 'datetime', 'password' => 'hashed'];
     }
 
-    /** Read by GuardedTools\Ai\Guarded::isMember(). */
+    /** Read by GuardedTools\Guarded::isMember(). */
     public function canAccessTenant(Model $tenant): bool
     {
         return (int) $this->company_id === (int) $tenant->getKey();

@@ -69,7 +69,7 @@ class HoursSummary extends GuardedTool
 Give the agent only the tools the person may use, and run it inside the person's workspace:
 
 ```php
-use GuardedTools\Ai\Guarded;
+use GuardedTools\Guarded;
 
 class AgencyAssistant implements Agent, HasTools
 {
@@ -335,7 +335,7 @@ Differences from plain laravel/ai:
 - **W3:** membership is checked by packstub when the approved call's turn enters the workspace (1.7.1+), and again by the tool. The ability is checked by packstub and again by the tool with the person as stored now.
 - **W4:** packstub does not pass the provider's tool call id to tools. The key is derived from the turn, the tool, the arguments and the call's position in the turn: a retried turn writes nothing twice, and two equal calls in one turn both run.
 
-Test with the same write assertions through `AssertsGuardedTools`.
+Test with the same write assertions through `AssertsGuardedPackstubTools`.
 
 ## Result statuses
 
@@ -377,14 +377,14 @@ protected function context(): array
 
 ## Test kit
 
-Use the `GuardedTools\Testing\AssertsGuardedTools` trait in a feature test. Every assertion runs the tool through packstub's engine with a scripted `ToolCall`, and records the database queries. No provider key, no network.
+Use the `GuardedTools\Testing\AssertsGuardedPackstubTools` trait in a feature test. Every assertion runs the tool through packstub's engine with a scripted `ToolCall`, and records the database queries. No provider key, no network.
 
 ```php
-use GuardedTools\Testing\AssertsGuardedTools;
+use GuardedTools\Testing\AssertsGuardedPackstubTools;
 
 class OrdersSummaryTest extends TestCase
 {
-    use AssertsGuardedTools, RefreshDatabase;
+    use AssertsGuardedPackstubTools, RefreshDatabase;
 
     public function test_guarantees(): void
     {

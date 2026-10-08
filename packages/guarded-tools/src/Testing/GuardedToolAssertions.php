@@ -11,10 +11,10 @@ use PHPUnit\Framework\Assert;
 use Throwable;
 
 /**
- * The guarantee assertions, shared by the packstub kit (AssertsGuardedTools) and the plain
+ * The guarantee assertions, shared by the platform kits (packstub: AssertsGuardedPackstubTools) and the plain
  * laravel/ai kit (AssertsGuardedAiTools). Scripted tool calls only, no real model.
  *
- * @internal use AssertsGuardedTools or AssertsGuardedAiTools
+ * @internal use a platform kit: AssertsGuardedAiTools, AssertsGuardedNeuronTools, AssertsGuardedPrismTools (read only) or AssertsGuardedPackstubTools
  */
 trait GuardedToolAssertions
 {

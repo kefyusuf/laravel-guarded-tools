@@ -11,7 +11,7 @@ use App\Models\User;
 use GuardedTools\CanonicalToolResult;
 use GuardedTools\Packstub\GuardedAgentTool;
 use GuardedTools\Packstub\HiddenCapabilities;
-use GuardedTools\Testing\AssertsGuardedTools;
+use GuardedTools\Testing\AssertsGuardedPackstubTools;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -27,7 +27,7 @@ use Tests\TestCase;
 
 class GuardedToolsTest extends TestCase
 {
-    use RefreshDatabase, AssertsGuardedTools;
+    use RefreshDatabase, AssertsGuardedPackstubTools;
 
     private Team $teamA;
     private Team $teamB;

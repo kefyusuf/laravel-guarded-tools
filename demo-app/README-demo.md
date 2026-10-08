@@ -81,7 +81,7 @@ These are the checks the written tests are intended to prove. **They have not be
 | Real command authentication | Scripted command execution uses the selected user's guard and workspace, prints the evidence chain, and restores the previous guard user | Provider execution is faked |
 | Explicit execution settings | Agent maxSteps is 6, timeout is 180, and fail-closed answer rules are present | Timeout is per provider request, not a total run deadline |
 
-The reusable `AssertsGuardedTools` trait exposes the five assertions from the brief. Set an authenticated user when calling assertions without an explicit user argument; use distinct nonempty fixtures for workspace checks. Override `guardedToolTables()` for your app's domain tables. For failure checks, the caller must restore the source changed by `breakDataSource` in `finally`.
+The reusable `AssertsGuardedPackstubTools` trait exposes the five assertions from the brief. Set an authenticated user when calling assertions without an explicit user argument; use distinct nonempty fixtures for workspace checks. Override `guardedToolTables()` for your app's domain tables. For failure checks, the caller must restore the source changed by `breakDataSource` in `finally`.
 
 ### Expected test inventory
 

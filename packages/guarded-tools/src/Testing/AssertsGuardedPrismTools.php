@@ -2,7 +2,7 @@
 
 namespace GuardedTools\Testing;
 
-use GuardedTools\Ai\Guarded;
+use GuardedTools\Guarded;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use LogicException;

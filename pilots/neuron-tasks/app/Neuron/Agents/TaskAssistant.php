@@ -7,7 +7,7 @@ use App\Neuron\Tools\CreateTask;
 use App\Neuron\Tools\DeleteTask;
 use App\Neuron\Tools\OpenTasks;
 use App\Neuron\Tools\TeamWorkload;
-use GuardedTools\Ai\Guarded;
+use GuardedTools\Guarded;
 use NeuronAI\Agent\Agent;
 use NeuronAI\Chat\Messages\SystemMessage;
 

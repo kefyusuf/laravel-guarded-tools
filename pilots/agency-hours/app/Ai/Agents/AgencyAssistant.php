@@ -7,7 +7,7 @@ use App\Ai\Tools\HoursSummary;
 use App\Ai\Tools\LogTime;
 use App\Ai\Tools\OverBudgetProjects;
 use App\Ai\Tools\UpdateTimeEntry;
-use GuardedTools\Ai\Guarded;
+use GuardedTools\Guarded;
 use Laravel\Ai\Attributes\MaxSteps;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Contracts\HasTools;

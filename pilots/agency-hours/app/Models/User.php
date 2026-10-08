@@ -30,7 +30,7 @@ class User extends Authenticatable
         return $this->belongsTo(Organization::class);
     }
 
-    /** Read by GuardedTools\Ai\Guarded::isMember(). */
+    /** Read by GuardedTools\Guarded::isMember(). */
     public function canAccessTenant(Model $tenant): bool
     {
         return (int) $this->organization_id === (int) $tenant->getKey();

@@ -7,7 +7,7 @@ use App\Mcp\Tools\PatientLookup;
 use App\Models\Clinic;
 use App\Models\User;
 use GuardedTools\Packstub\HiddenCapabilities;
-use GuardedTools\Testing\AssertsGuardedTools;
+use GuardedTools\Testing\AssertsGuardedPackstubTools;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +20,7 @@ use Tests\TestCase;
  */
 class ClinicGuaranteesTest extends TestCase
 {
-    use AssertsGuardedTools, RefreshDatabase;
+    use AssertsGuardedPackstubTools, RefreshDatabase;
 
     private Clinic $north;
     private Clinic $south;

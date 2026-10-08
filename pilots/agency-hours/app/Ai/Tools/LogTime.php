@@ -2,7 +2,7 @@
 
 namespace App\Ai\Tools;
 
-use GuardedTools\Ai\Guarded;
+use GuardedTools\Guarded;
 use GuardedTools\Ai\GuardedWriteTool;
 use GuardedTools\CanonicalToolResult;
 use Illuminate\Contracts\JsonSchema\JsonSchema;

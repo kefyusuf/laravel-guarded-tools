@@ -3,7 +3,7 @@
 namespace GuardedTools\Testing;
 
 use Closure;
-use GuardedTools\Ai\Guarded;
+use GuardedTools\Guarded;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Ai\Responses\Data\ToolCall;

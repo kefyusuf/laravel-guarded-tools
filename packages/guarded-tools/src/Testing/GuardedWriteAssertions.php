@@ -13,7 +13,7 @@ use PHPUnit\Framework\Assert;
  * is proposed and how an approved call runs. Under a faked gateway neither laravel/ai nor
  * packstub runs approved calls, so the proposal and the approved execution are checked apart.
  *
- * @internal use AssertsGuardedTools or AssertsGuardedAiTools
+ * @internal use a platform kit: AssertsGuardedAiTools, AssertsGuardedNeuronTools, AssertsGuardedPrismTools (read only) or AssertsGuardedPackstubTools
  */
 trait GuardedWriteAssertions
 {

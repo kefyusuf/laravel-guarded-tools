@@ -8,7 +8,7 @@ use App\Mcp\Tools\UpdateCustomerCity;
 use App\Models\Team;
 use App\Models\User;
 use GuardedTools\CanonicalToolResult;
-use GuardedTools\Testing\AssertsGuardedTools;
+use GuardedTools\Testing\AssertsGuardedPackstubTools;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +21,7 @@ use Tests\TestCase;
 /** Write tools (create, update, delete) on packstub/agents: the same guarantees W1–W7 as on plain laravel/ai. */
 class GuardedWritesTest extends TestCase
 {
-    use AssertsGuardedTools, RefreshDatabase;
+    use AssertsGuardedPackstubTools, RefreshDatabase;
 
     private Team $teamA;
     private Team $teamB;
