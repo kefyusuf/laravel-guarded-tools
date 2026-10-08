@@ -11,7 +11,7 @@ All notable changes to `kefyusuf/laravel-guarded-tools` are documented here. The
 ### Changed (pilots only, found by the live evals)
 
 - laravel/ai pilot: the agent is conversational, so approved writes can resume; a `recent_time_entries` tool returns the ids the write tools take; the agent knows today's date.
-- Neuron pilot: `open_tasks` returns task ids; the agent knows today's date and uses a provider that accepts replies without `content`.
+- Neuron pilot: `open_tasks` returns task ids; the agent knows today's date and uses a provider that accepts tool-call replies without `content` (Hetzner leaves the key out).
 
 ## 1.0.0 — 2026-10-08
 
