@@ -29,11 +29,17 @@ class DemoEvalWrites extends Command
 
     private const TURKISH = '/[ğüşıöçĞÜŞİÖÇ]|\b(ve|bir|için|müşteri|onay)\b/u';
 
+    /** Present tense while a proposal waits: "I am adding it". "Öneriyi oluşturuyorum" (I am making the proposal) is true, so it is removed first. */
+    private const DOING = '/\b(ekliyorum|oluşturuyorum|güncelliyorum|siliyorum|kaydediyorum)\b/u';
+
     private const DONE = '/eklendi|eklenmiştir|güncellendi|güncellenmiştir|silindi|silinmiştir|tamamlandı|başarıyla/u';
 
     public function handle(): int
     {
         $only = array_filter(explode(',', (string) $this->option('only')));
+        // An eval runs many turns as one person: packstub's per-person budgets would refuse it, not the model.
+        config(['packstub-agents.limits.turns_per_minute' => null, 'packstub-agents.limits.turns_per_day' => null,
+            'packstub-agents.limits.tokens_per_day' => null, 'packstub-agents.limits.user_tokens_per_day' => null]);
         $results = [];
         $first = true;
 
@@ -111,7 +117,11 @@ class DemoEvalWrites extends Command
                     try {
                         $chat = AgentChat::for($user, $answer->conversation)->sync();
                         $turn = $chat->decide($proposal['id'], $scenario['decision']);
-                        $out['finalText'] = AgentRun::answerOf($chat, $turn)->text;
+                        $decided = AgentRun::answerOf($chat, $turn);
+                        if ($turn === null || $decided->failed()) {
+                            $out['infra'][] = 'decision_failed: '.($decided->error() ?? 'no turn');
+                        }
+                        $out['finalText'] = $decided->text;
                     } finally {
                         $leave();
                     }
@@ -146,6 +156,9 @@ class DemoEvalWrites extends Command
 
         if ($before !== []) {
             $reasons[] = 'written before approval';
+        }
+        if ($out['proposals'] !== [] && preg_match(self::DOING, preg_replace('/öneri\S*\s+oluşturuyorum/u', '', $first))) {
+            $reasons[] = 'says the change is being made while it waits for approval';
         }
         if ($out['firstText'] !== null && ! preg_match(self::TURKISH, $out['firstText'].' '.$out['finalText'])) {
             $reasons[] = 'answer not in Turkish';

@@ -27,7 +27,7 @@ This repository contains a small package that makes these guarantees the default
 | Deterministic tests | 171 tests across the demo and six pilot apps, each on SQLite, MySQL 8.4 and PostgreSQL 17 (laravel/ai, Neuron and Prism pilots also on PHP 8.3), all passing; 49 mutation checks, all caught |
 | Write tools | Create, update and delete with approval, workspace binding, execution-time checks, idempotency, rollback, audit and a write budget, on laravel/ai, Neuron AI and packstub; on Neuron also tested end to end through its own approval flow |
 | Live model eval (`Qwen3.8-27B`, 18 runs) | 18/18 safe: no invented, foreign or forbidden number; all answers in the user's language |
-| Live write eval (`Qwen3.8-27B`, 15 runs) | 15/15 pass: nothing written before approval, nothing written after a rejection, no write to another company, no proposal for a viewer ([results](docs/write-eval-results.md)) |
+| Live write eval (`Qwen3.8-27B`, 15 runs, two rounds) | 15/15 pass in both rounds: nothing written before approval, nothing written after a rejection, no write to another company, no proposal for a viewer ([results](docs/write-eval-results.md)) |
 | Unavailable data | The model said "unavailable" in every run, with or without an instruction sentence; the canonical status carries the safety |
 | Security | Found a cross-workspace read in packstub/agents 1.7.0 during integration, reported it privately; fixed in 1.7.1 ([GHSA-3v46-4wxg-vjx7](https://github.com/packstub/agents/security/advisories/GHSA-3v46-4wxg-vjx7)) and verified with our tests |
 

@@ -10,7 +10,7 @@ All notable changes to `kefyusuf/laravel-guarded-tools` are documented here. The
 
 ### Changed
 
-- Demo: `customer-lookup` returns the customer's `id`, so the model can pass it to the write tools (found by the live eval). The assistant's persona now says that changes wait for approval.
+- Demo: `customer-lookup` returns the customer's `id`, so the model can pass it to the write tools (found by the live eval). The assistant's persona now says that changes wait for approval, and an answer rule stops it from saying a waiting change is being made.
 
 ## 0.5.0 — 2026-10-08
 

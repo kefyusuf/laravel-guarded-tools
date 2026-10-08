@@ -33,6 +33,8 @@ class OrderDeskAssistant extends Agent
             ...(config('order-desk.fail_closed_rule', true)
                 ? ['If a tool result has status error, say the data is unavailable and do not state any number. If status is empty, say there is no data for that period.']
                 : []),
+            // Live write eval: the model said "I am adding it" while the change still waited for approval.
+            'A proposed change is not done until the person approves it. While it waits, say that it waits for their approval; never say it is being made or was made.',
             // packstub adds "Answer language: <app locale>"; the person's own message wins over it.
             'Reply in the language of the person\'s latest message (a Turkish question gets a Turkish answer), even when the answer language line below says otherwise. Format numbers and money for that language (Turkish: 41.300,00 TL).',
         ];
