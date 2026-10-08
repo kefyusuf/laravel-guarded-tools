@@ -10,6 +10,90 @@ This repository contains a small package that makes these guarantees the default
 
 > **Status:** v0.5.0 pre-release ([changelog](CHANGELOG.md)). `composer require kefyusuf/laravel-guarded-tools`
 
+## Quickstart (laravel/ai)
+
+**1. Install.** The package adds one table, `guarded_tool_evidence`.
+
+```bash
+composer require kefyusuf/laravel-guarded-tools laravel/ai
+php artisan migrate
+```
+
+**2. Tell the package who belongs to a workspace.** Your user model answers it; the package asks again, from the database, on every tool call.
+
+```php
+// app/Models/User.php
+public function canAccessTenant(Model $tenant): bool
+{
+    return (int) $this->team_id === (int) $tenant->getKey();
+}
+```
+
+**3. Write a tool.** Extend `GuardedTool` and implement `query()`. You get the workspace; the package checks membership, the Gate ability, unknown arguments and validation before your query runs, and records evidence after it.
+
+```php
+use GuardedTools\Ai\GuardedTool;
+use GuardedTools\CanonicalToolResult;
+
+class OpenInvoices extends GuardedTool
+{
+    protected ?string $ability = 'invoices.read';      // a Gate ability; null = any member
+
+    public function id(): string { return 'invoices.open'; }
+    public function description(): string { return 'Open invoices of the current company.'; }
+    protected function rules(): array { return ['limit' => ['sometimes', 'integer', 'max:50']]; }
+
+    public function schema(JsonSchema $schema): array
+    {
+        return ['limit' => $schema->integer()];
+    }
+
+    protected function query(array $arguments, Model $workspace): CanonicalToolResult
+    {
+        $rows = DB::table('invoices')->where('team_id', $workspace->getKey())
+            ->whereNull('paid_at')->limit($arguments['limit'] ?? 10)->get(['number', 'amount']);
+
+        return $rows->isEmpty() ? CanonicalToolResult::empty(['invoices' => []])
+            : CanonicalToolResult::ok(['invoices' => $rows->all()]);
+    }
+}
+```
+
+**4. Give the agent only the tools the person may use, and run it in their workspace.**
+
+```php
+public function tools(): iterable
+{
+    return Guarded::visible([new OpenInvoices, new MonthlyRevenue]);
+}
+
+$answer = Guarded::run($request->user(), $team, fn () => (new BillingAssistant)->prompt($question));
+```
+
+The model sees only `{status, data, error.code, evidenceId}`. A database error becomes `status: error`, never "0 invoices".
+
+**5. Prove it in your own tests.** No API key; the kit scripts the model.
+
+```php
+use GuardedTools\Testing\AssertsGuardedAiTools;
+
+class BillingToolsTest extends TestCase
+{
+    use AssertsGuardedAiTools, RefreshDatabase;
+
+    public function test_open_invoices_are_guarded(): void
+    {
+        $this->actingInWorkspace($ownerA, $teamA);
+        $this->assertToolIsWorkspaceBound(OpenInvoices::class, [], $teamA, $teamB, $ownerA, $ownerB);
+        $this->assertRejectsUnknownArguments(OpenInvoices::class, []);
+        $this->assertFailureIsCanonical(OpenInvoices::class, []);
+        $this->assertNonMemberIsDenied(OpenInvoices::class, [], $ownerB, $teamA);
+    }
+}
+```
+
+**Write tools** extend `GuardedWriteTool`: every call waits for the person's approval, writes only inside the workspace, re-checks access when it runs, and is idempotent per tool call. **On Neuron AI** extend `GuardedNeuronTool` / `GuardedNeuronWriteTool` and use `AssertsGuardedNeuronTools`; the rest is the same. Prism and packstub: see the [package README](packages/guarded-tools/README.md).
+
 ## What is here
 
 | Path | What it is |
