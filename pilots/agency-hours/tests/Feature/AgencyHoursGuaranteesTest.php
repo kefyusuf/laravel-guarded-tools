@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Ai\Agents\AgencyAssistant;
 use App\Ai\Tools\HoursSummary;
 use App\Ai\Tools\OverBudgetProjects;
+use App\Ai\Tools\RecentTimeEntries;
 use App\Models\Organization;
 use App\Models\User;
 use GuardedTools\Guarded;
@@ -86,6 +87,7 @@ class AgencyHoursGuaranteesTest extends TestCase
         return [
             'hours' => [HoursSummary::class, ['period' => 'this_month'], 'db:time_entries'],
             'budgets' => [OverBudgetProjects::class, [], 'db:projects'],
+            'recent' => [RecentTimeEntries::class, [], 'db:time_entries'],
         ];
     }
 
@@ -125,7 +127,7 @@ class AgencyHoursGuaranteesTest extends TestCase
             return [array_map(fn ($tool) => $tool->name(), iterator_to_array($agent->tools())), (string) $agent->instructions()];
         });
 
-        $this->assertSame(['hours_summary', 'log_time', 'update_time_entry', 'delete_time_entry'], $names);
+        $this->assertSame(['hours_summary', 'recent_time_entries', 'log_time', 'update_time_entry', 'delete_time_entry'], $names);
         $this->assertStringContainsString('over_budget_projects', $instructions);
         $this->assertStringNotContainsString('App', $instructions, 'The hidden-capabilities line carries no data.');
     }

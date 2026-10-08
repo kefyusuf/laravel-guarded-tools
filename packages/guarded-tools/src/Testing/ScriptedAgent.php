@@ -8,9 +8,12 @@ use Laravel\Ai\Contracts\HasTools;
 use Laravel\Ai\Promptable;
 use Stringable;
 
-/** A minimal laravel/ai agent for the test kit; its answers are always faked. */
+/**
+ * A minimal laravel/ai agent for the test kit; its answers are always faked.
+ *
+ * @internal
+ */
 #[MaxSteps(10)]
-/** @internal */
 final class ScriptedAgent implements Agent, HasTools
 {
     use Promptable;

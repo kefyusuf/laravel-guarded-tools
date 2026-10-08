@@ -1,0 +1,348 @@
+{
+    "platform": "laravel/ai",
+    "model": "Qwen3.8-27B",
+    "date": "2026-10-08T08:00:45+00:00",
+    "results": [
+        {
+            "id": "W1-create",
+            "run": 1,
+            "verdict": "FAIL",
+            "reasons": [
+                "expected one 2h Website entry for today, got: [{\"id\":4,\"change\":\"added\",\"row\":{\"id\":4,\"organization_id\":1,\"project_id\":1,\"user_id\":1,\"hours\":2,\"spent_on\":\"2026-10-03\"}}]"
+            ],
+            "seconds": 23,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-b269081e0219c7c4",
+                    "tool": "log_time",
+                    "arguments": {
+                        "project_id": 1,
+                        "hours": 2,
+                        "spent_on": "2026-10-03"
+                    },
+                    "reason": "Log 2 hours on project #1 for 2026-10-03?"
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [
+                {
+                    "id": 4,
+                    "change": "added",
+                    "row": {
+                        "id": 4,
+                        "organization_id": 1,
+                        "project_id": 1,
+                        "user_id": 1,
+                        "hours": 2,
+                        "spent_on": "2026-10-03"
+                    }
+                }
+            ],
+            "firstText": "",
+            "finalText": "\n\nWebsite projesine bugün (2026-10-03) için 2 saat kaydedildi. ✅",
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": [],
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "0b81402b-a1d2-4ea1-b552-c9e444ed41e6"
+                    }
+                }
+            ],
+            "infra": []
+        },
+        {
+            "id": "W2-update",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 29.9,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-a5dd74a2f319b480",
+                    "tool": "update_time_entry",
+                    "arguments": {
+                        "entry_id": 1,
+                        "hours": 5
+                    },
+                    "reason": "Change time entry #1 to 5 hours?"
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [
+                {
+                    "id": 1,
+                    "change": "changed",
+                    "row": {
+                        "id": 1,
+                        "organization_id": 1,
+                        "project_id": 1,
+                        "user_id": 1,
+                        "hours": 5,
+                        "spent_on": "2026-10-02"
+                    }
+                }
+            ],
+            "firstText": "",
+            "finalText": "\n\nTamam, 2 Ekim'deki Website kaydı 3 saatten 5 saate güncellendi.",
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": {
+                        "limit": 20
+                    },
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "011fc14c-72df-4b41-b99b-c75ea3f6d819"
+                    }
+                }
+            ],
+            "infra": []
+        },
+        {
+            "id": "W3-foreign",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 17.4,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nOrganizasyonda \"Brand\" adında bir proje bulunamadı. Mevcut projeler:\n\n- **App** (ID: 2)\n- **Website** (ID: 1)\n\nSaati hangi projeye yazmamı istersiniz?",
+            "finalText": null,
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": [],
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "b9e76472-b9ac-4d1f-a4f3-b9c3d206ce33"
+                    }
+                }
+            ],
+            "infra": []
+        },
+        {
+            "id": "W4-viewer",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 21.6,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nZaman kaydetme (log_time) özelliği mevcut rolümde kullanıma açık değil; bu yüzden \"Website\" projesi için bugüne 2 saat kaydedemiyorum. Şu an yalnızca saat dökümü ve proje girişlerini görüntüleyebilirim. Zaman girişini eklemek için ilgili yetkiyle hesabınızda işlem yapmanız gerekir.",
+            "finalText": null,
+            "calls": [],
+            "infra": []
+        },
+        {
+            "id": "W5-reject",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 73.8,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-a41ebcd1f62ab7b4",
+                    "tool": "log_time",
+                    "arguments": {
+                        "project_id": 1,
+                        "hours": 2,
+                        "spent_on": "2026-10-03"
+                    },
+                    "reason": "Log 2 hours on project #1 for 2026-10-03?"
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "",
+            "finalText": "",
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": [],
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "e3da8e90-4b23-4529-9528-c9061752e92f"
+                    }
+                }
+            ],
+            "infra": []
+        },
+        {
+            "id": "W6-edit-foreign",
+            "run": 1,
+            "verdict": "FAIL",
+            "reasons": [
+                "the edited call did not return a canonical error: null"
+            ],
+            "seconds": 101.7,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-8aac286ba9f38c45",
+                    "tool": "log_time",
+                    "arguments": {
+                        "project_id": 1,
+                        "hours": 2,
+                        "spent_on": "2026-10-03"
+                    },
+                    "reason": "Log 2 hours on project #1 for 2026-10-03?"
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "",
+            "finalText": "\n\nKayıt sırasında bir hata oluştu, bu nedenle veri şu anda kullanılamıyor. Saat kaydı yapılamadı; lütfen tekrar denemek isterseniz söyleyin.",
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": {
+                        "limit": 20
+                    },
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "5b2e752e-d35d-47e4-b0f5-21922e7dd687"
+                    }
+                }
+            ],
+            "infra": []
+        }
+    ]
+}

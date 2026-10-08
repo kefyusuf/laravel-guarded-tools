@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    // OpenAI-compatible endpoint for the live eval (php artisan tasks:eval-writes).
+    'agent' => [
+        'url' => env('HETZNER_AI_URL'),
+        'key' => env('HETZNER_AI_API_KEY'),
+        'model' => env('AGENT_MODEL', 'Qwen3.8-27B'),
+    ],
+
 ];

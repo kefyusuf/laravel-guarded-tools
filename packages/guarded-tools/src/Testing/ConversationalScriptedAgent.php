@@ -13,9 +13,10 @@ use Stringable;
 /**
  * The test kit's agent for write tools: laravel/ai pauses for approval only in a
  * conversational agent, so the paused call can be resumed from history.
+ *
+ * @internal
  */
 #[MaxSteps(10)]
-/** @internal */
 final class ConversationalScriptedAgent implements Agent, Conversational, HasTools
 {
     use Promptable, RemembersConversations;

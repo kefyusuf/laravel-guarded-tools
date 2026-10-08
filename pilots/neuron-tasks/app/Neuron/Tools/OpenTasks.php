@@ -30,8 +30,9 @@ class OpenTasks extends GuardedNeuronTool
             ->when($arguments['assignee_id'] ?? null, fn ($q, $id) => $q->where('assignee_id', $id));
         $open = (clone $base)->count();
         $overdue = (clone $base)->whereNotNull('due_on')->where('due_on', '<', now()->toDateString())->count();
-        $titles = (clone $base)->orderBy('due_on')->limit(5)->pluck('title')->all();
-        $data = ['open' => $open, 'overdue' => $overdue, 'next' => $titles];
+        $next = (clone $base)->orderBy('due_on')->limit(10)->get(['id', 'title', 'due_on'])
+            ->map(fn ($t) => ['id' => (int) $t->id, 'title' => $t->title, 'due_on' => $t->due_on])->all();
+        $data = ['open' => $open, 'overdue' => $overdue, 'next' => $next];
 
         return $open === 0 ? CanonicalToolResult::empty($data) : CanonicalToolResult::ok($data);
     }

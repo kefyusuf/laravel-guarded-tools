@@ -1,0 +1,29 @@
+{
+    "platform": "neuron-ai",
+    "model": "Qwen3.8-27B",
+    "date": "2026-10-08T08:36:39+00:00",
+    "results": [
+        {
+            "id": "W3-foreign",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 24.6,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\n\"Ship invoice export\" adlı açık bir göreve ulaşamadım. Açık görevleriniz:\n\n- **Plan sprint** (id 3)\n- **Write release notes** (id 1) – 2026-10-05'den beri gecikmiş\n- **Review pull request** (id 2)\n\nSilinmesi gereken görev bunlardan biri değilse, adını kontrol edebilir misiniz? Görevi bulduğumda silme onayınızı beklerim.",
+            "finalText": null,
+            "infra": [],
+            "evidence": [
+                {
+                    "tool": "tasks.open",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "[]",
+                    "tool_call_id": "chatcmpl-tool-bcfcb325da0f5f13"
+                }
+            ]
+        }
+    ]
+}

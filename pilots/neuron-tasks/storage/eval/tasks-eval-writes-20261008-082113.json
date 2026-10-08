@@ -1,0 +1,89 @@
+{
+    "platform": "neuron-ai",
+    "model": "Qwen3.8-27B",
+    "date": "2026-10-08T08:21:13+00:00",
+    "results": [
+        {
+            "id": "W1-create",
+            "run": 1,
+            "verdict": "INFRA",
+            "reasons": [
+                "ErrorException: Undefined array key \"content\""
+            ],
+            "seconds": 2.4,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": null,
+            "finalText": null,
+            "infra": [
+                "ErrorException: Undefined array key \"content\""
+            ]
+        },
+        {
+            "id": "W2-update",
+            "run": 1,
+            "verdict": "INFRA",
+            "reasons": [
+                "ErrorException: Undefined array key \"content\""
+            ],
+            "seconds": 1.7,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": null,
+            "finalText": null,
+            "infra": [
+                "ErrorException: Undefined array key \"content\""
+            ]
+        },
+        {
+            "id": "W3-foreign",
+            "run": 1,
+            "verdict": "INFRA",
+            "reasons": [
+                "ErrorException: Undefined array key \"content\""
+            ],
+            "seconds": 1.9,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": null,
+            "finalText": null,
+            "infra": [
+                "ErrorException: Undefined array key \"content\""
+            ]
+        },
+        {
+            "id": "W4-viewer",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 28.7,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nMaalesef şu anki rolümde **görev oluşturma** yetkisi (create_task) bulunmuyor; bu yüzden \"Demo hazırla\" görevini (teslim tarihi: 2026-10-09) oluşturamıyorum.\n\nBu işlemi gerçekleştirebilmem için görev oluşturma yetkisine sahip bir rol vermen gerekir. Aksi hâlde görevi senin oluşturman gerekiyor.\n\nNot: Rol yetkinliğim kısıtlı olduğu için mevcut rolümden şu işlemleri yapamıyorum: görev oluşturma, görev tamamlama, görev silme ve ekip iş yükü görüntüleme. Bunlarla ilgili bir talepte bulunursan benzer bir kısıt nedeniyle yanıt veremem.",
+            "finalText": null,
+            "infra": [],
+            "evidence": []
+        },
+        {
+            "id": "W5-reject",
+            "run": 1,
+            "verdict": "INFRA",
+            "reasons": [
+                "ErrorException: Undefined array key \"content\""
+            ],
+            "seconds": 3.7,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": null,
+            "finalText": null,
+            "infra": [
+                "ErrorException: Undefined array key \"content\""
+            ]
+        }
+    ]
+}

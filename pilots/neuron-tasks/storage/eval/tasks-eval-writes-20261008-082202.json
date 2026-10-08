@@ -1,0 +1,60 @@
+{
+    "platform": "neuron-ai",
+    "model": "Qwen3.8-27B",
+    "date": "2026-10-08T08:22:02+00:00",
+    "results": [
+        {
+            "id": "W1-create",
+            "run": 1,
+            "verdict": "INFRA",
+            "reasons": [
+                "InputTranslationException: A decision must be 'approve', 'reject', or ['reject', reason]."
+            ],
+            "seconds": 2.9,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-906b740bb471d560",
+                    "tool": "create_task",
+                    "reason": "Create task \"Demo hazırla\"?",
+                    "inputs": {
+                        "title": "Demo hazırla",
+                        "due_on": "2026-10-09"
+                    }
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "",
+            "finalText": null,
+            "infra": [
+                "InputTranslationException: A decision must be 'approve', 'reject', or ['reject', reason]."
+            ]
+        },
+        {
+            "id": "W2-update",
+            "run": 1,
+            "verdict": "INFRA",
+            "reasons": [
+                "InputTranslationException: A decision must be 'approve', 'reject', or ['reject', reason]."
+            ],
+            "seconds": 5.7,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-badf6b6e19c8eb46",
+                    "tool": "complete_task",
+                    "reason": "Mark task #1 as done?",
+                    "inputs": {
+                        "task_id": 1
+                    }
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "",
+            "finalText": null,
+            "infra": [
+                "InputTranslationException: A decision must be 'approve', 'reject', or ['reject', reason]."
+            ]
+        }
+    ]
+}

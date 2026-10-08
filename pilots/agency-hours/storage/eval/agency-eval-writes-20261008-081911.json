@@ -1,0 +1,1193 @@
+{
+    "platform": "laravel/ai",
+    "model": "Qwen3.8-27B",
+    "date": "2026-10-08T08:19:11+00:00",
+    "results": [
+        {
+            "id": "W1-create",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 58.3,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-9b14c891bda5ea3d",
+                    "tool": "log_time",
+                    "arguments": {
+                        "project_id": 1,
+                        "hours": 2,
+                        "spent_on": "2026-10-08"
+                    },
+                    "reason": "Log 2 hours on project #1 for 2026-10-08?"
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [
+                {
+                    "id": 4,
+                    "change": "added",
+                    "row": {
+                        "id": 4,
+                        "organization_id": 1,
+                        "project_id": 1,
+                        "user_id": 1,
+                        "hours": 2,
+                        "spent_on": "2026-10-08"
+                    }
+                }
+            ],
+            "firstText": "",
+            "finalText": "\n\nWebsite projesine bugün (2026-10-08) için 2 saat kaydedildi (kayıt no: 4).",
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": [],
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "63b08c3e-9097-4ba9-8d85-1dff6f761666"
+                    }
+                }
+            ],
+            "infra": [],
+            "evidence": [
+                {
+                    "tool": "hours.recent",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "[]",
+                    "tool_call_id": "chatcmpl-tool-95fddfb9f5df57ff"
+                },
+                {
+                    "tool": "hours.log",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "{\"project_id\":1,\"hours\":2,\"spent_on\":\"2026-10-08\"}",
+                    "tool_call_id": "chatcmpl-tool-9b14c891bda5ea3d"
+                }
+            ]
+        },
+        {
+            "id": "W1-create",
+            "run": 2,
+            "verdict": "INFRA",
+            "reasons": [
+                "ProviderConnectionException: Could not connect to AI provider [hetzner]."
+            ],
+            "seconds": 80.6,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": null,
+            "finalText": null,
+            "calls": [],
+            "infra": [
+                "ProviderConnectionException: Could not connect to AI provider [hetzner]."
+            ]
+        },
+        {
+            "id": "W1-create",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 31.9,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-b1c8e9c76f3effc4",
+                    "tool": "log_time",
+                    "arguments": {
+                        "project_id": 1,
+                        "hours": 2,
+                        "spent_on": "2026-10-08"
+                    },
+                    "reason": "Log 2 hours on project #1 for 2026-10-08?"
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [
+                {
+                    "id": 4,
+                    "change": "added",
+                    "row": {
+                        "id": 4,
+                        "organization_id": 1,
+                        "project_id": 1,
+                        "user_id": 1,
+                        "hours": 2,
+                        "spent_on": "2026-10-08"
+                    }
+                }
+            ],
+            "firstText": "",
+            "finalText": "\n\nWebsite projesine bugün (2026-10-08) için 2 saat başarıyla kaydedildi. ✅",
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": [],
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "c8d98d4f-6b92-44fe-b3d8-f7447889d110"
+                    }
+                }
+            ],
+            "infra": [],
+            "evidence": [
+                {
+                    "tool": "hours.recent",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "[]",
+                    "tool_call_id": "chatcmpl-tool-b7e9c32eeb642ab7"
+                },
+                {
+                    "tool": "hours.log",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "{\"project_id\":1,\"hours\":2,\"spent_on\":\"2026-10-08\"}",
+                    "tool_call_id": "chatcmpl-tool-b1c8e9c76f3effc4"
+                }
+            ]
+        },
+        {
+            "id": "W2-update",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 50.1,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-abd56e7fe0f27291",
+                    "tool": "update_time_entry",
+                    "arguments": {
+                        "entry_id": 1,
+                        "hours": 5
+                    },
+                    "reason": "Change time entry #1 to 5 hours?"
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [
+                {
+                    "id": 1,
+                    "change": "changed",
+                    "row": {
+                        "id": 1,
+                        "organization_id": 1,
+                        "project_id": 1,
+                        "user_id": 1,
+                        "hours": 5,
+                        "spent_on": "2026-10-02"
+                    }
+                }
+            ],
+            "firstText": "",
+            "finalText": "\n\n2 Ekim 2026 tarihli Website kaydı 3 saatten 5 saate güncellendi.",
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": {
+                        "limit": 20
+                    },
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "a494e318-f029-4d37-b0ba-dfa433168f8c"
+                    }
+                }
+            ],
+            "infra": [],
+            "evidence": [
+                {
+                    "tool": "hours.recent",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "{\"limit\":20}",
+                    "tool_call_id": "chatcmpl-tool-9c507d78357ef9da"
+                },
+                {
+                    "tool": "hours.update",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "{\"entry_id\":1,\"hours\":5}",
+                    "tool_call_id": "chatcmpl-tool-abd56e7fe0f27291"
+                }
+            ]
+        },
+        {
+            "id": "W2-update",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 53,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-b83694aebfc07aab",
+                    "tool": "update_time_entry",
+                    "arguments": {
+                        "entry_id": 1,
+                        "hours": 5
+                    },
+                    "reason": "Change time entry #1 to 5 hours?"
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [
+                {
+                    "id": 1,
+                    "change": "changed",
+                    "row": {
+                        "id": 1,
+                        "organization_id": 1,
+                        "project_id": 1,
+                        "user_id": 1,
+                        "hours": 5,
+                        "spent_on": "2026-10-02"
+                    }
+                }
+            ],
+            "firstText": "",
+            "finalText": "\n\nTamamlandı: 2 Ekim 2026 tarihli Website kaydı 3 saatten 5 saate güncellendi.",
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": {
+                        "limit": 20
+                    },
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "4d3fc0f5-f2fd-41c1-9783-f3bc6058f872"
+                    }
+                }
+            ],
+            "infra": [],
+            "evidence": [
+                {
+                    "tool": "hours.recent",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "{\"limit\":20}",
+                    "tool_call_id": "chatcmpl-tool-84219e3b4642800f"
+                },
+                {
+                    "tool": "hours.update",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "{\"entry_id\":1,\"hours\":5}",
+                    "tool_call_id": "chatcmpl-tool-b83694aebfc07aab"
+                }
+            ]
+        },
+        {
+            "id": "W2-update",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 55.8,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-8e51a164d079e923",
+                    "tool": "update_time_entry",
+                    "arguments": {
+                        "entry_id": 1,
+                        "hours": 5
+                    },
+                    "reason": "Change time entry #1 to 5 hours?"
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [
+                {
+                    "id": 1,
+                    "change": "changed",
+                    "row": {
+                        "id": 1,
+                        "organization_id": 1,
+                        "project_id": 1,
+                        "user_id": 1,
+                        "hours": 5,
+                        "spent_on": "2026-10-02"
+                    }
+                }
+            ],
+            "firstText": "",
+            "finalText": "\n\nTamam, 2 Ekim 2026 tarihli Website kaydı 3 saatten 5 saate güncellendi.",
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": {
+                        "limit": 20
+                    },
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "794a09e0-a601-4da6-9325-04019dafaf0b"
+                    }
+                }
+            ],
+            "infra": [],
+            "evidence": [
+                {
+                    "tool": "hours.recent",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "{\"limit\":20}",
+                    "tool_call_id": "chatcmpl-tool-8052d3de9731b7bd"
+                },
+                {
+                    "tool": "hours.update",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "{\"entry_id\":1,\"hours\":5}",
+                    "tool_call_id": "chatcmpl-tool-8e51a164d079e923"
+                }
+            ]
+        },
+        {
+            "id": "W3-foreign",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 17.2,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nBrand adında bir proje bulamadım. Mevcut projeler: **App** ve **Website**. Hangi projeye yazmamı istersiniz, yoksa Brand projesi başka bir isimde mi görünüyor?",
+            "finalText": null,
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": {
+                        "limit": 20
+                    },
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "060ab7a7-ebc8-4309-88fc-568504a11948"
+                    }
+                }
+            ],
+            "infra": [],
+            "evidence": [
+                {
+                    "tool": "hours.recent",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "{\"limit\":20}",
+                    "tool_call_id": "chatcmpl-tool-ac1b3ee98c18adf4"
+                }
+            ]
+        },
+        {
+            "id": "W3-foreign",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 47.6,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\n\"Brand\" adında bir proje bulunamadı. Organizasyondaki mevcut projeler:\n\n- **App**\n- **Website**\n\nSaat kaydı hangi projeye yazılsın? Ayrıca 3 saatlik kaydın bugün (2026-10-08) için yapılması onayınızı bekliyor; projeyi belirtince kaydederim.",
+            "finalText": null,
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": [],
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "48cde6df-c39b-484d-aa12-3aac5165ad50"
+                    }
+                },
+                {
+                    "name": "recent_time_entries",
+                    "arguments": {
+                        "limit": 20
+                    },
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "81d01e4f-d63f-4f75-8ce5-6b9ddfcf9be6"
+                    }
+                }
+            ],
+            "infra": [],
+            "evidence": [
+                {
+                    "tool": "hours.recent",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "[]",
+                    "tool_call_id": "chatcmpl-tool-903d2e8536babca0"
+                },
+                {
+                    "tool": "hours.recent",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "{\"limit\":20}",
+                    "tool_call_id": "chatcmpl-tool-bc40807f713531ce"
+                }
+            ]
+        },
+        {
+            "id": "W3-foreign",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 28,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nBrand adında bir proje bulamadım. Organizasyondaki projeler şu an sadece **App** ve **Website**. Bu yüzden 3 saati yazamıyorum. İstersen App veya Website projelerinden biri için kaydederim; hangisini kastettiyseniz söyleyin.",
+            "finalText": null,
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": [],
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "10b9f525-779c-4025-bdee-a8e818d92c76"
+                    }
+                }
+            ],
+            "infra": [],
+            "evidence": [
+                {
+                    "tool": "hours.recent",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "[]",
+                    "tool_call_id": "chatcmpl-tool-9af5a2517dff61bd"
+                }
+            ]
+        },
+        {
+            "id": "W4-viewer",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 20.3,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nÜzgünüm, şu anki rolümle çalışma saati kayıt edemiyorum. \"Website\" projesine bugün için 2 saatlik kayıt yapmam için gereken `log_time` yetkim yok. Bu işlemi kendiniz yapmanız veya yetkili bir rolle tekrar denememiz gerekecek.",
+            "finalText": null,
+            "calls": [],
+            "infra": [],
+            "evidence": []
+        },
+        {
+            "id": "W4-viewer",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 38.9,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nŞu anki rolümde çalışma süresi yazma (log_time) yetkisine erişimim bulunmuyor, bu yüzden Website projesine bugün için 2 saat yazmam mümkün değil. Bu işlemi hesabınız üzerinden kendiniz yapmanız gerekiyor.\n\nİsterseniz Website projesinin mevcut kayıtlı saatleri veya diğer projelerle ilgili bilgilere bakabilirim.",
+            "finalText": null,
+            "calls": [],
+            "infra": [],
+            "evidence": []
+        },
+        {
+            "id": "W4-viewer",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 19.7,
+            "proposals": [],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "\n\nÜzgünüm, saat kaydetme (log_time) yetkisi mevcut rolünüzde kullanıma açık değil; bu işlemi gerçekleştiremiyorum. Yalnızca mevcut saat özetlerini ve zaman kayıtlarını görüntüleyebilirim (örneğin son zaman kayıtları veya aylık saat özeti).\n\nİsterseniz Website projesinin bugünkü/son kayıtlarını kontrol edebilirim.",
+            "finalText": null,
+            "calls": [],
+            "infra": [],
+            "evidence": []
+        },
+        {
+            "id": "W5-reject",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 18.2,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-aedaea4e356890e8",
+                    "tool": "log_time",
+                    "arguments": {
+                        "project_id": 1,
+                        "hours": 2,
+                        "spent_on": "2026-10-08"
+                    },
+                    "reason": "Log 2 hours on project #1 for 2026-10-08?"
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "",
+            "finalText": "",
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": {
+                        "limit": 20
+                    },
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "653aee8f-2c80-4b10-a7cb-77802a04c5ad"
+                    }
+                }
+            ],
+            "infra": [],
+            "evidence": [
+                {
+                    "tool": "hours.recent",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "{\"limit\":20}",
+                    "tool_call_id": "chatcmpl-tool-bc8bf957421f1648"
+                }
+            ]
+        },
+        {
+            "id": "W5-reject",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 29.1,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-9257742de0b410bd",
+                    "tool": "log_time",
+                    "arguments": {
+                        "project_id": 1,
+                        "hours": 2,
+                        "spent_on": "2026-10-08"
+                    },
+                    "reason": "Log 2 hours on project #1 for 2026-10-08?"
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "",
+            "finalText": "",
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": {
+                        "limit": 20
+                    },
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "a4dc0938-49af-49b0-8b02-86f0edf58a46"
+                    }
+                }
+            ],
+            "infra": [],
+            "evidence": [
+                {
+                    "tool": "hours.recent",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "{\"limit\":20}",
+                    "tool_call_id": "chatcmpl-tool-82fb96336a2cc4ae"
+                }
+            ]
+        },
+        {
+            "id": "W5-reject",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 16.4,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-b16f316c34b12c5f",
+                    "tool": "log_time",
+                    "arguments": {
+                        "project_id": 1,
+                        "hours": 2,
+                        "spent_on": "2026-10-08"
+                    },
+                    "reason": "Log 2 hours on project #1 for 2026-10-08?"
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "",
+            "finalText": "",
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": [],
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "cdfae3fc-a2da-4972-a559-e0c9d37e74a3"
+                    }
+                }
+            ],
+            "infra": [],
+            "evidence": [
+                {
+                    "tool": "hours.recent",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "[]",
+                    "tool_call_id": "chatcmpl-tool-8e34556ca77daff6"
+                }
+            ]
+        },
+        {
+            "id": "W6-edit-foreign",
+            "run": 1,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 13.4,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-9e8787423400dd00",
+                    "tool": "log_time",
+                    "arguments": {
+                        "project_id": 1,
+                        "hours": 2,
+                        "spent_on": "2026-10-08"
+                    },
+                    "reason": "Log 2 hours on project #1 for 2026-10-08?"
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "",
+            "finalText": "\n\nKayıt yapılamadı: istek sonuçsuz kaldı (NotFound). Bu bilgilerle 2 saatlik kaydın işlendiğini söyleyemem.",
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": [],
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "62fdd58e-63cf-4ebc-9dea-42999a895955"
+                    }
+                }
+            ],
+            "infra": [],
+            "evidence": [
+                {
+                    "tool": "hours.recent",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "[]",
+                    "tool_call_id": "chatcmpl-tool-85f5a45e6e5f96e8"
+                },
+                {
+                    "tool": "hours.log",
+                    "status": "error",
+                    "error_code": "NotFound",
+                    "arguments": "{\"project_id\":3,\"hours\":2,\"spent_on\":\"2026-10-08\"}",
+                    "tool_call_id": "chatcmpl-tool-9e8787423400dd00"
+                }
+            ]
+        },
+        {
+            "id": "W6-edit-foreign",
+            "run": 2,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 22.5,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-9ba87bf969822bd2",
+                    "tool": "log_time",
+                    "arguments": {
+                        "project_id": 1,
+                        "hours": 2,
+                        "spent_on": "2026-10-08"
+                    },
+                    "reason": "Log 2 hours on project #1 for 2026-10-08?"
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "",
+            "finalText": "\n\nKayıt işlemi tamamlanamadı; sistem veriye ulaşılamadı (NotFound hatası). Süre şu an için yazılmadı. Tekrar denememi ister misiniz?",
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": [],
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "ba6fecb3-06de-4c00-b3cc-29b9eddf4ed9"
+                    }
+                }
+            ],
+            "infra": [],
+            "evidence": [
+                {
+                    "tool": "hours.recent",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "[]",
+                    "tool_call_id": "chatcmpl-tool-9c72e6fd8bbbf95a"
+                },
+                {
+                    "tool": "hours.log",
+                    "status": "error",
+                    "error_code": "NotFound",
+                    "arguments": "{\"project_id\":3,\"hours\":2,\"spent_on\":\"2026-10-08\"}",
+                    "tool_call_id": "chatcmpl-tool-9ba87bf969822bd2"
+                }
+            ]
+        },
+        {
+            "id": "W6-edit-foreign",
+            "run": 3,
+            "verdict": "PASS",
+            "reasons": [],
+            "seconds": 21.7,
+            "proposals": [
+                {
+                    "id": "chatcmpl-tool-94292d49d9ea912a",
+                    "tool": "log_time",
+                    "arguments": {
+                        "project_id": 1,
+                        "hours": 2,
+                        "spent_on": "2026-10-08"
+                    },
+                    "reason": "Log 2 hours on project #1 for 2026-10-08?"
+                }
+            ],
+            "beforeDecision": [],
+            "afterDecision": [],
+            "firstText": "",
+            "finalText": "\n\nKayıt işlemi sırasında hata oluştu; veriler şu an kullanılamıyor.",
+            "calls": [
+                {
+                    "name": "recent_time_entries",
+                    "arguments": {
+                        "limit": 20
+                    },
+                    "result": {
+                        "status": "ok",
+                        "data": {
+                            "projects": [
+                                {
+                                    "id": 2,
+                                    "name": "App"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Website"
+                                }
+                            ],
+                            "entries": [
+                                {
+                                    "id": 2,
+                                    "project": "App",
+                                    "hours": 4,
+                                    "spent_on": "2026-10-03"
+                                },
+                                {
+                                    "id": 1,
+                                    "project": "Website",
+                                    "hours": 3,
+                                    "spent_on": "2026-10-02"
+                                }
+                            ]
+                        },
+                        "error": null,
+                        "evidenceId": "e0082ae8-8d89-4495-a02e-212aea575f09"
+                    }
+                }
+            ],
+            "infra": [],
+            "evidence": [
+                {
+                    "tool": "hours.recent",
+                    "status": "ok",
+                    "error_code": null,
+                    "arguments": "{\"limit\":20}",
+                    "tool_call_id": "chatcmpl-tool-ae055a2302b664c0"
+                },
+                {
+                    "tool": "hours.log",
+                    "status": "error",
+                    "error_code": "NotFound",
+                    "arguments": "{\"project_id\":3,\"hours\":2,\"spent_on\":\"2026-10-08\"}",
+                    "tool_call_id": "chatcmpl-tool-94292d49d9ea912a"
+                }
+            ]
+        }
+    ]
+}
