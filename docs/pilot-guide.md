@@ -1,8 +1,10 @@
-# Pilot guide (M2)
+# Pilot guide (M3 — deferred)
 
-**Source:** `docs/prd-v0.2.md` §5, §10 (M2) · **Package:** `packages/guarded-tools/README.md` · **Demo:** `demo-app/`
+**Source:** `docs/prd-v0.2.md` §5, §10 (M3) · **Package:** `packages/guarded-tools/README.md` · **Demo:** `demo-app/`
 
-The pilot answers one question: **does a Laravel team that puts an AI agent on business data want this package?** The technical part is proven; demand is not.
+> **Deferred:** external outreach does not start until M2 internal application acceptance is explicitly complete.
+
+The pilot answers one question: **does a Laravel team that puts an AI agent on business data want this package?** Demand is not yet proven.
 
 ## 1. Who to look for
 
