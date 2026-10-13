@@ -13,7 +13,7 @@ A pilot candidate has all of these:
 - business data an agent could answer from (orders, invoices, tickets, stock);
 - plans to add an AI assistant, or one already started.
 
-Nice to have: already uses or considers packstub/agents. Without it, the candidate still answers the demand questions; the install needs PHP 8.4 and Laravel 13 (Track A).
+Nice to have: already uses or considers packstub/agents. Without it, the candidate still answers the demand questions. For the install step, the app must match at least one adapter already supported by the package; use the current requirements table in `packages/guarded-tools/README.md` as the source of truth. Do not add a new adapter or widen dependency support just to make a pilot candidate installable.
 
 **Where to find them:** Laravel Türkiye and similar communities, people who reacted to the advisory post, agencies that build multi-tenant Laravel apps.
 
@@ -56,7 +56,7 @@ Point out: the answer matches the data and has an evidence ID; the viewer is tol
 
 **Blockers**
 
-7. What would stop you from using it? (PHP 8.4 / Laravel 13, packstub dependency, an extra table, the license, the API being pre-release)
+7. What would stop you from using it? (current framework / agent-stack compatibility, an extra table, the license, migration effort, or the package API)
 8. Would you prefer it inside packstub, as a separate package, or without packstub?
 
 **Value**
@@ -76,6 +76,6 @@ For each session, one entry in `docs/pilot-log.md`:
 
 | After 3–5 sessions | Decision |
 |---|---|
-| At least 2 candidates install one tool in their app | **Go:** prepare M3 (release, docs, version matrix) |
+| At least 2 candidates install one tool in their app | **Go:** make the M3 product decision from the evidence; do not infer new scope automatically |
 | Interest, but nobody installs | **Pivot:** find the blocker (question 7), change one thing, try again |
 | No real problem in question 1–3 | **Stop** the package; keep the findings |
