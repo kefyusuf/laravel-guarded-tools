@@ -188,14 +188,16 @@ class GuardedWritesTest extends TestCase
 
         $rows = DB::table('guarded_tool_evidence')
             ->where('tool', 'test.fails-once-after-insert')
-            ->orderBy('created_at')
             ->get();
         $this->assertCount(2, $rows);
-        $this->assertSame('error', $rows[0]->status);
-        $this->assertNull($rows[0]->idempotency_key);
-        $this->assertSame('ok', $rows[1]->status);
-        $this->assertNotNull($rows[1]->idempotency_key);
-        $this->assertSame($rows[0]->tool_call_id, $rows[1]->tool_call_id);
+
+        $failed = $rows->firstWhere('status', 'error');
+        $succeeded = $rows->firstWhere('status', 'ok');
+        $this->assertNotNull($failed);
+        $this->assertNotNull($succeeded);
+        $this->assertNull($failed->idempotency_key);
+        $this->assertNotNull($succeeded->idempotency_key);
+        $this->assertSame($failed->tool_call_id, $succeeded->tool_call_id);
     }
 
     #[DataProvider('writeTools')]
