@@ -8,6 +8,10 @@ All notable changes to `kefyusuf/laravel-guarded-tools` are documented here. The
 
 - Live write evals on laravel/ai (`agency:eval-writes`, 18/18) and Neuron AI (`tasks:eval-writes`, 15/15), including an approval whose arguments the person edits to point at another company. See `docs/write-eval-results.md`.
 
+### Fixed
+
+- W4 write idempotency is now concurrency-safe: a successful approved write and its evidence commit atomically with a DB-unique idempotency key. An overlapping redelivery rolls back the losing business mutation and replays the stored winner result. Failed writes keep no key and remain retryable.
+
 ### Changed (pilots only, found by the live evals)
 
 - laravel/ai pilot: the agent is conversational, so approved writes can resume; a `recent_time_entries` tool returns the ids the write tools take; the agent knows today's date.
