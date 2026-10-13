@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -11,10 +10,12 @@ use Tests\TestCase;
 
 class EvidenceMigrationUpgradeTest extends TestCase
 {
-    use DatabaseMigrations;
-
     public function test_idempotency_migration_upgrades_existing_evidence_rows_without_losing_data(): void
     {
+        // This CI database is disposable. Prepare the current schema explicitly, then exercise only
+        // this package migration's down/up path; do not roll back unrelated vendor migrations.
+        $this->artisan('migrate:fresh', ['--force' => true])->assertSuccessful();
+
         $migration = require base_path('../packages/guarded-tools/database/migrations/2026_10_13_000001_add_idempotency_key_to_guarded_tool_evidence_table.php');
 
         // Simulate a v1.0.0 database: tool_call_id exists, idempotency_key does not.
