@@ -1067,7 +1067,7 @@
             "dist": {
                 "type": "path",
                 "url": "../../packages/guarded-tools",
-                "reference": "17479b63b30f6a41ade14c546f9f154a905ded73"
+                "reference": "e185daf612895ac5a4b295f9ec7a3807f47acd4e"
             },
             "require": {
                 "laravel/framework": "^12.0|^13.0",
@@ -2445,16 +2445,16 @@
         },
         {
             "name": "neuron-core/neuron-ai",
-            "version": "4.1.6",
+            "version": "4.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/neuron-core/neuron-ai.git",
-                "reference": "43e3a2a516fedf2eda38acd1c223dcf06ac83d85"
+                "reference": "5a2188d536323c263f5435715f8df75f4de2b5c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/neuron-core/neuron-ai/zipball/43e3a2a516fedf2eda38acd1c223dcf06ac83d85",
-                "reference": "43e3a2a516fedf2eda38acd1c223dcf06ac83d85",
+                "url": "https://api.github.com/repos/neuron-core/neuron-ai/zipball/5a2188d536323c263f5435715f8df75f4de2b5c9",
+                "reference": "5a2188d536323c263f5435715f8df75f4de2b5c9",
                 "shasum": ""
             },
             "require": {
@@ -2526,7 +2526,7 @@
             "description": "A unified layer for building AI-native applications in PHP.",
             "support": {
                 "issues": "https://github.com/neuron-core/neuron-ai/issues",
-                "source": "https://github.com/neuron-core/neuron-ai/tree/4.1.6"
+                "source": "https://github.com/neuron-core/neuron-ai/tree/4.1.9"
             },
             "funding": [
                 {
@@ -2534,7 +2534,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-07T15:36:06+00:00"
+            "time": "2026-10-09T07:05:57+00:00"
         },
         {
             "name": "nikic/php-parser",
