@@ -164,6 +164,40 @@ class GuardedWritesTest extends TestCase
             ->count(), 'The successful call must have one canonical evidence row.');
     }
 
+    public function test_w4_failed_write_does_not_reserve_the_idempotency_key(): void
+    {
+        Agents::useTools([FailsOnceAfterInsertCustomer::class]);
+        FailsOnceAfterInsertCustomer::$attempts = 0;
+        $arguments = $this->arguments(AddCustomer::class);
+        $callKey = 'guarded-kit-retry-after-failure';
+
+        $first = $this->executeApprovedWrite(
+            FailsOnceAfterInsertCustomer::class, $arguments, $this->sales, $this->teamA, $callKey,
+        );
+        $second = $this->executeApprovedWrite(
+            FailsOnceAfterInsertCustomer::class, $arguments, $this->sales, $this->teamA, $callKey,
+        );
+
+        $this->assertSame(['code' => 'UPSTREAM_UNAVAILABLE'], $first['error']);
+        $this->assertSame('ok', $second['status']);
+        $this->assertSame(1, DB::table('customers')
+            ->where('team_id', $this->teamA->id)
+            ->where('name', 'Kuzey Kumaş')
+            ->where('city', 'Denizli')
+            ->count(), 'The failed attempt must roll back, and the retry must write exactly once.');
+
+        $rows = DB::table('guarded_tool_evidence')
+            ->where('tool', 'test.fails-once-after-insert')
+            ->orderBy('created_at')
+            ->get();
+        $this->assertCount(2, $rows);
+        $this->assertSame('error', $rows[0]->status);
+        $this->assertNull($rows[0]->idempotency_key);
+        $this->assertSame('ok', $rows[1]->status);
+        $this->assertNotNull($rows[1]->idempotency_key);
+        $this->assertSame($rows[0]->tool_call_id, $rows[1]->tool_call_id);
+    }
+
     #[DataProvider('writeTools')]
     public function test_w7_write_budget_is_enforced(string $tool): void
     {
@@ -227,6 +261,25 @@ class FailingAfterInsertCustomer extends AddCustomer
         parent::write($arguments, $workspace);
 
         throw new RuntimeException('disk full');
+    }
+}
+
+/** First delivery writes then fails; the retry with the same key must still be allowed. */
+class FailsOnceAfterInsertCustomer extends AddCustomer
+{
+    public static int $attempts = 0;
+
+    public function id(): string { return 'test.fails-once-after-insert'; }
+
+    protected function write(array $arguments, Model $workspace): CanonicalToolResult
+    {
+        $result = parent::write($arguments, $workspace);
+
+        if (++self::$attempts === 1) {
+            throw new RuntimeException('transient failure');
+        }
+
+        return $result;
     }
 }
 
