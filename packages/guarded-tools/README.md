@@ -134,7 +134,7 @@ class DeleteTimeEntry extends GuardedWriteTool
 | W1 | No write without a person's approval | `GuardedWriteTool` is `Approvable` and always asks; `withoutApproval()` throws. The run pauses until your app resumes it with the person's decision |
 | W2 | Writes stay in the workspace | `insertOwn()` sets the workspace column from the server, `updateOwn()` cannot change it, `findOwn()` / `updateOwn()` / `deleteOwn()` filter by it. Another workspace's row answers `NotFound`, like a missing row |
 | W3 | Checked again when the approved call runs | The full pipeline runs at execution: membership, ability, arguments (the approval may be late, and may change the arguments) |
-| W4 | A call writes at most once | A call that already succeeded returns its first result for the same tool call id, person and workspace |
+| W4 | A call writes at most once | A successful call stores a DB-unique idempotency key in the same transaction as the business write and evidence. Sequential or overlapping redelivery for the same tool call, person and workspace replays the first stored result; a failed call does not reserve the key and may be retried |
 | W5 | All or nothing | `write()` runs in a transaction; an exception rolls every statement back |
 | W6 | Audit trail | The evidence row stores the operation and what `write()` returns (return `before` / `after`) |
 | W7 | Write budget | `guarded-tools.max_writes_per_turn` (default **3**) on top of the call budget |

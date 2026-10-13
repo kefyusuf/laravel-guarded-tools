@@ -7,11 +7,13 @@ use App\Mcp\Tools\DeleteCustomer;
 use App\Mcp\Tools\UpdateCustomerCity;
 use App\Models\Team;
 use App\Models\User;
+use Fiber;
 use GuardedTools\CanonicalToolResult;
 use GuardedTools\Testing\AssertsGuardedPackstubTools;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Events\QueryExecuted;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 use Packstub\Agents\Facades\Agents;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -110,6 +112,92 @@ class GuardedWritesTest extends TestCase
         $this->assertWriteIsIdempotent($tool, $this->arguments($tool));
     }
 
+    public function test_w4_same_approved_call_is_idempotent_when_two_executions_overlap(): void
+    {
+        $callKey = 'guarded-kit-concurrent';
+        $firstFiber = null;
+        $suspended = false;
+
+        DB::listen(function (QueryExecuted $query) use (&$firstFiber, &$suspended): void {
+            if ($suspended || Fiber::getCurrent() !== $firstFiber) {
+                return;
+            }
+
+            $sql = strtolower(str_replace(['"', '`', '[', ']'], '', $query->sql));
+            if (str_contains($sql, 'guarded_tool_evidence') && str_contains($sql, 'tool_call_id')) {
+                $suspended = true;
+                Fiber::suspend('replay-read-complete');
+            }
+        });
+
+        $execute = fn (): array => $this->executeApprovedWrite(
+            AddCustomer::class,
+            $this->arguments(AddCustomer::class),
+            $this->sales,
+            $this->teamA,
+            $callKey,
+        );
+
+        $firstFiber = new Fiber($execute);
+        $this->assertSame('replay-read-complete', $firstFiber->start());
+
+        $second = $execute();
+
+        $firstFiber->resume();
+        $this->assertTrue($firstFiber->isTerminated());
+        $first = $firstFiber->getReturn();
+
+        $this->assertSame('ok', $first['status']);
+        $this->assertSame('ok', $second['status']);
+        $this->assertSame($first['evidenceId'], $second['evidenceId'],
+            'Concurrent redelivery of the same approved call must replay one stored result.');
+        $this->assertSame($first['data']['id'], $second['data']['id']);
+        $this->assertSame(1, DB::table('customers')
+            ->where('team_id', $this->teamA->id)
+            ->where('name', 'Kuzey Kumaş')
+            ->where('city', 'Denizli')
+            ->count(), 'The same approved call must mutate business data at most once.');
+        $stored = DB::table('guarded_tool_evidence')->where('id', $first['evidenceId'])->sole();
+        $this->assertNotNull($stored->idempotency_key);
+        $this->assertSame(1, DB::table('guarded_tool_evidence')
+            ->where('tool_call_id', $stored->tool_call_id)
+            ->count(), 'The successful call must have one canonical evidence row.');
+    }
+
+    public function test_w4_failed_write_does_not_reserve_the_idempotency_key(): void
+    {
+        Agents::useTools([FailsOnceAfterInsertCustomer::class]);
+        FailsOnceAfterInsertCustomer::$attempts = 0;
+        $arguments = $this->arguments(AddCustomer::class);
+        $callKey = 'guarded-kit-retry-after-failure';
+
+        $first = $this->executeApprovedWrite(
+            FailsOnceAfterInsertCustomer::class, $arguments, $this->sales, $this->teamA, $callKey,
+        );
+        $second = $this->executeApprovedWrite(
+            FailsOnceAfterInsertCustomer::class, $arguments, $this->sales, $this->teamA, $callKey,
+        );
+
+        $this->assertSame(['code' => 'UPSTREAM_UNAVAILABLE'], $first['error']);
+        $this->assertSame('ok', $second['status']);
+        $this->assertSame(1, DB::table('customers')
+            ->where('team_id', $this->teamA->id)
+            ->where('name', 'Kuzey Kumaş')
+            ->where('city', 'Denizli')
+            ->count(), 'The failed attempt must roll back, and the retry must write exactly once.');
+
+        $rows = DB::table('guarded_tool_evidence')
+            ->where('tool', 'test.fails-once-after-insert')
+            ->orderBy('created_at')
+            ->get();
+        $this->assertCount(2, $rows);
+        $this->assertSame('error', $rows[0]->status);
+        $this->assertNull($rows[0]->idempotency_key);
+        $this->assertSame('ok', $rows[1]->status);
+        $this->assertNotNull($rows[1]->idempotency_key);
+        $this->assertSame($rows[0]->tool_call_id, $rows[1]->tool_call_id);
+    }
+
     #[DataProvider('writeTools')]
     public function test_w7_write_budget_is_enforced(string $tool): void
     {
@@ -173,6 +261,25 @@ class FailingAfterInsertCustomer extends AddCustomer
         parent::write($arguments, $workspace);
 
         throw new RuntimeException('disk full');
+    }
+}
+
+/** First delivery writes then fails; the retry with the same key must still be allowed. */
+class FailsOnceAfterInsertCustomer extends AddCustomer
+{
+    public static int $attempts = 0;
+
+    public function id(): string { return 'test.fails-once-after-insert'; }
+
+    protected function write(array $arguments, Model $workspace): CanonicalToolResult
+    {
+        $result = parent::write($arguments, $workspace);
+
+        if (++self::$attempts === 1) {
+            throw new RuntimeException('transient failure');
+        }
+
+        return $result;
     }
 }
 
