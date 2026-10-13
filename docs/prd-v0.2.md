@@ -1,6 +1,6 @@
 # PRD v0.2 — Guarded tools for Laravel AI agents
 
-**Version:** 0.2 · **Date:** 2026-10-05 · **Status:** Active · M2 external demand validation pending
+**Version:** 0.2 · **Date:** 2026-10-05 · **Status:** Active · M2 internal application acceptance
 **Replaces:** `docs/preview-demo/php-agent-prd.md` (v0.1, "Agent Studio")
 **Evidence:** `docs/spike-m0-findings.md` (R-001 to R-019), `docs/packstub-integration-findings.md` (F1 to F7)
 **Working name:** not decided. "Agent Studio" no longer fits the scope.
@@ -134,10 +134,11 @@ Track B replaces the packstub layer with `ExposurePolicy`, `GuardedTool` and `Ag
 |---|---|---|
 | M1a — Package skeleton | Shared result + evidence, Track A base class, test kit, example app | FR-01 to FR-08 pass; mutation checks for G1–G5 |
 | M1b — Model behavior | FR-09, FR-10; L-scenarios re-run with one model | L3 and L6: no metric in any run; L6 says access is missing in 3/3 |
-| M2 — External pilot | 3–5 real Laravel teams are interviewed; candidates may install one guarded tool in a real app with real auth and CI | At least 2 installs → go; interest but no installs → pivot on the blocker; no real problem → stop |
-| M3 — Product decision | Decide whether to continue investing beyond maintenance | Only after M2 produces demand evidence |
+| M2 — Internal application acceptance | Consumer-like Laravel boundaries in the existing demo/pilot apps; no new product features | Authenticated HTTP request resolves the correct user/workspace, guarded tool and evidence; unauthenticated access fails; consecutive requests do not leak context; existing DB matrix remains green |
+| M3 — External pilot | 3–5 real Laravel teams are interviewed; candidates may install one guarded tool in a real app with real auth and CI | Only after M2 is explicitly complete; at least 2 installs → go, interest but no installs → pivot, no real problem → stop |
+| M4 — Product decision | Decide whether to continue investing beyond maintenance | Only after M3 produces demand evidence |
 
-**Release history note (2026-10-12):** `v1.0.0` was published before M2 external demand validation. Treat it as a technical release, not as evidence that M2 or the product-validation intent of M3 is complete. M2 remains the current gate. Do not add product scope solely because a stable version exists.
+**Release history note (2026-10-12):** `v1.0.0` was published before internal application acceptance and external demand validation were complete. Treat it as a technical release, not as evidence that either gate is complete. M2 internal acceptance is the current gate; external outreach is deferred to M3. Do not add product scope solely because a stable version exists.
 
 No calendar estimates; exit criteria decide. The track gate (section 4) can move Track B into M1a.
 
@@ -154,7 +155,7 @@ No calendar estimates; exit criteria decide. The track gate (section 4) can move
 
 | Risk | Effect | Mitigation |
 |---|---|---|
-| No demand | Nobody adopts a tool-level layer | M2 external pilot before further product expansion |
+| No demand | Nobody adopts a tool-level layer | M3 external pilot after M2 internal acceptance |
 | packstub changes its extension point (`run()`) | Track A breaks | Pin versions; contract tests; Track B fallback |
 | packstub adds canonical results or evidence itself | Our difference shrinks further | Talk to the maintainers; contribute instead of competing |
 | `laravel/ai` undocumented behaviors (`name()` resolution, `ToolCall` fakes) change | Tests or naming break | Contract tests on pinned versions (R-005, Q2) |
