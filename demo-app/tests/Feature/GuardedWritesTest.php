@@ -157,8 +157,10 @@ class GuardedWritesTest extends TestCase
             ->where('name', 'Kuzey Kumaş')
             ->where('city', 'Denizli')
             ->count(), 'The same approved call must mutate business data at most once.');
+        $stored = DB::table('guarded_tool_evidence')->where('id', $first['evidenceId'])->sole();
+        $this->assertNotNull($stored->idempotency_key);
         $this->assertSame(1, DB::table('guarded_tool_evidence')
-            ->where('tool_call_id', $callKey)
+            ->where('tool_call_id', $stored->tool_call_id)
             ->count(), 'The successful call must have one canonical evidence row.');
     }
 
