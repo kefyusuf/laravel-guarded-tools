@@ -8,6 +8,7 @@ use GuardedTools\CanonicalToolResult;
 use GuardedTools\Evidence\EvidenceRecorder;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -88,16 +89,37 @@ final class GuardedCall
                         $result = CanonicalToolResult::error('InvalidToolArguments');
                         $audit += ['reason' => 'validation_failed'];
                     } else {
+                        $validated = $validator->validated();
+
+                        if ($operation !== null && $toolCallId !== null) {
+                            $idempotencyKey = self::idempotencyKey($tool, $toolCallId, $space, $userId);
+
+                            try {
+                                // The business write and its success evidence commit together. If another
+                                // execution of this same approved call wins the unique idempotency key,
+                                // this transaction rolls back its business mutation and replays the winner.
+                                return DB::transaction(function () use ($query, $validated, $space, $tool, $source,
+                                    $userId, $arguments, $audit, $toolCallId, $idempotencyKey) {
+                                    $result = self::invoke($query, $validated, $space);
+
+                                    return self::respond(
+                                        $result, $tool, $source, $space, $userId, $arguments, $audit, $toolCallId,
+                                        in_array($result->status, ['ok', 'empty'], true) ? $idempotencyKey : null,
+                                        throwOnEvidenceFailure: true,
+                                    );
+                                });
+                            } catch (UniqueConstraintViolationException $exception) {
+                                if (($replay = self::replay($tool, $toolCallId, $space, $userId)) !== null) {
+                                    return $replay;
+                                }
+
+                                throw $exception;
+                            }
+                        }
+
                         // A savepoint: on PostgreSQL a failed query aborts the surrounding transaction,
                         // and the evidence row below could not be written.
-                        $result = DB::transaction(function () use ($query, $validator, $space) {
-                            self::$querying = true;
-                            try {
-                                return $query($validator->validated(), $space);
-                            } finally {
-                                self::$querying = false;
-                            }
-                        });
+                        $result = DB::transaction(fn () => self::invoke($query, $validated, $space));
                     }
                 }
             }
@@ -128,7 +150,8 @@ final class GuardedCall
      * the call returns no data.
      */
     public static function respond(CanonicalToolResult $result, string $tool, string $source, ?Model $workspace,
-        int|string|null $userId, array $arguments, array $audit, ?string $toolCallId = null): array
+        int|string|null $userId, array $arguments, array $audit, ?string $toolCallId = null,
+        ?string $idempotencyKey = null, bool $throwOnEvidenceFailure = false): array
     {
         try {
             $provenance = array_replace($result->provenance, [
@@ -142,17 +165,44 @@ final class GuardedCall
             };
             $evidenceId = (string) Str::uuid();
             app(EvidenceRecorder::class)->record($evidenceId, $tool, $workspace?->getKey(), $userId,
-                $source, $arguments, $result, $audit, $toolCallId);
+                $source, $arguments, $result, $audit, $toolCallId, $idempotencyKey);
 
             return [
                 'status' => $result->status, 'data' => $result->data,
                 'error' => $result->errorCode === null ? null : ['code' => $result->errorCode],
                 'evidenceId' => $evidenceId,
             ];
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
+            if ($throwOnEvidenceFailure) {
+                throw $exception;
+            }
+
             return ['status' => 'error', 'data' => null,
                 'error' => ['code' => 'UPSTREAM_UNAVAILABLE'], 'evidenceId' => null];
         }
+    }
+
+    /** Execute only the tool's own query/write while marking its SQL for the assurance kit. */
+    private static function invoke(Closure $query, array $arguments, Model $workspace): CanonicalToolResult
+    {
+        self::$querying = true;
+        try {
+            return $query($arguments, $workspace);
+        } finally {
+            self::$querying = false;
+        }
+    }
+
+    /** Stable DB-enforced key for one successful approved write call. */
+    private static function idempotencyKey(string $tool, string $toolCallId, Model $workspace, int|string|null $userId): string
+    {
+        return hash('sha256', implode('|', [
+            $tool,
+            $toolCallId,
+            $workspace::class,
+            (string) $workspace->getKey(),
+            (string) $userId,
+        ]));
     }
 
     /** The person re-read from storage, so membership revoked mid-turn is seen. */
