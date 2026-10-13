@@ -1,6 +1,8 @@
-# M2 pilot log
+# M3 external pilot log — deferred
 
-**Purpose:** record external demand evidence for the M2 gate in `docs/prd-v0.2.md`.
+**Purpose:** record external demand evidence for the future M3 gate in `docs/prd-v0.2.md`.
+
+> Do not add new outreach/session entries until M2 internal application acceptance is explicitly complete.
 
 Use `docs/pilot-guide.md` for candidate criteria, the 45-minute session plan, questions and the decision rule. This file records outcomes; it is not a sales CRM.
 
