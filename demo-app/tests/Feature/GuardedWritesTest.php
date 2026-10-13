@@ -7,11 +7,13 @@ use App\Mcp\Tools\DeleteCustomer;
 use App\Mcp\Tools\UpdateCustomerCity;
 use App\Models\Team;
 use App\Models\User;
+use Fiber;
 use GuardedTools\CanonicalToolResult;
 use GuardedTools\Testing\AssertsGuardedPackstubTools;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Events\QueryExecuted;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 use Packstub\Agents\Facades\Agents;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -108,6 +110,56 @@ class GuardedWritesTest extends TestCase
     public function test_w4_write_is_idempotent(string $tool): void
     {
         $this->assertWriteIsIdempotent($tool, $this->arguments($tool));
+    }
+
+    public function test_w4_same_approved_call_is_idempotent_when_two_executions_overlap(): void
+    {
+        $callKey = 'guarded-kit-concurrent';
+        $firstFiber = null;
+        $suspended = false;
+
+        DB::listen(function (QueryExecuted $query) use (&$firstFiber, &$suspended): void {
+            if ($suspended || Fiber::getCurrent() !== $firstFiber) {
+                return;
+            }
+
+            $sql = strtolower(str_replace(['"', '`', '[', ']'], '', $query->sql));
+            if (str_contains($sql, 'guarded_tool_evidence') && str_contains($sql, 'tool_call_id')) {
+                $suspended = true;
+                Fiber::suspend('replay-read-complete');
+            }
+        });
+
+        $execute = fn (): array => $this->executeApprovedWrite(
+            AddCustomer::class,
+            $this->arguments(AddCustomer::class),
+            $this->sales,
+            $this->teamA,
+            $callKey,
+        );
+
+        $firstFiber = new Fiber($execute);
+        $this->assertSame('replay-read-complete', $firstFiber->start());
+
+        $second = $execute();
+
+        $firstFiber->resume();
+        $this->assertTrue($firstFiber->isTerminated());
+        $first = $firstFiber->getReturn();
+
+        $this->assertSame('ok', $first['status']);
+        $this->assertSame('ok', $second['status']);
+        $this->assertSame($first['evidenceId'], $second['evidenceId'],
+            'Concurrent redelivery of the same approved call must replay one stored result.');
+        $this->assertSame($first['data']['id'], $second['data']['id']);
+        $this->assertSame(1, DB::table('customers')
+            ->where('team_id', $this->teamA->id)
+            ->where('name', 'Kuzey Kumaş')
+            ->where('city', 'Denizli')
+            ->count(), 'The same approved call must mutate business data at most once.');
+        $this->assertSame(1, DB::table('guarded_tool_evidence')
+            ->where('tool_call_id', $callKey)
+            ->count(), 'The successful call must have one canonical evidence row.');
     }
 
     #[DataProvider('writeTools')]
