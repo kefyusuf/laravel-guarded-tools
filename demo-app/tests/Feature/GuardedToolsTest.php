@@ -15,12 +15,15 @@ use GuardedTools\Testing\AssertsGuardedPackstubTools;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Route;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 use Laravel\Ai\Responses\Data\ToolCall;
 use Packstub\Agents\Facades\Agents;
+use Packstub\Agents\Support\AgentRun;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -410,6 +413,86 @@ class GuardedToolsTest extends TestCase
         $this->assertSame('INV-0-1', $outcome['data']['rows'][0]['number']);
         $this->assertSame(10, $outcome['data']['rows'][0]['days_overdue']);
     }
+
+
+    public function test_http_boundary_rejects_unauthenticated_requests_before_agent_execution(): void
+    {
+        $this->registerInternalAcceptanceRoute();
+        auth()->logout();
+
+        OrderDeskAssistant::fake([
+            fn (): never => throw new \RuntimeException('Agent must not run for an unauthenticated request.'),
+        ]);
+
+        $this->postJson('/_internal-acceptance/ask', ['question' => 'How many orders last month?'])
+            ->assertUnauthorized();
+
+        $this->assertSame(0, DB::table('guarded_tool_evidence')->count());
+    }
+
+    public function test_authenticated_http_requests_keep_user_workspace_and_evidence_isolated(): void
+    {
+        $this->registerInternalAcceptanceRoute();
+
+        OrderDeskAssistant::fake([
+            function (): ToolCall {
+                $this->assertSame($this->ownerA->id, auth()->id());
+                $this->assertSame($this->teamA->id, Agents::tenant()->getKey());
+
+                return new ToolCall('http-call-a', 'orders-summary', ['period' => 'last_month']);
+            },
+            'Anadolu answer.',
+            function (): ToolCall {
+                $this->assertSame($this->ownerB->id, auth()->id());
+                $this->assertSame($this->teamB->id, Agents::tenant()->getKey());
+
+                return new ToolCall('http-call-b', 'orders-summary', ['period' => 'last_month']);
+            },
+            'Ege answer.',
+        ]);
+
+        $this->actingAs($this->ownerA)
+            ->postJson('/_internal-acceptance/ask', ['question' => 'How many orders last month?'])
+            ->assertOk()
+            ->assertJson(['answer' => 'Anadolu answer.']);
+
+        $this->actingAs($this->ownerB)
+            ->postJson('/_internal-acceptance/ask', ['question' => 'How many orders last month?'])
+            ->assertOk()
+            ->assertJson(['answer' => 'Ege answer.']);
+
+        $this->assertSame(2, DB::table('guarded_tool_evidence')->count());
+
+        $rowA = DB::table('guarded_tool_evidence')
+            ->where('user_id', $this->ownerA->id)
+            ->where('workspace_id', $this->teamA->id)
+            ->sole();
+        $this->assertSame('orders.summary', $rowA->tool);
+        $this->assertSame('ok', $rowA->status);
+        $this->assertSame('db:orders', $rowA->source);
+
+        $rowB = DB::table('guarded_tool_evidence')
+            ->where('user_id', $this->ownerB->id)
+            ->where('workspace_id', $this->teamB->id)
+            ->sole();
+        $this->assertSame('orders.summary', $rowB->tool);
+        $this->assertSame('ok', $rowB->status);
+        $this->assertSame('db:orders', $rowB->source);
+    }
+
+    private function registerInternalAcceptanceRoute(): void
+    {
+        Route::middleware('auth')->post('/_internal-acceptance/ask', function (Request $request) {
+            $user = $request->user();
+            abort_unless($user instanceof User && $user->currentTeam !== null, 422);
+
+            $answer = AgentRun::as($user)->in($user->currentTeam)
+                ->ask((string) $request->string('question'));
+
+            return response()->json(['answer' => $answer->text]);
+        });
+    }
+
 
     public function test_demo_command_authenticates_the_selected_user_and_prints_the_evidence_chain(): void
     {
