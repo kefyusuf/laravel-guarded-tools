@@ -9,6 +9,7 @@ use App\Models\Team;
 use App\Models\User;
 use Fiber;
 use GuardedTools\CanonicalToolResult;
+use GuardedTools\Evidence\EvidenceRecorder;
 use GuardedTools\Testing\AssertsGuardedPackstubTools;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -198,6 +199,40 @@ class GuardedWritesTest extends TestCase
         $this->assertNull($failed->idempotency_key);
         $this->assertNotNull($succeeded->idempotency_key);
         $this->assertSame($failed->tool_call_id, $succeeded->tool_call_id);
+    }
+
+    public function test_w6_successful_write_rolls_back_when_evidence_cannot_be_persisted(): void
+    {
+        $beforeCount = DB::table('customers')->count();
+        $transactionLevel = DB::connection()->transactionLevel();
+
+        $this->mock(EvidenceRecorder::class, function ($mock): void {
+            $mock->shouldReceive('record')->andThrow(new RuntimeException('evidence store unavailable'));
+        });
+
+        $payload = $this->executeApprovedWrite(
+            AddCustomer::class,
+            $this->arguments(AddCustomer::class),
+            $this->sales,
+            $this->teamA,
+            'guarded-kit-evidence-failure',
+        );
+
+        $this->assertSame([
+            'status' => 'error',
+            'data' => null,
+            'error' => ['code' => 'UPSTREAM_UNAVAILABLE'],
+            'evidenceId' => null,
+        ], $payload);
+        $this->assertSame($beforeCount, DB::table('customers')->count(),
+            'A write without durable evidence must not leave a business mutation behind.');
+        $this->assertSame(0, DB::table('customers')
+            ->where('team_id', $this->teamA->id)
+            ->where('name', 'Kuzey Kumaş')
+            ->where('city', 'Denizli')
+            ->count());
+        $this->assertSame($transactionLevel, DB::connection()->transactionLevel());
+        $this->assertSame(0, DB::table('guarded_tool_evidence')->count());
     }
 
     #[DataProvider('writeTools')]
