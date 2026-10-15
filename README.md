@@ -10,6 +10,8 @@ This repository contains a small package that makes these guarantees the default
 
 > **Status:** v1.0.0 ([changelog](CHANGELOG.md)). Semantic versioning: the public API (the base classes, `Guarded`, `CanonicalToolResult`, the test-kit assertions and the evidence table) changes incompatibly only in a new major version. Classes marked `@internal` are not part of it. The packstub adapter (`GuardedTools\Packstub`, `AssertsGuardedPackstubTools`) is experimental: it follows packstub/agents' own releases and can change in a minor version. `composer require kefyusuf/laravel-guarded-tools`
 
+> **Measured (2026-10-15):** 32 `*Test.php` files across the package, the demo app, six pilots and two spikes · 7 GitHub releases · CI workflow `tests.yml` · live eval outcomes published in the table below and in [`docs/write-eval-results.md`](docs/write-eval-results.md) · the four "why" decisions are in [`docs/adr/`](docs/adr/): evidence-per-call, honest failure over retry, workspace-as-parameter, and the two-track host strategy.
+
 ## Quickstart (laravel/ai)
 
 **1. Install.** The package adds one table, `guarded_tool_evidence`.
@@ -103,6 +105,7 @@ class BillingToolsTest extends TestCase
 | [`pilots`](pilots) | Apps that test the package outside the demo: support desk, clinic and inventory on packstub; agency hours on plain laravel/ai, team tasks on Neuron AI and on Prism, all on Laravel 12. |
 | [`spike-m0`](spike-m0), [`spike-packstub`](spike-packstub) | Throwaway spikes that tested the idea on plain `laravel/ai` and on packstub. Kept as evidence. |
 | [`docs`](docs) | PRD, spike reports, demo and eval results, pilot simulations. |
+| [`docs/adr`](docs/adr) | The four decisions behind the guarantees, each naming the tests that hold it and the gap that no test covers yet. |
 
 ## Results so far
 
