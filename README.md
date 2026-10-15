@@ -136,9 +136,11 @@ php artisan test
 
 The same `composer install` and `php artisan test` work in each `pilots/*` app. Tests need no API key. Live commands (`demo:ask`, `demo:eval`, `demo:eval-writes`) need an OpenAI-compatible provider in `.env`; see [`demo-app/README-demo.md`](demo-app/README-demo.md).
 
-## How it was built
+## Design and verification
 
-Built with [Claude Code](https://claude.com/claude-code) (Claude Opus 5.5) and Codex: spikes, reviews, implementation and verification. Every claim in `docs/` cites a test, a file and line, or a recorded run.
+The guarantee set — a tool call carries evidence or has no effect, failure is reported honestly, the workspace is an input rather than a filter — was specified before implementation: [`docs/prd-v0.2.md`](docs/prd-v0.2.md) and the four decisions in [`docs/adr`](docs/adr), each naming the tests that hold it. The counts in [Results so far](#results-so-far) are what that verification produced, and every claim in `docs/` cites a test, a file and line, or a recorded run.
+
+Implementation was carried out with [Claude Code](https://claude.com/claude-code) and Codex against those criteria.
 
 ## License
 
