@@ -33,6 +33,8 @@ Test-only setting: `packstub-agents.enabled = true`. Without a provider key, pac
 
 Command (from `spike-packstub/`): `php artisan test tests/Feature/PackstubIntegrationTest.php` gives **10 passed (43 assertions)**. All scenarios use packstub's own eval API (`AgentEval::as($user)->in($team)->expecting([...ToolCall...])`).
 
+> **Update 2026-10-15.** The figure above is the one recorded when this spike ran against packstub 1.7.0. The file now holds 14 test methods, including the two named for the 1.7.1 behaviour (P5b, P9) and the runtime/queue/MCP boundary cases (V3–V6); which of them post-date the original run is not recorded here. Re-run on this date, packstub 1.7.1 with PHP 8.4.16: `vendor/bin/phpunit tests/Feature/PackstubIntegrationTest.php` → **OK (14 tests, 52 assertions)**, and the original `php artisan test` lane gives the same **14 passed (52 assertions)** once `.env` exists — copy `.env.example` first; a missing `.env` makes artisan report every test as skipped with a `file_get_contents` warning. `docs/prd-v0.2.md` §4 still quotes the older "10 tests" figure.
+
 | ID | Scenario | Canonical tool | Plain packstub tool (baseline) |
 |---|---|---|---|
 | P1 | Allowed call, last month | `ok`, 3 orders, 425.75; the model gets `status`, `data`, `evidenceId` only, no tenant or internal IDs | — |

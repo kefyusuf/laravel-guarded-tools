@@ -22,7 +22,9 @@ Run two tracks over one core, with a written rule for which one leads
 
 - **Track A — packstub extension.** Base class `CanonicalAgentTool extends Packstub\Agents\Mcp\AgentTool`;
   exposure and call-time authorization stay packstub's (`shouldRegister()`, `handle()`); requirements
-  PHP ^8.4 + Laravel ^13. Proven in `spike-packstub/` (10 tests, 43 assertions).
+  PHP ^8.4 + Laravel ^13. Proven in `spike-packstub/` — 14 tests, 52 assertions, re-run green on
+  2026-10-15 with packstub 1.7.1 (`docs/packstub-integration-findings.md` §4 records the older 10/43
+  figure from the 1.7.0 run).
 - **Track B — standalone on `laravel/ai`.** `CanonicalTool` + `GuardedTool` wrapper; exposure and policy
   are ours (`ExposurePolicy`, `ToolPolicy`); requirements PHP ^8.3 + Laravel ^12 or ^13. Proven in
   `spike-m0/` (20 tests, 18 live runs).
