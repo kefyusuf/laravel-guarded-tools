@@ -2445,16 +2445,16 @@
         },
         {
             "name": "neuron-core/neuron-ai",
-            "version": "4.1.9",
+            "version": "4.1.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/neuron-core/neuron-ai.git",
-                "reference": "5a2188d536323c263f5435715f8df75f4de2b5c9"
+                "reference": "e1d4790cadf829dea6fc5e35033d7fb24a05b352"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/neuron-core/neuron-ai/zipball/5a2188d536323c263f5435715f8df75f4de2b5c9",
-                "reference": "5a2188d536323c263f5435715f8df75f4de2b5c9",
+                "url": "https://api.github.com/repos/neuron-core/neuron-ai/zipball/e1d4790cadf829dea6fc5e35033d7fb24a05b352",
+                "reference": "e1d4790cadf829dea6fc5e35033d7fb24a05b352",
                 "shasum": ""
             },
             "require": {
@@ -2526,7 +2526,7 @@
             "description": "A unified layer for building AI-native applications in PHP.",
             "support": {
                 "issues": "https://github.com/neuron-core/neuron-ai/issues",
-                "source": "https://github.com/neuron-core/neuron-ai/tree/4.1.9"
+                "source": "https://github.com/neuron-core/neuron-ai/tree/4.1.11"
             },
             "funding": [
                 {
@@ -2534,7 +2534,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-09T07:05:57+00:00"
+            "time": "2026-10-10T13:34:19+00:00"
         },
         {
             "name": "nikic/php-parser",
